@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora Organics | Supervisão Agrícola</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background-color: #0f1115;
+        color: #f2f2f2;
+      }
+
+      header {
+        background: #15181d;
+        padding: 16px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #222;
+      }
+
+      header h1 {
+        font-size: 20px;
+        color: #7fffa6;
+        margin: 0;
+      }
+
+      header .info {
+        font-size: 14px;
+        color: #bbb;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 24px;
+        padding: 24px 40px;
+      }
+
+      .sidebar {
+        background: #15181d;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .sidebar h2 {
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: #aaa;
+      }
+
+      .sidebar select {
+        background: #0f1115;
+        border: 1px solid #2a2d33;
+        border-radius: 8px;
+        color: #f2f2f2;
+        padding: 8px;
+      }
+
+      .stats {
+        background: #15181d;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat h3 {
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 6px;
+      }
+
+      .stat p {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .map {
+        background: linear-gradient(180deg, #1c2026 0%, #121417 100%);
+        border-radius: 16px;
+        padding: 16px;
+        position: relative;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map svg {
+        width: 80%;
+        max-width: 500px;
+      }
+
+      .sensor {
+        position: absolute;
+        background: #1f242b;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .sensor.green {
+        border: 1px solid #3cff86;
+        color: #3cff86;
+      }
+
+      .sensor.yellow {
+        border: 1px solid #ffd94d;
+        color: #ffd94d;
+      }
+
+      .sensor.red {
+        border: 1px solid #ff4d4d;
+        color: #ff4d4d;
+      }
+
+      .footer {
+        text-align: center;
+        color: #666;
+        padding: 16px;
+        font-size: 12px;
+        border-top: 1px solid #222;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>🌿 Aurora Organics</h1>
+      <div class="info">Última sincronização: há 5 minutos</div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <div>
+          <h2>Período</h2>
+          <select>
+            <option>Últimos 7 dias</option>
+            <option>Últimos 30 dias</option>
+            <option>Últimos 3 meses</option>
+          </select>
+        </div>
+
+        <div>
+          <h2>Tipo de alerta</h2>
+          <select>
+            <option>Todos</option>
+            <option>Temperatura</option>
+            <option>Umidade</option>
+            <option>Pragas</option>
+          </select>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <h3>Áreas monitoradas</h3>
+            <p>3</p>
+          </div>
+          <div class="stat">
+            <h3>Alertas ativos</h3>
+            <p style="color:#ffd94d;">2</p>
+          </div>
+          <div class="stat">
+            <h3>Críticos</h3>
+            <p style="color:#ff4d4d;">1</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="map">
+        <svg viewBox="0 0 200 200">
+          <rect x="20" y="20" width="160" height="160" rx="15" ry="15" fill="#263238"/>
+          <rect x="30" y="30" width="60" height="60" rx="10" ry="10" fill="#2e7d32"/>
+          <rect x="110" y="30" width="60" height="60" rx="10" ry="10" fill="#fbc02d"/>
+          <rect x="30" y="110" width="60" height="60" rx="10" ry="10" fill="#e53935"/>
+          <rect x="110" y="110" width="60" height="60" rx="10" ry="10" fill="#43a047"/>
+        </svg>
+
+        <div class="sensor green" style="top: 30%; left: 35%">Estufa 🌡️ 21°C</div>
+        <div class="sensor yellow" style="top: 35%; left: 65%">Horta 💧 24%</div>
+        <div class="sensor red" style="top: 70%; left: 40%">Talhão ⚠️ 15%</div>
+      </div>
+    </main>
+
+    <div class="footer">
+      © 2025 Aurora Organics – Supervisão Agrícola Inteligente
+    </div>
+  </body>
+</html>
