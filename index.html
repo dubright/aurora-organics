@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     body{margin:0;font-family:"Inter",sans-serif;background:#0F1115;color:#E6E6E6;transition:background .4s ease}
     header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#171A1F;box-shadow:0 2px 10px rgba(0,0,0,.3)}
@@ -46,7 +45,8 @@
     </div>
   </header>
   <div id="root"></div>
-  <script type="text/babel">
+
+  <script type="text/javascript">
     const {useState,useEffect}=React;
 
     const plantas=["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
@@ -105,52 +105,67 @@
 
       function diasDesde(germ){return Math.floor((new Date()-new Date(germ))/(1000*60*60*24))}
 
-      return(
-        <div className="container">
-          <h2>🌱 Cadastro de Cultivos</h2>
-          <div className="flex">
-            <select value={planta} onChange={e=>setPlanta(e.target.value)}>
-              <option value="">Selecione a planta</option>{plantas.map((p,i)=><option key={i}>{p}</option>)}
-            </select>
-            <input type="date" value={data} onChange={e=>setData(e.target.value)}/>
-            <select value={fert} onChange={e=>setFert(e.target.value)}>
-              <option>BioBizz</option><option>Forth</option><option>Dimy</option>
-            </select>
-            <input placeholder="Local (opcional)" value={local} onChange={e=>setLocal(e.target.value)}/>
-            <button onClick={addCultivo}>Adicionar</button>
-          </div>
-
-          <h2>🌿 Cultivos Ativos</h2>
-          {cultivos.sort((a,b)=>new Date(a.colheita)-new Date(b.colheita)).map(c=>{
-            const dias=diasDesde(c.dataGerminacao);const fase=getFase(dias);
-            const progresso=Math.min((dias/60)*100,100);
-            return(
-              <div className="card" key={c.id}>
-                <div className="flex justify-between"><strong>{c.planta}</strong><span>{c.fertilizante}</span></div>
-                <small>Germinação: {c.dataGerminacao} | Colheita prevista: {c.colheita}</small>
-                <div className="fase" style={{color:fase.cor}}>{fase.icone} {fase.nome}</div>
-                <div className="progress"><div className="progress-bar" style={{width:`${progresso}%`,background:fase.cor}}></div></div>
-                <div style={{marginTop:"1rem"}}>
-                  <strong>💧 Recomendações ({c.fertilizante})</strong>
-                  {fertRecomendacoes[c.fertilizante].map((r,i)=><div key={i}><strong>{r.fase}</strong> — <small>{r.dias}</small><div>{r.recomendacao}</div></div>)}
-                </div>
-                <div className="flex" style={{marginTop:"1rem"}}>
-                  <button onClick={()=>registrar(c.id,"Adubação realizada")}>✅ Aplicar</button>
-                  <button onClick={()=>editar(c.id,{planta:prompt("Editar nome da planta:",c.planta)||c.planta})}>✏️ Editar</button>
-                  <button onClick={()=>excluir(c.id)}>🗑️ Excluir</button>
-                </div>
-                {c.historico.length>0&&<div style={{marginTop:"1rem"}}><strong>📜 Histórico:</strong>{c.historico.map((h,i)=><div key={i}><small>{h.data} — {h.acao}</small></div>)}</div>}
-              </div>
+      return React.createElement("div",{className:"container"},
+        React.createElement("h2",null,"🌱 Cadastro de Cultivos"),
+        React.createElement("div",{className:"flex"},
+          React.createElement("select",{value:planta,onChange:e=>setPlanta(e.target.value)},
+            React.createElement("option",{value:""},"Selecione a planta"),
+            plantas.map((p,i)=>React.createElement("option",{key:i},p))
+          ),
+          React.createElement("input",{type:"date",value:data,onChange:e=>setData(e.target.value)}),
+          React.createElement("select",{value:fert,onChange:e=>setFert(e.target.value)},
+            React.createElement("option",null,"BioBizz"),
+            React.createElement("option",null,"Forth"),
+            React.createElement("option",null,"Dimy")
+          ),
+          React.createElement("input",{placeholder:"Local (opcional)",value:local,onChange:e=>setLocal(e.target.value)}),
+          React.createElement("button",{onClick:addCultivo},"Adicionar")
+        ),
+        React.createElement("h2",null,"🌿 Cultivos Ativos"),
+        cultivos.sort((a,b)=>new Date(a.colheita)-new Date(b.colheita)).map(c=>{
+          const dias=diasDesde(c.dataGerminacao);const fase=getFase(dias);
+          const progresso=Math.min((dias/60)*100,100);
+          return React.createElement("div",{className:"card",key:c.id},
+            React.createElement("div",{className:"flex justify-between"},
+              React.createElement("strong",null,c.planta),
+              React.createElement("span",null,c.fertilizante)
+            ),
+            React.createElement("small",null,`Germinação: ${c.dataGerminacao} | Colheita prevista: ${c.colheita}`),
+            React.createElement("div",{className:"fase",style:{color:fase.cor}},fase.icone," ",fase.nome),
+            React.createElement("div",{className:"progress"},
+              React.createElement("div",{className:"progress-bar",style:{width:`${progresso}%`,background:fase.cor}})
+            ),
+            React.createElement("div",{style:{marginTop:"1rem"}},
+              React.createElement("strong",null,`💧 Recomendações (${c.fertilizante})`),
+              fertRecomendacoes[c.fertilizante].map((r,i)=>
+                React.createElement("div",{key:i},
+                  React.createElement("strong",null,r.fase)," — ",
+                  React.createElement("small",null,r.dias),
+                  React.createElement("div",null,r.recomendacao)
+                )
+              )
+            ),
+            React.createElement("div",{className:"flex",style:{marginTop:"1rem"}},
+              React.createElement("button",{onClick:()=>registrar(c.id,"Adubação realizada")},"✅ Aplicar"),
+              React.createElement("button",{onClick:()=>editar(c.id,{planta:prompt('Editar nome da planta:',c.planta)||c.planta})},"✏️ Editar"),
+              React.createElement("button",{onClick:()=>excluir(c.id)},"🗑️ Excluir")
+            ),
+            c.historico.length>0 && React.createElement("div",{style:{marginTop:"1rem"}},
+              React.createElement("strong",null,"📜 Histórico:"),
+              c.historico.map((h,i)=>React.createElement("div",{key:i},
+                React.createElement("small",null,`${h.data} — ${h.acao}`)
+              ))
             )
-          })}
-          {toast&&<div className="toast">{toast}</div>}
-        </div>
+          )
+        }),
+        toast && React.createElement("div",{className:"toast"},toast)
       )
     }
 
     const root=ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App/>);
+    root.render(React.createElement(App));
   </script>
+
   <script>
     const toggle=document.getElementById("themeToggle");
     const menu=document.getElementById("themeOptions");
