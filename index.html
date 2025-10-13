@@ -442,3 +442,87 @@
 
   </body>
 </html>
+<!-- RECOMENDAÇÕES DE FERTILIZANTES -->
+<section id="recomendacoes" style="background:#15181d; border-radius:12px; padding:24px; margin-bottom:32px;">
+  <h2 style="color:#7fffa6;">🧪 Recomendações de Fertilizantes</h2>
+  <div id="recomendacaoTexto" style="margin-top:14px; color:#fff;"></div>
+</section>
+
+<script>
+  // Durações médias por espécie (em dias)
+  const duracaoCiclo = {
+    Alface: 60, Rúcula: 45, Tomate: 120, Morango: 90, Cenoura: 100, Beterraba: 90, Couve: 80, Manjericão: 70, Coentro: 70
+  };
+
+  // Etapas de fertilização por fases
+  const planoFertilizante = [
+    {
+      fase: "Germinação inicial",
+      intervalo: [0, 15],
+      descricao: "Use Nitrogênio e Cálcio para fortalecer raízes e brotos iniciais.",
+      produtos: ["Bio-Grow", "CalMag", "Nitro Max"]
+    },
+    {
+      fase: "Crescimento vegetativo",
+      intervalo: [16, 40],
+      descricao: "Aplique Magnésio e Fósforo para estimular o crescimento de folhas e caules.",
+      produtos: ["Sensi Grow", "Mag-Pro", "Bio-Heaven"]
+    },
+    {
+      fase: "Floração / frutificação",
+      intervalo: [41, 55],
+      descricao: "Foque em Potássio e micronutrientes para o florescimento e início da frutificação.",
+      produtos: ["Big Bud", "Bio-Bloom", "Top Max"]
+    },
+    {
+      fase: "Pré-colheita",
+      intervalo: [56, 100],
+      descricao: "Reduza fertilizantes, mantendo Potássio e micronutrientes leves até o flush final.",
+      produtos: ["Alg-A-Mic", "Water Flush"]
+    }
+  ];
+
+  // Função para gerar recomendações detalhadas
+  function gerarRecomendacoesDetalhadas() {
+    const linhas = document.querySelectorAll("#tabelaCultivos tr");
+    let html = "";
+
+    linhas.forEach((linha) => {
+      const planta = linha.children[0]?.textContent;
+      const germinacao = linha.children[1]?.textContent;
+      const colheita = linha.children[3]?.textContent;
+
+      if (planta && germinacao && colheita) {
+        const duracao = duracaoCiclo[planta] || 90;
+        html += `<div style="margin-bottom:22px;">
+          <h3 style="color:#7fffa6;">${planta}</h3>
+          <ul style="list-style:none; padding-left:0;">`;
+
+        planoFertilizante.forEach((fase) => {
+          const inicio = new Date(germinacao);
+          const fim = new Date(inicio);
+          fim.setDate(inicio.getDate() + (fase.intervalo[1] * duracao / 100));
+          const inicioFormatado = new Date(inicio.getTime() + (fase.intervalo[0] * duracao / 100) * 24 * 60 * 60 * 1000)
+            .toISOString().split("T")[0];
+          const fimFormatado = fim.toISOString().split("T")[0];
+
+          html += `
+            <li style="margin-bottom:12px;">
+              <strong>${fase.fase}</strong> <br>
+              <small>De ${inicioFormatado} até ${fimFormatado}</small><br>
+              <span>${fase.descricao}</span><br>
+              <b>Produtos:</b> ${fase.produtos.join(", ")}
+            </li>
+          `;
+        });
+
+        html += "</ul></div>";
+      }
+    });
+
+    document.getElementById("recomendacaoTexto").innerHTML =
+      html || "<p>Nenhum cultivo cadastrado.</p>";
+  }
+
+  gerarRecomendacoesDetalhadas();
+</script>
