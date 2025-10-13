@@ -8,107 +8,31 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background-color: #0F1115;
-      color: #E6E6E6;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: #171A1F;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-    h1 {
-      font-size: 1.5rem;
-      color: #00E676;
-    }
-    select, input, button {
-      border: none;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-family: inherit;
-    }
-    button {
-      background: #00E676;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 10px #00E67688;
-    }
-    .container {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    .card {
-      background: #171A1F;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,230,118,0.05);
-      margin-bottom: 1rem;
-      transition: 0.3s ease;
-    }
-    .card:hover {
-      transform: scale(1.01);
-      box-shadow: 0 0 12px rgba(0,230,118,0.15);
-    }
-    .flex {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .justify-between {
-      justify-content: space-between;
-    }
-    .progress {
-      height: 8px;
-      border-radius: 4px;
-      background: #1E2228;
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #00E676;
-      transition: width 0.5s ease;
-    }
-    .theme-selector {
-      position: relative;
-    }
-    .theme-options {
-      position: absolute;
-      right: 0;
-      top: 40px;
-      background: #171A1F;
-      border-radius: 8px;
-      display: none;
-      flex-direction: column;
-    }
-    .theme-options button {
-      background: none;
-      color: #E6E6E6;
-      padding: 8px 12px;
-      border-radius: 0;
-    }
-    .theme-options button:hover {
-      background: #00E67622;
-    }
-    .show {
-      display: flex;
-    }
+    body{margin:0;font-family:"Inter",sans-serif;background:#0F1115;color:#E6E6E6;transition:background .4s ease}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#171A1F;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+    h1{font-size:1.5rem;color:#00E676}
+    .container{padding:2rem;max-width:1100px;margin:auto}
+    select,input,button{border:none;border-radius:8px;padding:8px 10px;font-family:inherit}
+    button{background:#00E676;color:#000;font-weight:600;cursor:pointer;transition:.3s}
+    button:hover{transform:scale(1.03);box-shadow:0 0 10px #00E67688}
+    .card{background:#171A1F;padding:1rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,230,118,.05);margin-bottom:1rem;transition:.3s}
+    .card:hover{transform:scale(1.01)}
+    .flex{display:flex;gap:1rem;flex-wrap:wrap}
+    .justify-between{justify-content:space-between}
+    .progress{height:8px;border-radius:4px;background:#1E2228;margin-top:6px;overflow:hidden}
+    .progress-bar{height:100%;transition:width .5s ease}
+    .fase{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+    .toast{position:fixed;bottom:20px;right:20px;background:#00E676;color:#000;padding:10px 20px;border-radius:8px;font-weight:600;animation:slideIn .5s ease}
+    @keyframes slideIn{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .theme-selector{position:relative}
+    .theme-options{position:absolute;right:0;top:40px;background:#171A1F;border-radius:8px;display:none;flex-direction:column}
+    .theme-options button{background:none;color:#E6E6E6;padding:8px 12px;border-radius:0}
+    .theme-options button:hover{background:#00E67622}
+    .show{display:flex}
+    small{color:#A1A1A1}
   </style>
 </head>
-
 <body>
   <header>
     <h1>🌿 Aurora Organics</h1>
@@ -121,93 +45,117 @@
       </div>
     </div>
   </header>
-
   <div id="root"></div>
-
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const {useState,useEffect}=React;
 
-    const plantas = [
-      "Abóbora", "Abobrinha", "Acelga", "Agrião", "Aipo", "Alcachofra", "Alface", "Alho", "Alho-poró", "Almeirão",
-      "Aspargo", "Batata", "Batata-doce", "Berinjela", "Beterraba", "Brócolis", "Cebola", "Cenoura", "Coentro", "Couve",
-      "Couve-flor", "Ervilha", "Espinafre", "Feijão-vagem", "Gengibre", "Jiló", "Maxixe", "Milho", "Pepino", "Pimentão",
-      "Quiabo", "Rabanete", "Repolho", "Rúcula", "Salsa", "Tomate", "Abacate", "Abacaxi", "Açaí", "Acerola", "Amora",
-      "Banana", "Cajá", "Caju", "Coco", "Cupuaçu", "Figo", "Framboesa", "Goiaba", "Graviola", "Jabuticaba", "Laranja",
-      "Limão", "Maçã", "Mamão", "Manga", "Maracujá", "Melancia", "Melão", "Morango", "Pera", "Pêssego", "Pitanga", "Uva"
+    const plantas=["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
+    const fertRecomendacoes={
+      BioBizz:[
+        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Bio-Grow (2ml/L) + CalMag (1ml/L)"},
+        {fase:"Floração",dias:"21–40 dias",recomendacao:"Bio-Bloom (2ml/L) + Top-Max (1ml/L)"},
+        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Somente Alg-A-Mic (1ml/L)"}
+      ],
+      Forth:[
+        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Forth Enraizador (3ml/L) + Forth Cálcio (1ml/L)"},
+        {fase:"Floração",dias:"21–40 dias",recomendacao:"Forth Flores (2ml/L) + Forth Potássio (1ml/L)"},
+        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Suspender adubação 5 dias antes da colheita"}
+      ],
+      Dimy:[
+        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Dimy NPK 10-10-10 (2ml/L)"},
+        {fase:"Floração",dias:"21–40 dias",recomendacao:"Dimy NPK 4-14-8 (2ml/L)"},
+        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Dimy NPK 0-0-30 (1ml/L)"}
+      ]
+    };
+
+    const fases=[
+      {nome:"Germinação",icone:"🌱",cor:"#00ff99",inicio:0,fim:7},
+      {nome:"Crescimento",icone:"🌿",cor:"#00E676",inicio:8,fim:35},
+      {nome:"Floração",icone:"🌸",cor:"#C084FC",inicio:36,fim:50},
+      {nome:"Pré-colheita",icone:"🍅",cor:"#FCA311",inicio:51,fim:60}
     ];
 
-    function App() {
-      const [cultivos, setCultivos] = useState([]);
-      const [planta, setPlanta] = useState("");
-      const [data, setData] = useState("");
-      const [fert, setFert] = useState("BioBizz");
-      const [tema, setTema] = useState(localStorage.getItem("tema") || "dark");
+    function getFase(dias){
+      const f=fases.find(f=>dias>=f.inicio&&dias<=f.fim);
+      return f||fases[0];
+    }
 
-      useEffect(() => {
-        document.body.style.background = tema === "light" ? "#E6E6E6" : tema === "green" ? "#021d11" : "#0F1115";
-        document.body.style.color = tema === "light" ? "#000" : "#E6E6E6";
-        localStorage.setItem("tema", tema);
-      }, [tema]);
+    function App(){
+      const [cultivos,setCultivos]=useState(JSON.parse(localStorage.getItem("cultivos")||"[]"));
+      const [planta,setPlanta]=useState("");const [data,setData]=useState("");const [fert,setFert]=useState("BioBizz");
+      const [local,setLocal]=useState("");const [toast,setToast]=useState("");
+      const [tema,setTema]=useState(localStorage.getItem("tema")||"dark");
 
-      function addCultivo() {
-        if (!planta || !data) return alert("Preencha todos os campos!");
-        const novo = {
-          id: Date.now(),
-          planta,
-          dataGerminacao: data,
-          fertilizante: fert,
-          diasTotais: 60,
-          diasRestantes: 60 - Math.floor(Math.random() * 30),
-        };
-        setCultivos([...cultivos, novo]);
-        setPlanta(""); setData("");
+      useEffect(()=>{document.body.style.background=tema==="light"?"#E6E6E6":tema==="green"?"#021d11":"#0F1115";document.body.style.color=tema==="light"?"#000":"#E6E6E6";localStorage.setItem("tema",tema)},[tema]);
+      useEffect(()=>{localStorage.setItem("cultivos",JSON.stringify(cultivos))},[cultivos]);
+
+      function addCultivo(){
+        if(!planta||!data)return alert("Preencha todos os campos!");
+        const germ=new Date(data);const transpl=new Date(germ);transpl.setDate(germ.getDate()+7);
+        const colh=new Date(germ);colh.setDate(germ.getDate()+60);
+        const novo={id:Date.now(),planta,dataGerminacao:data,transplante:transpl.toISOString().split("T")[0],colheita:colh.toISOString().split("T")[0],fertilizante:fert,localCultivo:local,historico:[],criadoEm:new Date().toLocaleDateString()};
+        setCultivos([...cultivos,novo]);
+        setPlanta("");setData("");setLocal("");
+        setToast("🌱 Cultivo adicionado com sucesso!");setTimeout(()=>setToast(""),3000);
       }
 
-      return (
+      function excluir(id){setCultivos(cultivos.filter(c=>c.id!==id))}
+      function editar(id,novos){setCultivos(cultivos.map(c=>c.id===id?{...c,...novos}:c))}
+      function registrar(id,acao){setCultivos(cultivos.map(c=>c.id===id?{...c,historico:[...c.historico,{data:new Date().toLocaleDateString(),acao}]}:c))}
+
+      function diasDesde(germ){return Math.floor((new Date()-new Date(germ))/(1000*60*60*24))}
+
+      return(
         <div className="container">
           <h2>🌱 Cadastro de Cultivos</h2>
           <div className="flex">
-            <select value={planta} onChange={e => setPlanta(e.target.value)}>
-              <option value="">Selecione a planta</option>
-              {plantas.map((p, i) => <option key={i}>{p}</option>)}
+            <select value={planta} onChange={e=>setPlanta(e.target.value)}>
+              <option value="">Selecione a planta</option>{plantas.map((p,i)=><option key={i}>{p}</option>)}
             </select>
-            <input type="date" value={data} onChange={e => setData(e.target.value)} />
-            <select value={fert} onChange={e => setFert(e.target.value)}>
-              <option>BioBizz</option>
-              <option>Forth</option>
-              <option>Dimy</option>
+            <input type="date" value={data} onChange={e=>setData(e.target.value)}/>
+            <select value={fert} onChange={e=>setFert(e.target.value)}>
+              <option>BioBizz</option><option>Forth</option><option>Dimy</option>
             </select>
+            <input placeholder="Local (opcional)" value={local} onChange={e=>setLocal(e.target.value)}/>
             <button onClick={addCultivo}>Adicionar</button>
           </div>
 
-          <h2 style={{marginTop:"2rem"}}>🌿 Cultivos Ativos</h2>
-          {cultivos.map(c => (
-            <div className="card" key={c.id}>
-              <div className="flex justify-between">
-                <strong>{c.planta}</strong>
-                <span>{c.fertilizante}</span>
+          <h2>🌿 Cultivos Ativos</h2>
+          {cultivos.sort((a,b)=>new Date(a.colheita)-new Date(b.colheita)).map(c=>{
+            const dias=diasDesde(c.dataGerminacao);const fase=getFase(dias);
+            const progresso=Math.min((dias/60)*100,100);
+            return(
+              <div className="card" key={c.id}>
+                <div className="flex justify-between"><strong>{c.planta}</strong><span>{c.fertilizante}</span></div>
+                <small>Germinação: {c.dataGerminacao} | Colheita prevista: {c.colheita}</small>
+                <div className="fase" style={{color:fase.cor}}>{fase.icone} {fase.nome}</div>
+                <div className="progress"><div className="progress-bar" style={{width:`${progresso}%`,background:fase.cor}}></div></div>
+                <div style={{marginTop:"1rem"}}>
+                  <strong>💧 Recomendações ({c.fertilizante})</strong>
+                  {fertRecomendacoes[c.fertilizante].map((r,i)=><div key={i}><strong>{r.fase}</strong> — <small>{r.dias}</small><div>{r.recomendacao}</div></div>)}
+                </div>
+                <div className="flex" style={{marginTop:"1rem"}}>
+                  <button onClick={()=>registrar(c.id,"Adubação realizada")}>✅ Aplicar</button>
+                  <button onClick={()=>editar(c.id,{planta:prompt("Editar nome da planta:",c.planta)||c.planta})}>✏️ Editar</button>
+                  <button onClick={()=>excluir(c.id)}>🗑️ Excluir</button>
+                </div>
+                {c.historico.length>0&&<div style={{marginTop:"1rem"}}><strong>📜 Histórico:</strong>{c.historico.map((h,i)=><div key={i}><small>{h.data} — {h.acao}</small></div>)}</div>}
               </div>
-              <small>Germinação: {c.dataGerminacao}</small>
-              <div className="progress"><div className="progress-bar" style={{width:`${(1 - c.diasRestantes/c.diasTotais)*100}%`}}></div></div>
-            </div>
-          ))}
+            )
+          })}
+          {toast&&<div className="toast">{toast}</div>}
         </div>
-      );
+      )
     }
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App />);
+    const root=ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App/>);
   </script>
-
   <script>
-    const toggle = document.getElementById("themeToggle");
-    const menu = document.getElementById("themeOptions");
-    toggle.addEventListener("click", () => menu.classList.toggle("show"));
-
-    function setTheme(t) {
-      localStorage.setItem("tema", t);
-      location.reload();
-    }
+    const toggle=document.getElementById("themeToggle");
+    const menu=document.getElementById("themeOptions");
+    toggle.addEventListener("click",()=>menu.classList.toggle("show"));
+    function setTheme(t){localStorage.setItem("tema",t);location.reload();}
   </script>
 </body>
 </html>
