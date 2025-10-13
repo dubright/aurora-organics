@@ -1,321 +1,281 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aurora Organics 2.0 | Supervisão Agrícola Inteligente</title>
-  <style>
-    :root {
-      --bg: #0f1115;
-      --card: #15181d;
-      --text: #f2f2f2;
-      --accent: #7fffa6;
-      --secondary: #1b1f27;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora Organics 🌿</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      :root {
+        --bg: #121212;
+        --card: #1e1e1e;
+        --text: #e2e2e2;
+        --accent: #7ef29d;
+      }
+      [data-theme="clear"] {
+        --bg: #f9f9f9;
+        --card: #ffffff;
+        --text: #333;
+        --accent: #3b9c5d;
+      }
+      [data-theme="pro"] {
+        --bg: #101418;
+        --card: #1c1f26;
+        --text: #e8e8e8;
+        --accent: #c8b55e;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background: var(--card);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      button {
+        cursor: pointer;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+      button:hover {
+        opacity: 0.8;
+      }
+      .container {
+        padding: 1.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .card {
+        background: var(--card);
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      .input-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      input, select {
+        background: var(--bg);
+        border: 1px solid var(--accent);
+        color: var(--text);
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th, td {
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--accent);
+      }
+      .phase {
+        margin: 0.8rem 0;
+        padding: 0.8rem;
+        border-radius: 10px;
+        background: var(--card);
+      }
+      .theme-menu {
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--card);
+        padding: 0.8rem;
+        border-radius: 10px;
+        display: none;
+      }
+      .theme-menu.active {
+        display: block;
+      }
+    </style>
+  </head>
 
-    [data-theme="light"] {
-      --bg: #f7f9f8;
-      --card: #ffffff;
-      --text: #0f1115;
-      --accent: #00c06b;
-      --secondary: #e4f2ec;
-    }
+  <body>
+    <header>
+      <h1>🌱 Aurora Organics</h1>
+      <div style="position: relative;">
+        <button id="themeButton">Alterar Tema</button>
+        <div id="themeMenu" class="theme-menu">
+          <p><button data-theme="dark">Aurora Dark</button></p>
+          <p><button data-theme="clear">Aurora Clear</button></p>
+          <p><button data-theme="pro">Aurora Pro</button></p>
+        </div>
+      </div>
+    </header>
 
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      transition: all 0.4s ease;
-    }
+    <div id="root"></div>
 
-    header {
-      background: var(--card);
-      color: var(--accent);
-      padding: 20px 40px;
-      font-size: 24px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
+    <script type="text/babel">
 
-    .theme-toggle {
-      background: var(--accent);
-      border: none;
-      color: var(--bg);
-      border-radius: 20px;
-      padding: 8px 14px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
-      transition: 0.3s;
-    }
+      const fertilizantes = {
+        Biobizz: { germ: 1, cresc: 2, flor: 3, pre: 2 },
+        Forth: { germ: 2, cresc: 2.5, flor: 3, pre: 1 },
+        Dimy: { germ: 1, cresc: 2, flor: 2, pre: 1.5 },
+        Lindeza: { germ: 1.5, cresc: 2.5, flor: 3, pre: 2 },
+        Cibra: { germ: 2, cresc: 3, flor: 3.5, pre: 2 }
+      };
 
-    .theme-toggle:hover { opacity: 0.8; }
-
-    main {
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 36px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    h2 {
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-    }
-
-    input, select, button {
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    input, select {
-      background: var(--secondary);
-      color: var(--text);
-    }
-
-    button {
-      background: var(--accent);
-      color: var(--bg);
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    th {
-      color: var(--accent);
-    }
-
-    .fase-card {
-      background: var(--secondary);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .fase-card.aplicado {
-      background: linear-gradient(90deg, #00c06b, #009f5c);
-      color: #0f1115;
-      font-weight: 600;
-    }
-
-    .fase-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .fase-nome {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .fase-datas {
-      color: #ccc;
-      font-size: 13px;
-    }
-
-    .progresso {
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 8px 0;
-    }
-
-    .barra {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width 1s;
-    }
-
-    footer {
-      text-align: center;
-      padding: 18px;
-      color: #777;
-      font-size: 13px;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    🌿 Aurora Organics 2.0
-    <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema</button>
-  </header>
-
-  <main>
-    <section id="recomendacoes" class="card">
-      <h2>🧪 Recomendações de Fertilizantes</h2>
-      <div id="recomendacaoTexto">Cadastre um cultivo para gerar recomendações personalizadas.</div>
-    </section>
-
-    <section id="cadastro" class="card">
-      <h2>📋 Cadastro de Cultivos</h2>
-      <form id="cultivoForm">
-        <select id="tipo" required>
-          <option>Alface</option>
-          <option>Rúcula</option>
-          <option>Tomate</option>
-          <option>Morango</option>
-          <option>Cenoura</option>
-          <option>Beterraba</option>
-          <option>Manjericão</option>
-          <option>Coentro</option>
-        </select>
-        <input type="date" id="germinacao" required>
-        <input type="number" id="quantidade" min="1" value="1">
-        <button type="submit">Adicionar cultivo</button>
-      </form>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Planta</th>
-            <th>Germinação</th>
-            <th>Colheita Prevista</th>
-            <th>Qtd.</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaCultivos"></tbody>
-      </table>
-    </section>
-  </main>
-
-  <footer>© 2025 Aurora Organics – Supervisão Agrícola Inteligente</footer>
-
-  <script>
-    const duracaoPadrao = { Alface: 60, Rúcula: 45, Tomate: 120, Morango: 90, Cenoura: 100, Beterraba: 90, Manjericão: 70, Coentro: 70 };
-    const form = document.getElementById("cultivoForm");
-    const tabela = document.getElementById("tabelaCultivos");
-    const recomendacaoDiv = document.getElementById("recomendacaoTexto");
-
-    function toggleTheme() {
-      const current = document.body.getAttribute("data-theme");
-      const next = current === "light" ? "dark" : "light";
-      document.body.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-    }
-
-    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const tipo = document.getElementById("tipo").value;
-      const germinacao = new Date(document.getElementById("germinacao").value);
-      const qtd = document.getElementById("quantidade").value;
-      const duracao = duracaoPadrao[tipo] || 90;
-      const colheita = new Date(germinacao);
-      colheita.setDate(colheita.getDate() + duracao);
-
-      const germFormat = germinacao.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-      const colhFormat = colheita.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-
-      tabela.innerHTML = `
-        <tr>
-          <td>${tipo}</td>
-          <td>${germFormat}</td>
-          <td>${colhFormat}</td>
-          <td>${qtd}</td>
-        </tr>`;
-      gerarRecomendacoes(tipo, germinacao, duracao);
-      form.reset();
-    });
-
-    function gerarRecomendacoes(planta, dataGerminacao, duracao) {
-      const fases = [
-        { nome: "Crescimento", inicio: 1, fim: 20, desc: "Use Nitrogênio e Cálcio.", produtos: ["Bio-Grow", "CalMag"] },
-        { nome: "Floração", inicio: 21, fim: 45, desc: "Aplique Potássio e micronutrientes.", produtos: ["Big Bud", "Bio-Bloom"] },
-        { nome: "Pré-colheita", inicio: 46, fim: 100, desc: "Mantenha potássio leve até o flush.", produtos: ["Alg-A-Mic", "Water Flush"] }
+      const cultivosLista = ["Abóbora","Abobrinha","Acelga","Agrião","Aipo (salsão)","Alcachofra","Alface","Alho","Alho-poró",
+        "Almeirão","Aspargo","Batata","Batata-doce","Berinjela","Beterraba","Brócolis","Cenoura","Couve","Couve-flor",
+        "Ervilha","Espinafre","Feijão-vagem","Gengibre","Jiló","Maxixe","Milho verde","Moranga","Nabo","Pepino","Pimenta",
+        "Pimentão","Quiabo","Rabanete","Repolho","Rúcula","Salsa","Taioba","Tomate","Abacate","Abacaxi","Acerola","Amora",
+        "Banana","Caju","Caju","Goiaba","Jabuticaba","Laranja","Limão","Mamão","Manga","Maracujá","Melancia","Melão","Morango",
+        "Pêssego","Pitanga","Uva"
       ];
 
-      let html = `<h3 style="color:var(--accent);">${planta}</h3>`;
-      fases.forEach((fase, i) => {
-        const inicio = new Date(dataGerminacao);
-        inicio.setDate(inicio.getDate() + (duracao * fase.inicio / 100));
-        const fim = new Date(dataGerminacao);
-        fim.setDate(fim.getDate() + (duracao * fase.fim / 100));
+      function App() {
+        const [cultivos, setCultivos] = React.useState(JSON.parse(localStorage.getItem("cultivos")) || []);
+        const [nome, setNome] = React.useState("");
+        const [data, setData] = React.useState("");
+        const [fert, setFert] = React.useState("Biobizz");
+        const [editingIndex, setEditingIndex] = React.useState(null);
+        const [tema, setTema] = React.useState(localStorage.getItem("tema") || "dark");
+        const [aplicados, setAplicados] = React.useState({});
 
-        const inicioFmt = inicio.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-        const fimFmt = fim.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+        React.useEffect(() => {
+          document.documentElement.setAttribute("data-theme", tema);
+          localStorage.setItem("tema", tema);
+        }, [tema]);
 
-        const key = `${planta}-fase${i}`;
-        const aplicado = localStorage.getItem(key) === "true";
+        React.useEffect(() => {
+          localStorage.setItem("cultivos", JSON.stringify(cultivos));
+        }, [cultivos]);
 
-        html += `
-          <div class="fase-card ${aplicado ? 'aplicado' : ''}" id="fase-${i}">
-            <div class="fase-header">
-              <div>
-                <div class="fase-nome">${fase.nome}</div>
-                <div class="fase-datas">${inicioFmt} até ${fimFmt}</div>
+        const addCultivo = () => {
+          if (!nome || !data) return alert("Preencha o nome e data de germinação!");
+          const novo = { nome, data, fert };
+          if (editingIndex !== null) {
+            const atualizados = [...cultivos];
+            atualizados[editingIndex] = novo;
+            setCultivos(atualizados);
+            setEditingIndex(null);
+          } else setCultivos([...cultivos, novo]);
+          setNome(""); setData("");
+        };
+
+        const deleteCultivo = (i) => {
+          if (confirm("Excluir cultivo?")) {
+            const atualizados = cultivos.filter((_, idx) => idx !== i);
+            setCultivos(atualizados);
+          }
+        };
+
+        const editCultivo = (i) => {
+          const c = cultivos[i];
+          setNome(c.nome);
+          setData(c.data);
+          setFert(c.fert);
+          setEditingIndex(i);
+        };
+
+        const toggleApliquei = (fase) => {
+          setAplicados({ ...aplicados, [fase]: !aplicados[fase] });
+        };
+
+        const calcularFases = (d) => {
+          const base = new Date(d);
+          const add = (days) => {
+            const nd = new Date(base);
+            nd.setDate(nd.getDate() + days);
+            return nd.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+          };
+          return [
+            { nome: "Germinação", ini: add(0), fim: add(7) },
+            { nome: "Crescimento", ini: add(7), fim: add(20) },
+            { nome: "Floração", ini: add(20), fim: add(30) },
+            { nome: "Pré-colheita", ini: add(30), fim: add(45) }
+          ];
+        };
+
+        const dosagem = (fase) => Math.round(fertilizantes[fert][fase] * 0.7 * 10) / 10;
+
+        const cultivoAtual = cultivos[editingIndex ?? 0];
+
+        return (
+          <div className="container">
+            <div className="card">
+              <h2>📋 Cadastro de Cultivos</h2>
+              <div className="input-group">
+                <input list="cultivos" value={nome} onChange={e => setNome(e.target.value)} placeholder="Tipo de cultivo" />
+                <datalist id="cultivos">{cultivosLista.map((c,i)=><option key={i} value={c} />)}</datalist>
+                <input type="date" value={data} onChange={e=>setData(e.target.value)} />
+                <select value={fert} onChange={e=>setFert(e.target.value)}>
+                  {Object.keys(fertilizantes).map(f=><option key={f}>{f}</option>)}
+                </select>
+                <button onClick={addCultivo}>{editingIndex!==null ? "Salvar" : "Adicionar"}</button>
               </div>
-              <button class="botao-aplicar" onclick="marcarAplicado('${key}', ${i})" ${aplicado ? 'disabled' : ''}>
-                ${aplicado ? '✔️ Aplicado' : '✅ Apliquei'}
-              </button>
+              <table>
+                <thead><tr><th>Planta</th><th>Germinação</th><th>Fertilizante</th><th>Ações</th></tr></thead>
+                <tbody>
+                  {cultivos.map((c,i)=>(
+                    <tr key={i}>
+                      <td onClick={()=>setEditingIndex(i)} style={{cursor:"pointer"}}>{c.nome}</td>
+                      <td>{new Date(c.data).toLocaleDateString("pt-BR")}</td>
+                      <td>{c.fert}</td>
+                      <td>
+                        <button onClick={()=>editCultivo(i)}>Editar</button>
+                        <button onClick={()=>deleteCultivo(i)}>Excluir</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div class="progresso"><div class="barra" id="barra-${i}"></div></div>
-            <p>${fase.desc}</p>
-            <p><b>Produtos:</b> ${fase.produtos.join(", ")}</p>
-          </div>`;
+
+            {cultivoAtual && (
+              <div className="card">
+                <h2>🧪 Recomendações de Fertilizantes</h2>
+                <h3>{cultivoAtual.nome} — {cultivoAtual.fert}</h3>
+                {calcularFases(cultivoAtual.data).map((f,i)=>(
+                  <div key={i} className="phase">
+                    <strong>{f.nome}</strong> — {f.ini} até {f.fim}<br/>
+                    Dosagem: <b>{dosagem(["germ","cresc","flor","pre"][i])} ml</b> / 700ml de água<br/>
+                    <button onClick={()=>toggleApliquei(f.nome)}>
+                      {aplicados[f.nome] ? "✅ Apliquei" : "Aplicar"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+      const btn = document.getElementById("themeButton");
+      const menu = document.getElementById("themeMenu");
+      btn.onclick = () => menu.classList.toggle("active");
+      menu.querySelectorAll("button").forEach(b=>{
+        b.onclick = ()=> {
+          document.documentElement.setAttribute("data-theme", b.dataset.theme);
+          localStorage.setItem("tema", b.dataset.theme);
+          menu.classList.remove("active");
+        };
       });
 
-      recomendacaoDiv.innerHTML = html;
-      animarProgresso();
-    }
-
-    function marcarAplicado(key, id) {
-      localStorage.setItem(key, "true");
-      const card = document.getElementById(`fase-${id}`);
-      card.classList.add("aplicado");
-      const btn = card.querySelector("button");
-      btn.textContent = "✔️ Aplicado";
-      btn.disabled = true;
-    }
-
-    function animarProgresso() {
-      document.querySelectorAll(".barra").forEach(bar => {
-        const random = Math.floor(Math.random() * 90) + 10;
-        bar.style.width = random + "%";
-      });
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
