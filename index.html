@@ -197,6 +197,123 @@
         <div class="sensor red" style="top: 70%; left: 40%">Talhão ⚠️ 15%</div>
       </div>
     </main>
+<!-- Formulário de cadastro de cultivos -->
+<section id="cadastro" style="background:#15181d; border-radius:12px; padding:20px; margin-top:30px;">
+  <h2 style="color:#7fffa6; margin-bottom:16px;">📋 Cadastro de Cultivos</h2>
+
+  <form id="cultivoForm" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+    <div>
+      <label>Tipo de cultivo:</label>
+      <select id="tipo" required style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
+        <optgroup label="Hortaliças">
+          <option>Alface</option>
+          <option>Rúcula</option>
+          <option>Couve</option>
+          <option>Espinafre</option>
+          <option>Cenoura</option>
+          <option>Beterraba</option>
+          <option>Agrião</option>
+          <option>Cebolinha</option>
+          <option>Coentro</option>
+        </optgroup>
+        <optgroup label="Frutas">
+          <option>Tomate</option>
+          <option>Morango</option>
+          <option>Melancia</option>
+          <option>Melão</option>
+          <option>Banana</option>
+          <option>Abacaxi</option>
+          <option>Mamão</option>
+          <option>Goiaba</option>
+          <option>Maracujá</option>
+        </optgroup>
+        <optgroup label="Verduras e Temperos">
+          <option>Manjericão</option>
+          <option>Hortelã</option>
+          <option>Salsa</option>
+          <option>Orégano</option>
+          <option>Alecrim</option>
+          <option>Tomilho</option>
+          <option>Pimentão</option>
+          <option>Quiabo</option>
+          <option>Abobrinha</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div>
+      <label>Data de germinação:</label>
+      <input type="date" id="germinacao" required style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
+    </div>
+
+    <div>
+      <label>Data de transplante:</label>
+      <input type="date" id="transplante" style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
+    </div>
+
+    <div>
+      <label>Quantidade:</label>
+      <input type="number" id="quantidade" min="1" value="1" style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
+    </div>
+
+    <button type="submit" style="grid-column: span 2; background:#7fffa6; color:#0f1115; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
+      Adicionar cultivo
+    </button>
+  </form>
+
+  <div id="listaCultivos" style="margin-top:24px;">
+    <h3 style="margin-bottom:8px;">🌾 Supervisório de Cultivos</h3>
+    <table style="width:100%; border-collapse:collapse; text-align:left;">
+      <thead>
+        <tr style="color:#7fffa6;">
+          <th>Planta</th>
+          <th>Germinação</th>
+          <th>Transplante</th>
+          <th>Colheita Prevista</th>
+          <th>Qtd.</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaCultivos"></tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  const duracaoPadrao = {
+    Alface: 60, Rúcula: 45, Couve: 90, Espinafre: 75, Cenoura: 100, Beterraba: 90, Agrião: 50, Cebolinha: 80, Coentro: 70,
+    Tomate: 120, Morango: 90, Melancia: 100, Melão: 95, Banana: 180, Abacaxi: 240, Mamão: 150, Goiaba: 210, Maracujá: 150,
+    Manjericão: 70, Hortelã: 60, Salsa: 80, Orégano: 80, Alecrim: 90, Tomilho: 75, Pimentão: 110, Quiabo: 100, Abobrinha: 85
+  };
+
+  const form = document.getElementById("cultivoForm");
+  const tabela = document.getElementById("tabelaCultivos");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const tipo = document.getElementById("tipo").value;
+    const germinacao = new Date(document.getElementById("germinacao").value);
+    const transplante = document.getElementById("transplante").value || "-";
+    const qtd = document.getElementById("quantidade").value;
+
+    const duracao = duracaoPadrao[tipo] || 90;
+    const colheita = new Date(germinacao);
+    colheita.setDate(colheita.getDate() + duracao);
+    const colheitaFormatada = colheita.toISOString().split("T")[0];
+
+    const linha = `
+      <tr>
+        <td>${tipo}</td>
+        <td>${germinacao.toISOString().split("T")[0]}</td>
+        <td>${transplante}</td>
+        <td>${colheitaFormatada}</td>
+        <td>${qtd}</td>
+      </tr>`;
+    tabela.innerHTML += linha;
+
+    form.reset();
+  });
+</script>
 
     <div class="footer">
       © 2025 Aurora Organics – Supervisão Agrícola Inteligente
