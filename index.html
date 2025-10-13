@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aurora Organics 🌿</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
   <style>
     body{margin:0;font-family:"Inter",sans-serif;background:#0F1115;color:#E6E6E6;transition:background .4s ease}
     header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#171A1F;box-shadow:0 2px 10px rgba(0,0,0,.3)}
@@ -46,64 +46,78 @@
   </header>
   <div id="root"></div>
 
-  <script type="text/javascript">
-    const {useState,useEffect}=React;
+  <script>
+    const {useState, useEffect} = React;
 
-    const plantas=["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
-    const fertRecomendacoes={
-      BioBizz:[
-        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Bio-Grow (2ml/L) + CalMag (1ml/L)"},
-        {fase:"Floração",dias:"21–40 dias",recomendacao:"Bio-Bloom (2ml/L) + Top-Max (1ml/L)"},
-        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Somente Alg-A-Mic (1ml/L)"}
+    const plantas = ["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
+    const fertRecomendacoes = {
+      BioBizz: [
+        {fase:"Crescimento", dias:"0–20 dias", recomendacao:"Bio-Grow (2ml/L) + CalMag (1ml/L)"},
+        {fase:"Floração", dias:"21–40 dias", recomendacao:"Bio-Bloom (2ml/L) + Top-Max (1ml/L)"},
+        {fase:"Pré-colheita", dias:"41–60 dias", recomendacao:"Somente Alg-A-Mic (1ml/L)"}
       ],
-      Forth:[
-        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Forth Enraizador (3ml/L) + Forth Cálcio (1ml/L)"},
-        {fase:"Floração",dias:"21–40 dias",recomendacao:"Forth Flores (2ml/L) + Forth Potássio (1ml/L)"},
-        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Suspender adubação 5 dias antes da colheita"}
+      Forth: [
+        {fase:"Crescimento", dias:"0–20 dias", recomendacao:"Forth Enraizador (3ml/L) + Forth Cálcio (1ml/L)"},
+        {fase:"Floração", dias:"21–40 dias", recomendacao:"Forth Flores (2ml/L) + Forth Potássio (1ml/L)"},
+        {fase:"Pré-colheita", dias:"41–60 dias", recomendacao:"Suspender adubação 5 dias antes da colheita"}
       ],
-      Dimy:[
-        {fase:"Crescimento",dias:"0–20 dias",recomendacao:"Dimy NPK 10-10-10 (2ml/L)"},
-        {fase:"Floração",dias:"21–40 dias",recomendacao:"Dimy NPK 4-14-8 (2ml/L)"},
-        {fase:"Pré-colheita",dias:"41–60 dias",recomendacao:"Dimy NPK 0-0-30 (1ml/L)"}
+      Dimy: [
+        {fase:"Crescimento", dias:"0–20 dias", recomendacao:"Dimy NPK 10-10-10 (2ml/L)"},
+        {fase:"Floração", dias:"21–40 dias", recomendacao:"Dimy NPK 4-14-8 (2ml/L)"},
+        {fase:"Pré-colheita", dias:"41–60 dias", recomendacao:"Dimy NPK 0-0-30 (1ml/L)"}
       ]
     };
 
-    const fases=[
-      {nome:"Germinação",icone:"🌱",cor:"#00ff99",inicio:0,fim:7},
-      {nome:"Crescimento",icone:"🌿",cor:"#00E676",inicio:8,fim:35},
-      {nome:"Floração",icone:"🌸",cor:"#C084FC",inicio:36,fim:50},
-      {nome:"Pré-colheita",icone:"🍅",cor:"#FCA311",inicio:51,fim:60}
+    const fases = [
+      {nome:"Germinação", icone:"🌱", cor:"#00ff99", inicio:0, fim:7},
+      {nome:"Crescimento", icone:"🌿", cor:"#00E676", inicio:8, fim:35},
+      {nome:"Floração", icone:"🌸", cor:"#C084FC", inicio:36, fim:50},
+      {nome:"Pré-colheita", icone:"🍅", cor:"#FCA311", inicio:51, fim:60}
     ];
 
-    function getFase(dias){
-      const f=fases.find(f=>dias>=f.inicio&&dias<=f.fim);
-      return f||fases[0];
+    function getFase(dias) {
+      return fases.find(f=>dias>=f.inicio && dias<=f.fim) || fases[0];
     }
 
-    function App(){
-      const [cultivos,setCultivos]=useState(JSON.parse(localStorage.getItem("cultivos")||"[]"));
-      const [planta,setPlanta]=useState("");const [data,setData]=useState("");const [fert,setFert]=useState("BioBizz");
-      const [local,setLocal]=useState("");const [toast,setToast]=useState("");
-      const [tema,setTema]=useState(localStorage.getItem("tema")||"dark");
+    function App() {
+      const [cultivos, setCultivos] = useState(JSON.parse(localStorage.getItem("cultivos") || "[]"));
+      const [planta, setPlanta] = useState("");
+      const [data, setData] = useState("");
+      const [fert, setFert] = useState("BioBizz");
+      const [local, setLocal] = useState("");
+      const [toast, setToast] = useState("");
+      const [tema, setTema] = useState(localStorage.getItem("tema") || "dark");
 
-      useEffect(()=>{document.body.style.background=tema==="light"?"#E6E6E6":tema==="green"?"#021d11":"#0F1115";document.body.style.color=tema==="light"?"#000":"#E6E6E6";localStorage.setItem("tema",tema)},[tema]);
-      useEffect(()=>{localStorage.setItem("cultivos",JSON.stringify(cultivos))},[cultivos]);
+      useEffect(()=>{
+        document.body.style.background = tema==="light"?"#E6E6E6":tema==="green"?"#021d11":"#0F1115";
+        document.body.style.color = tema==="light"?"#000":"#E6E6E6";
+        localStorage.setItem("tema", tema);
+      }, [tema]);
 
-      function addCultivo(){
-        if(!planta||!data)return alert("Preencha todos os campos!");
-        const germ=new Date(data);const transpl=new Date(germ);transpl.setDate(germ.getDate()+7);
-        const colh=new Date(germ);colh.setDate(germ.getDate()+60);
-        const novo={id:Date.now(),planta,dataGerminacao:data,transplante:transpl.toISOString().split("T")[0],colheita:colh.toISOString().split("T")[0],fertilizante:fert,localCultivo:local,historico:[],criadoEm:new Date().toLocaleDateString()};
-        setCultivos([...cultivos,novo]);
-        setPlanta("");setData("");setLocal("");
-        setToast("🌱 Cultivo adicionado com sucesso!");setTimeout(()=>setToast(""),3000);
+      useEffect(()=>{
+        localStorage.setItem("cultivos", JSON.stringify(cultivos));
+      }, [cultivos]);
+
+      function addCultivo() {
+        if(!planta || !data) return alert("Preencha todos os campos!");
+        const germ = new Date(data);
+        const colh = new Date(germ); colh.setDate(germ.getDate()+60);
+        const novo = {
+          id: Date.now(), planta, dataGerminacao:data,
+          colheita: colh.toISOString().split("T")[0],
+          fertilizante: fert, localCultivo: local,
+          historico: [], criadoEm: new Date().toLocaleDateString()
+        };
+        setCultivos([...cultivos, novo]);
+        setPlanta(""); setData(""); setLocal("");
+        setToast("🌱 Cultivo adicionado com sucesso!");
+        setTimeout(()=>setToast(""),3000);
       }
 
-      function excluir(id){setCultivos(cultivos.filter(c=>c.id!==id))}
-      function editar(id,novos){setCultivos(cultivos.map(c=>c.id===id?{...c,...novos}:c))}
-      function registrar(id,acao){setCultivos(cultivos.map(c=>c.id===id?{...c,historico:[...c.historico,{data:new Date().toLocaleDateString(),acao}]}:c))}
+      function excluir(id){ setCultivos(cultivos.filter(c=>c.id!==id)) }
+      function registrar(id,acao){ setCultivos(cultivos.map(c=>c.id===id?{...c,historico:[...c.historico,{data:new Date().toLocaleDateString(),acao}]}:c)) }
 
-      function diasDesde(germ){return Math.floor((new Date()-new Date(germ))/(1000*60*60*24))}
+      function diasDesde(germ){ return Math.floor((new Date()-new Date(germ))/(1000*60*60*24)) }
 
       return React.createElement("div",{className:"container"},
         React.createElement("h2",null,"🌱 Cadastro de Cultivos"),
@@ -122,15 +136,16 @@
           React.createElement("button",{onClick:addCultivo},"Adicionar")
         ),
         React.createElement("h2",null,"🌿 Cultivos Ativos"),
-        cultivos.sort((a,b)=>new Date(a.colheita)-new Date(b.colheita)).map(c=>{
-          const dias=diasDesde(c.dataGerminacao);const fase=getFase(dias);
+        cultivos.map(c=>{
+          const dias=diasDesde(c.dataGerminacao);
+          const fase=getFase(dias);
           const progresso=Math.min((dias/60)*100,100);
           return React.createElement("div",{className:"card",key:c.id},
             React.createElement("div",{className:"flex justify-between"},
               React.createElement("strong",null,c.planta),
               React.createElement("span",null,c.fertilizante)
             ),
-            React.createElement("small",null,`Germinação: ${c.dataGerminacao} | Colheita prevista: ${c.colheita}`),
+            React.createElement("small",null,`Germinação: ${c.dataGerminacao} | Colheita: ${c.colheita}`),
             React.createElement("div",{className:"fase",style:{color:fase.cor}},fase.icone," ",fase.nome),
             React.createElement("div",{className:"progress"},
               React.createElement("div",{className:"progress-bar",style:{width:`${progresso}%`,background:fase.cor}})
@@ -147,7 +162,6 @@
             ),
             React.createElement("div",{className:"flex",style:{marginTop:"1rem"}},
               React.createElement("button",{onClick:()=>registrar(c.id,"Adubação realizada")},"✅ Aplicar"),
-              React.createElement("button",{onClick:()=>editar(c.id,{planta:prompt('Editar nome da planta:',c.planta)||c.planta})},"✏️ Editar"),
               React.createElement("button",{onClick:()=>excluir(c.id)},"🗑️ Excluir")
             ),
             c.historico.length>0 && React.createElement("div",{style:{marginTop:"1rem"}},
@@ -159,11 +173,10 @@
           )
         }),
         toast && React.createElement("div",{className:"toast"},toast)
-      )
+      );
     }
 
-    const root=ReactDOM.createRoot(document.getElementById("root"));
-    root.render(React.createElement(App));
+    ReactDOM.render(React.createElement(App), document.getElementById("root"));
   </script>
 
   <script>
