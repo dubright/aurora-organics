@@ -363,6 +363,82 @@
     });
   }
 </script>
+<script>
+  // Função para calcular a fase da planta com base nas datas
+  function calcularFasePlanta(dataGerminacao, dataColheita) {
+    const hoje = new Date();
+    const totalDias = (new Date(dataColheita) - new Date(dataGerminacao)) / (1000 * 60 * 60 * 24);
+    const diasDecorridos = (hoje - new Date(dataGerminacao)) / (1000 * 60 * 60 * 24);
+    const progresso = (diasDecorridos / totalDias) * 100;
+
+    if (progresso < 20) return "Germinação";
+    if (progresso < 60) return "Crescimento";
+    if (progresso < 90) return "Floração";
+    if (progresso >= 90) return "Colheita";
+  }
+
+  // Regras de fertilizantes para cada fase
+  const fertilizantes = {
+    Germinação: {
+      descricao: "Use fertilizantes ricos em Nitrogênio e Cálcio para fortalecer raízes e folhas iniciais.",
+      produtos: ["Bio-Grow", "Nitro Max", "CalMag"]
+    },
+    Crescimento: {
+      descricao: "Aplique Magnésio e Fósforo para estimular o crescimento saudável das folhas e caules.",
+      produtos: ["Bio-Grow", "Sensi Grow", "Mag-Pro"]
+    },
+    Floração: {
+      descricao: "Foque em Potássio e micronutrientes para incentivar o florescimento e frutificação.",
+      produtos: ["Bio-Bloom", "Big Bud", "Top Max"]
+    },
+    Colheita: {
+      descricao: "Reduza fertilizantes e faça lavagem das raízes (‘flush’) para purificação final.",
+      produtos: ["Alg-A-Mic", "Water Flush"]
+    }
+  };
+
+  // Cria uma área visual para exibir as recomendações
+  const container = document.createElement("section");
+  container.style.background = "#15181d";
+  container.style.borderRadius = "12px";
+  container.style.padding = "20px";
+  container.style.marginTop = "30px";
+  container.innerHTML = `
+    <h2 style="color:#7fffa6;">🧪 Recomendações de Fertilizantes</h2>
+    <div id="recomendacaoTexto" style="margin-top:10px; color:#fff;"></div>
+  `;
+  document.body.appendChild(container);
+
+  // Função principal que atualiza recomendações
+  function atualizarRecomendacoes() {
+    const linhas = document.querySelectorAll("#tabelaCultivos tr");
+    let html = "";
+
+    linhas.forEach((linha) => {
+      const planta = linha.children[0]?.textContent;
+      const germinacao = linha.children[1]?.textContent;
+      const colheita = linha.children[3]?.textContent;
+
+      if (planta && germinacao && colheita) {
+        const fase = calcularFasePlanta(germinacao, colheita);
+        const dados = fertilizantes[fase];
+        html += `
+          <div style="margin-bottom:18px;">
+            <h3 style="color:#7fffa6;">${planta} — Fase: ${fase}</h3>
+            <p>${dados.descricao}</p>
+            <p><strong>Produtos recomendados:</strong> ${dados.produtos.join(", ")}</p>
+          </div>
+        `;
+      }
+    });
+
+    document.getElementById("recomendacaoTexto").innerHTML = html || "<p>Nenhum cultivo cadastrado.</p>";
+  }
+
+  // Atualiza automaticamente a cada 10 segundos
+  setInterval(atualizarRecomendacoes, 10000);
+  atualizarRecomendacoes();
+</script>
 
   </body>
 </html>
