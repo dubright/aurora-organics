@@ -3,50 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aurora Organics | Supervisão Agrícola Inteligente</title>
+  <title>Aurora Organics 2.0 | Supervisão Agrícola Inteligente</title>
   <style>
+    :root {
+      --bg: #0f1115;
+      --card: #15181d;
+      --text: #f2f2f2;
+      --accent: #7fffa6;
+      --secondary: #1b1f27;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f9f8;
+      --card: #ffffff;
+      --text: #0f1115;
+      --accent: #00c06b;
+      --secondary: #e4f2ec;
+    }
+
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background-color: #0f1115;
-      color: #f2f2f2;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: all 0.4s ease;
     }
 
     header {
-      background-color: #15181d;
-      color: #7fffa6;
+      background: var(--card);
+      color: var(--accent);
       padding: 20px 40px;
       font-size: 24px;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    h2 {
-      color: #7fffa6;
-      margin-bottom: 12px;
+    .theme-toggle {
+      background: var(--accent);
+      border: none;
+      color: var(--bg);
+      border-radius: 20px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: 0.3s;
     }
+
+    .theme-toggle:hover { opacity: 0.8; }
 
     main {
-      padding: 24px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
       gap: 36px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: var(--accent);
+      margin-bottom: 12px;
     }
 
     .card {
-      background: #15181d;
+      background: var(--card);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
     }
 
-    /* === CADASTRO === */
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+    .card:hover {
+      transform: translateY(-2px);
     }
 
     input, select, button {
@@ -57,13 +89,13 @@
     }
 
     input, select {
-      background: #0f1115;
-      color: #fff;
+      background: var(--secondary);
+      color: var(--text);
     }
 
     button {
-      background: #7fffa6;
-      color: #0f1115;
+      background: var(--accent);
+      color: var(--bg);
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s;
@@ -82,24 +114,24 @@
 
     th, td {
       padding: 8px;
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     th {
-      color: #7fffa6;
+      color: var(--accent);
     }
 
-    /* === FASES VISUAIS === */
     .fase-card {
-      background: #1b1f27;
-      border-radius: 10px;
+      background: var(--secondary);
+      border-radius: 12px;
       padding: 16px;
       margin-bottom: 16px;
-      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
 
     .fase-card.aplicado {
-      background: linear-gradient(90deg, #00c06b, #00b347);
+      background: linear-gradient(90deg, #00c06b, #009f5c);
       color: #0f1115;
       font-weight: 600;
     }
@@ -113,52 +145,28 @@
 
     .fase-nome {
       font-weight: bold;
-      font-size: 15px;
+      font-size: 16px;
     }
 
     .fase-datas {
-      color: #aaa;
+      color: #ccc;
       font-size: 13px;
     }
 
-    .botao-aplicar {
-      background: #7fffa6;
-      border: none;
-      color: #0f1115;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      padding: 6px 10px;
-      transition: 0.3s;
+    .progresso {
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
     }
 
-    .botao-aplicar:hover {
-      opacity: 0.8;
+    .barra {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 1s;
     }
-
-    .supervisorio {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 16px;
-    }
-
-    .sensor-box {
-      width: 220px;
-      height: 180px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-
-    .sensor.green { background: #00b347; }
-    .sensor.yellow { background: #ffaa00; }
-    .sensor.red { background: #e43d3d; }
 
     footer {
       text-align: center;
@@ -170,41 +178,31 @@
 </head>
 <body>
   <header>
-    🌿 Aurora Organics
+    🌿 Aurora Organics 2.0
+    <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema</button>
   </header>
 
   <main>
-    <!-- 🔹 RECOMENDAÇÕES DE FERTILIZANTES -->
     <section id="recomendacoes" class="card">
       <h2>🧪 Recomendações de Fertilizantes</h2>
       <div id="recomendacaoTexto">Cadastre um cultivo para gerar recomendações personalizadas.</div>
     </section>
 
-    <!-- 🔹 CADASTRO DE CULTIVOS -->
     <section id="cadastro" class="card">
       <h2>📋 Cadastro de Cultivos</h2>
       <form id="cultivoForm">
-        <div>
-          <label>Tipo de cultivo:</label>
-          <select id="tipo" required>
-            <option>Alface</option>
-            <option>Rúcula</option>
-            <option>Tomate</option>
-            <option>Morango</option>
-            <option>Cenoura</option>
-            <option>Beterraba</option>
-            <option>Manjericão</option>
-            <option>Coentro</option>
-          </select>
-        </div>
-        <div>
-          <label>Data de germinação:</label>
-          <input type="date" id="germinacao" required>
-        </div>
-        <div>
-          <label>Quantidade:</label>
-          <input type="number" id="quantidade" min="1" value="1">
-        </div>
+        <select id="tipo" required>
+          <option>Alface</option>
+          <option>Rúcula</option>
+          <option>Tomate</option>
+          <option>Morango</option>
+          <option>Cenoura</option>
+          <option>Beterraba</option>
+          <option>Manjericão</option>
+          <option>Coentro</option>
+        </select>
+        <input type="date" id="germinacao" required>
+        <input type="number" id="quantidade" min="1" value="1">
         <button type="submit">Adicionar cultivo</button>
       </form>
 
@@ -220,16 +218,6 @@
         <tbody id="tabelaCultivos"></tbody>
       </table>
     </section>
-
-    <!-- 🔹 SUPERVISÓRIO DE AMBIENTE -->
-    <section id="supervisorio" class="card">
-      <h2>🌡️ Sensores e Ambiente</h2>
-      <div class="supervisorio">
-        <div class="sensor-box sensor green">Estufa 🌿</div>
-        <div class="sensor-box sensor yellow">Horta 💧</div>
-        <div class="sensor-box sensor red">Talhão ⚠️</div>
-      </div>
-    </section>
   </main>
 
   <footer>© 2025 Aurora Organics – Supervisão Agrícola Inteligente</footer>
@@ -240,39 +228,46 @@
     const tabela = document.getElementById("tabelaCultivos");
     const recomendacaoDiv = document.getElementById("recomendacaoTexto");
 
+    function toggleTheme() {
+      const current = document.body.getAttribute("data-theme");
+      const next = current === "light" ? "dark" : "light";
+      document.body.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
+
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const tipo = document.getElementById("tipo").value;
       const germinacao = new Date(document.getElementById("germinacao").value);
       const qtd = document.getElementById("quantidade").value;
       const duracao = duracaoPadrao[tipo] || 90;
-
       const colheita = new Date(germinacao);
       colheita.setDate(colheita.getDate() + duracao);
+
       const germFormat = germinacao.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
       const colhFormat = colheita.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
-      const linha = `
+      tabela.innerHTML = `
         <tr>
           <td>${tipo}</td>
           <td>${germFormat}</td>
           <td>${colhFormat}</td>
           <td>${qtd}</td>
         </tr>`;
-      tabela.innerHTML = linha;
-      gerarRecomendacoes(tipo, germinacao, colheita, duracao);
+      gerarRecomendacoes(tipo, germinacao, duracao);
       form.reset();
     });
 
-    function gerarRecomendacoes(planta, dataGerminacao, dataColheita, duracao) {
+    function gerarRecomendacoes(planta, dataGerminacao, duracao) {
       const fases = [
-        { nome: "Crescimento", inicio: 1, fim: 20, desc: "Use Nitrogênio e Cálcio.", produtos: ["Bio-Grow", "CalMag"], aplicado: false },
-        { nome: "Floração", inicio: 21, fim: 45, desc: "Aplique Potássio e micronutrientes.", produtos: ["Big Bud", "Bio-Bloom"], aplicado: false },
-        { nome: "Pré-colheita", inicio: 46, fim: 100, desc: "Mantenha potássio leve até o flush.", produtos: ["Alg-A-Mic", "Water Flush"], aplicado: false }
+        { nome: "Crescimento", inicio: 1, fim: 20, desc: "Use Nitrogênio e Cálcio.", produtos: ["Bio-Grow", "CalMag"] },
+        { nome: "Floração", inicio: 21, fim: 45, desc: "Aplique Potássio e micronutrientes.", produtos: ["Big Bud", "Bio-Bloom"] },
+        { nome: "Pré-colheita", inicio: 46, fim: 100, desc: "Mantenha potássio leve até o flush.", produtos: ["Alg-A-Mic", "Water Flush"] }
       ];
 
-      let html = `<h3 style="color:#7fffa6;">${planta}</h3>`;
-
+      let html = `<h3 style="color:var(--accent);">${planta}</h3>`;
       fases.forEach((fase, i) => {
         const inicio = new Date(dataGerminacao);
         inicio.setDate(inicio.getDate() + (duracao * fase.inicio / 100));
@@ -282,28 +277,44 @@
         const inicioFmt = inicio.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
         const fimFmt = fim.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
+        const key = `${planta}-fase${i}`;
+        const aplicado = localStorage.getItem(key) === "true";
+
         html += `
-          <div class="fase-card" id="fase-${i}">
+          <div class="fase-card ${aplicado ? 'aplicado' : ''}" id="fase-${i}">
             <div class="fase-header">
               <div>
                 <div class="fase-nome">${fase.nome}</div>
                 <div class="fase-datas">${inicioFmt} até ${fimFmt}</div>
               </div>
-              <button class="botao-aplicar" onclick="marcarAplicado(${i})">✅ Apliquei</button>
+              <button class="botao-aplicar" onclick="marcarAplicado('${key}', ${i})" ${aplicado ? 'disabled' : ''}>
+                ${aplicado ? '✔️ Aplicado' : '✅ Apliquei'}
+              </button>
             </div>
+            <div class="progresso"><div class="barra" id="barra-${i}"></div></div>
             <p>${fase.desc}</p>
             <p><b>Produtos:</b> ${fase.produtos.join(", ")}</p>
           </div>`;
       });
 
       recomendacaoDiv.innerHTML = html;
+      animarProgresso();
     }
 
-    function marcarAplicado(id) {
+    function marcarAplicado(key, id) {
+      localStorage.setItem(key, "true");
       const card = document.getElementById(`fase-${id}`);
       card.classList.add("aplicado");
-      card.querySelector(".botao-aplicar").disabled = true;
-      card.querySelector(".botao-aplicar").textContent = "✔️ Aplicado";
+      const btn = card.querySelector("button");
+      btn.textContent = "✔️ Aplicado";
+      btn.disabled = true;
+    }
+
+    function animarProgresso() {
+      document.querySelectorAll(".barra").forEach(bar => {
+        const random = Math.floor(Math.random() * 90) + 10;
+        bar.style.width = random + "%";
+      });
     }
   </script>
 </body>
