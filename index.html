@@ -201,5 +201,51 @@
     <div class="footer">
       © 2025 Aurora Organics – Supervisão Agrícola Inteligente
     </div>
+    <script>
+  // Simulação de sensores em tempo real
+  const sensores = [
+    { id: 1, nome: "Estufa 🌡️", tipo: "Temperatura", valor: 21, el: null },
+    { id: 2, nome: "Horta 💧", tipo: "Umidade", valor: 24, el: null },
+    { id: 3, nome: "Talhão ⚠️", tipo: "Umidade", valor: 15, el: null },
+  ];
+
+  window.onload = () => {
+    sensores[0].el = document.querySelector(".sensor.green");
+    sensores[1].el = document.querySelector(".sensor.yellow");
+    sensores[2].el = document.querySelector(".sensor.red");
+    atualizarSensores();
+    setInterval(atualizarSensores, 5000);
+  };
+
+  function atualizarSensores() {
+    sensores.forEach((sensor) => {
+      const variacao = (Math.random() * 4 - 2).toFixed(1);
+      sensor.valor = Math.max(10, Math.min(40, sensor.valor + parseFloat(variacao)));
+
+      sensor.el.textContent = `${sensor.nome} ${sensor.valor}${sensor.tipo === "Temperatura" ? "°C" : "%"}`;
+
+      if (sensor.tipo === "Temperatura") {
+        if (sensor.valor > 30) {
+          sensor.el.className = "sensor red";
+        } else if (sensor.valor > 25) {
+          sensor.el.className = "sensor yellow";
+        } else {
+          sensor.el.className = "sensor green";
+        }
+      }
+
+      if (sensor.tipo === "Umidade") {
+        if (sensor.valor < 20) {
+          sensor.el.className = "sensor red";
+        } else if (sensor.valor < 35) {
+          sensor.el.className = "sensor yellow";
+        } else {
+          sensor.el.className = "sensor green";
+        }
+      }
+    });
+  }
+</script>
+
   </body>
 </html>
