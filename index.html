@@ -1,366 +1,213 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aurora Organics 🌱</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Organics 🌿</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              bg: "#0F1115",
-              panel: "#171A1F",
-              green: "#00E676",
-              lilac: "#C084FC",
-              orange: "#FCA311",
-              text: "#E6E6E6",
-              subt: "#A1A1A1",
-            },
-          },
-        },
-      };
-    </script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background-color: #0F1115;
+      color: #E6E6E6;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #171A1F;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 1.5rem;
+      color: #00E676;
+    }
+    select, input, button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: inherit;
+    }
+    button {
+      background: #00E676;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px #00E67688;
+    }
+    .container {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    .card {
+      background: #171A1F;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,230,118,0.05);
+      margin-bottom: 1rem;
+      transition: 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 12px rgba(0,230,118,0.15);
+    }
+    .flex {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .progress {
+      height: 8px;
+      border-radius: 4px;
+      background: #1E2228;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #00E676;
+      transition: width 0.5s ease;
+    }
+    .theme-selector {
+      position: relative;
+    }
+    .theme-options {
+      position: absolute;
+      right: 0;
+      top: 40px;
+      background: #171A1F;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+    }
+    .theme-options button {
+      background: none;
+      color: #E6E6E6;
+      padding: 8px 12px;
+      border-radius: 0;
+    }
+    .theme-options button:hover {
+      background: #00E67622;
+    }
+    .show {
+      display: flex;
+    }
+  </style>
+</head>
 
-    <!-- React + Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<body>
+  <header>
+    <h1>🌿 Aurora Organics</h1>
+    <div class="theme-selector">
+      <button id="themeToggle">Alterar Tema</button>
+      <div class="theme-options" id="themeOptions">
+        <button onclick="setTheme('dark')">🌙 Escuro</button>
+        <button onclick="setTheme('light')">☀️ Claro</button>
+        <button onclick="setTheme('green')">🌿 Verde</button>
+      </div>
+    </div>
+  </header>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore-compat.js"></script>
+  <div id="root"></div>
 
-    <!-- Framer Motion -->
-    <script src="https://unpkg.com/framer-motion@10.16.2/dist/framer-motion.umd.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-    <style>
-      body {
-        background-color: #0F1115;
-        color: #E6E6E6;
-        font-family: "Inter", sans-serif;
+    const plantas = [
+      "Abóbora", "Abobrinha", "Acelga", "Agrião", "Aipo", "Alcachofra", "Alface", "Alho", "Alho-poró", "Almeirão",
+      "Aspargo", "Batata", "Batata-doce", "Berinjela", "Beterraba", "Brócolis", "Cebola", "Cenoura", "Coentro", "Couve",
+      "Couve-flor", "Ervilha", "Espinafre", "Feijão-vagem", "Gengibre", "Jiló", "Maxixe", "Milho", "Pepino", "Pimentão",
+      "Quiabo", "Rabanete", "Repolho", "Rúcula", "Salsa", "Tomate", "Abacate", "Abacaxi", "Açaí", "Acerola", "Amora",
+      "Banana", "Cajá", "Caju", "Coco", "Cupuaçu", "Figo", "Framboesa", "Goiaba", "Graviola", "Jabuticaba", "Laranja",
+      "Limão", "Maçã", "Mamão", "Manga", "Maracujá", "Melancia", "Melão", "Morango", "Pera", "Pêssego", "Pitanga", "Uva"
+    ];
+
+    function App() {
+      const [cultivos, setCultivos] = useState([]);
+      const [planta, setPlanta] = useState("");
+      const [data, setData] = useState("");
+      const [fert, setFert] = useState("BioBizz");
+      const [tema, setTema] = useState(localStorage.getItem("tema") || "dark");
+
+      useEffect(() => {
+        document.body.style.background = tema === "light" ? "#E6E6E6" : tema === "green" ? "#021d11" : "#0F1115";
+        document.body.style.color = tema === "light" ? "#000" : "#E6E6E6";
+        localStorage.setItem("tema", tema);
+      }, [tema]);
+
+      function addCultivo() {
+        if (!planta || !data) return alert("Preencha todos os campos!");
+        const novo = {
+          id: Date.now(),
+          planta,
+          dataGerminacao: data,
+          fertilizante: fert,
+          diasTotais: 60,
+          diasRestantes: 60 - Math.floor(Math.random() * 30),
+        };
+        setCultivos([...cultivos, novo]);
+        setPlanta(""); setData("");
       }
-      .card {
-        background-color: #171A1F;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,230,118,0.05);
-      }
-      .blur-bg {
-        backdrop-filter: blur(12px);
-        background: rgba(0, 230, 118, 0.05);
-      }
-    </style>
-  </head>
 
-  <body class="min-h-screen overflow-x-hidden">
-    <div id="root"></div>
-
-    <script type="text/babel">
-
-      // === Firebase Config ===
-      const firebaseConfig = {
-        apiKey: "AIzaSyD76LM0fFDG0L7tME70GHI5yZS_0KwFP_g",
-        authDomain: "aurora-organics-6ffa6.firebaseapp.com",
-        projectId: "aurora-organics-6ffa6",
-        storageBucket: "aurora-organics-6ffa6.firebasestorage.app",
-        messagingSenderId: "878991415647",
-        appId: "1:878991415647:web:40e7f5d9811caa9f8c7eea",
-        measurementId: "G-8ZLQKFGPW3",
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-
-      // === Dados fixos ===
-      const listaPlantas = [
-        "Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alcachofra","Alface","Alho","Alho-poró","Almeirão",
-        "Aspargo","Batata","Batata-doce","Berinjela","Beterraba","Brócolis","Cenoura","Couve","Couve-flor",
-        "Ervilha","Espinafre","Feijão-vagem","Gengibre","Jiló","Maxixe","Milho verde","Moranga","Nabo",
-        "Pepino","Pimenta","Pimentão","Quiabo","Rabanete","Repolho","Rúcula","Salsa","Taioba","Tomate",
-        "Abacate","Abacaxi","Acerola","Amora","Banana","Caju","Goiaba","Jabuticaba","Laranja","Limão",
-        "Mamão","Manga","Maracujá","Melancia","Melão","Morango","Pêssego","Pitanga","Uva"
-      ];
-
-      const fertilizantes = ["BioBizz","Dimy","NPK"];
-
-      // === Funções Firestore ===
-      async function salvarCultivo(cultivo) {
-        await db.collection("cultivos").add(cultivo);
-      }
-      async function listarCultivos(setCultivos) {
-        const snap = await db.collection("cultivos").get();
-        setCultivos(snap.docs.map(d=>({ id:d.id, ...d.data() })));
-      }
-      async function deletarCultivo(id) {
-        await db.collection("cultivos").doc(id).delete();
-      }
-
-      // === Componentes ===
-      const { motion, AnimatePresence } = window["framer-motion"];
-
-      function AmbientEffect() {
-        return (
-          <motion.div
-            className="absolute inset-0 -z-10 overflow-hidden"
-            animate={{ opacity: [0.1, 0.2, 0.1] }}
-            transition={{ duration: 10, repeat: Infinity }}
-          >
-            <div className="bg-gradient-to-br from-green-500/10 via-emerald-300/5 to-lime-400/10 blur-3xl w-full h-full" />
-          </motion.div>
-        );
-      }
-
-      function Header({ tema, setTema }) {
-        return (
-          <header className="flex justify-between items-center p-4 bg-panel shadow-lg">
-            <h1 className="text-green text-xl font-semibold">🌱 Aurora Organics</h1>
-            <button
-              onClick={() => {
-                const novo = tema === "dark" ? "light" : "dark";
-                setTema(novo);
-                localStorage.setItem("tema", novo);
-              }}
-              className="bg-green text-black px-4 py-2 rounded-full font-semibold hover:opacity-80"
-            >
-              {tema === "dark" ? "☀️ Claro" : "🌙 Escuro"}
-            </button>
-          </header>
-        );
-      }
-
-      function ProgressBar({ percent }) {
-        return (
-          <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-            <motion.div
-              className="h-2 rounded-full bg-green"
-              initial={{ width: 0 }}
-              animate={{ width: `${percent}%` }}
-              transition={{ duration: 1 }}
-            ></motion.div>
+      return (
+        <div className="container">
+          <h2>🌱 Cadastro de Cultivos</h2>
+          <div className="flex">
+            <select value={planta} onChange={e => setPlanta(e.target.value)}>
+              <option value="">Selecione a planta</option>
+              {plantas.map((p, i) => <option key={i}>{p}</option>)}
+            </select>
+            <input type="date" value={data} onChange={e => setData(e.target.value)} />
+            <select value={fert} onChange={e => setFert(e.target.value)}>
+              <option>BioBizz</option>
+              <option>Forth</option>
+              <option>Dimy</option>
+            </select>
+            <button onClick={addCultivo}>Adicionar</button>
           </div>
-        );
-      }
-      function CultivoCard({ cultivo, onView, onDelete }) {
-        const fases = ["Germinação", "Crescimento", "Floração", "Pré-colheita"];
-        const hoje = new Date();
-        const germ = new Date(cultivo.dataGerminacao);
-        const diasTotais = cultivo.diasTotais || 60;
-        const diasPassados = Math.floor((hoje - germ) / (1000 * 60 * 60 * 24));
-        const progresso = Math.min(100, Math.round((diasPassados / diasTotais) * 100));
-        const faseAtual =
-          diasPassados < 10 ? fases[0] :
-          diasPassados < 30 ? fases[1] :
-          diasPassados < 45 ? fases[2] : fases[3];
 
-        return (
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="card p-4 flex flex-col justify-between cursor-pointer"
-          >
-            <div>
-              <h2 className="text-lg font-semibold text-green">{cultivo.planta}</h2>
-              <p className="text-subt text-sm">{cultivo.fertilizante}</p>
-              <p className="mt-1 text-sm">🌿 {faseAtual}</p>
-              <ProgressBar percent={progresso} />
-              <p className="text-xs mt-1">{60 - diasPassados} dias até a colheita</p>
-            </div>
-            <div className="flex gap-2 mt-3">
-              <button onClick={onView} className="bg-green text-black px-2 py-1 rounded-md text-sm font-semibold">🔍 Ver</button>
-              <button onClick={()=>onDelete(cultivo.id)} className="bg-red-500 px-2 py-1 rounded-md text-sm font-semibold">🗑️</button>
-            </div>
-          </motion.div>
-        );
-      }
-
-      function FormNovoCultivo({ onAdd }) {
-        const [planta, setPlanta] = React.useState("");
-        const [dataGerminacao, setDataGerminacao] = React.useState("");
-        const [fertilizante, setFertilizante] = React.useState("BioBizz");
-        const [localCultivo, setLocalCultivo] = React.useState("");
-
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          if (!planta || !dataGerminacao) return alert("Preencha todos os campos!");
-          const novo = {
-            planta,
-            dataGerminacao,
-            fertilizante,
-            localCultivo,
-            faseAtual: "Germinação",
-            diasTotais: 60,
-            diasRestantes: 60,
-            historico: [],
-            anotacoes: "",
-            criadoEm: new Date().toISOString(),
-          };
-          await salvarCultivo(novo);
-          onAdd(novo);
-          setPlanta("");
-          setDataGerminacao("");
-          setLocalCultivo("");
-          alert("🌱 Novo cultivo adicionado com sucesso!");
-        };
-
-        return (
-          <form onSubmit={handleSubmit} className="card p-4 mb-4">
-            <h2 className="text-lg font-semibold mb-2">➕ Novo Cultivo</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div>
-                <label className="text-sm text-subt">Planta</label>
-                <select
-                  value={planta}
-                  onChange={(e)=>setPlanta(e.target.value)}
-                  className="w-full bg-bg text-text border border-green rounded-md p-1"
-                >
-                  <option value="">Selecione</option>
-                  {listaPlantas.map((p,i)=><option key={i}>{p}</option>)}
-                </select>
+          <h2 style={{marginTop:"2rem"}}>🌿 Cultivos Ativos</h2>
+          {cultivos.map(c => (
+            <div className="card" key={c.id}>
+              <div className="flex justify-between">
+                <strong>{c.planta}</strong>
+                <span>{c.fertilizante}</span>
               </div>
-              <div>
-                <label className="text-sm text-subt">Data de Germinação</label>
-                <input
-                  type="date"
-                  value={dataGerminacao}
-                  onChange={(e)=>setDataGerminacao(e.target.value)}
-                  className="w-full bg-bg text-text border border-green rounded-md p-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-subt">Fertilizante</label>
-                <select
-                  value={fertilizante}
-                  onChange={(e)=>setFertilizante(e.target.value)}
-                  className="w-full bg-bg text-text border border-green rounded-md p-1"
-                >
-                  {fertilizantes.map((f,i)=><option key={i}>{f}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm text-subt">Local</label>
-                <input
-                  type="text"
-                  value={localCultivo}
-                  onChange={(e)=>setLocalCultivo(e.target.value)}
-                  placeholder="ex: Vaso 1"
-                  className="w-full bg-bg text-text border border-green rounded-md p-1"
-                />
-              </div>
+              <small>Germinação: {c.dataGerminacao}</small>
+              <div className="progress"><div className="progress-bar" style={{width:`${(1 - c.diasRestantes/c.diasTotais)*100}%`}}></div></div>
             </div>
-            <button type="submit" className="mt-4 bg-green text-black px-4 py-2 rounded-md font-semibold hover:opacity-90">
-              Salvar
-            </button>
-          </form>
-        );
-      }
+          ))}
+        </div>
+      );
+    }
 
-      function DetalhesCultivo({ cultivo, onClose }) {
-        const [historico, setHistorico] = React.useState(cultivo.historico || []);
-        const [anotacoes, setAnotacoes] = React.useState(cultivo.anotacoes || "");
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
 
-        const adicionarEvento = () => {
-          const novo = {
-            data: new Date().toLocaleDateString("pt-BR"),
-            acao: "Adubação",
-            detalhe: `Aplicado ${cultivo.fertilizante}`
-          };
-          setHistorico([...historico, novo]);
-        };
+  <script>
+    const toggle = document.getElementById("themeToggle");
+    const menu = document.getElementById("themeOptions");
+    toggle.addEventListener("click", () => menu.classList.toggle("show"));
 
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"
-          >
-            <div className="card max-w-lg w-full p-5 relative overflow-y-auto max-h-[90vh]">
-              <button onClick={onClose} className="absolute top-2 right-3 text-green text-xl">✖</button>
-              <h2 className="text-xl font-semibold mb-2">{cultivo.planta}</h2>
-              <p className="text-subt text-sm mb-4">{cultivo.fertilizante}</p>
-
-              <h3 className="text-green font-semibold mb-1">Histórico</h3>
-              <ul className="text-sm mb-2 space-y-1">
-                {historico.map((h,i)=>(
-                  <li key={i} className="border-b border-green/20 pb-1">{h.data} — {h.detalhe}</li>
-                ))}
-              </ul>
-
-              <button onClick={adicionarEvento} className="bg-green text-black px-3 py-1 rounded-md mb-3">✅ Aplicar fertilização</button>
-
-              <h3 className="text-green font-semibold mb-1">Anotações</h3>
-              <textarea
-                className="w-full bg-bg text-text border border-green rounded-md p-2"
-                rows="4"
-                value={anotacoes}
-                onChange={(e)=>setAnotacoes(e.target.value)}
-              />
-            </div>
-          </motion.div>
-        );
-      }
-      function App() {
-        const [tema, setTema] = React.useState(localStorage.getItem("tema") || "dark");
-        const [cultivos, setCultivos] = React.useState([]);
-        const [selecionado, setSelecionado] = React.useState(null);
-
-        React.useEffect(() => {
-          document.body.className =
-            tema === "dark" ? "bg-bg text-text" : "bg-white text-black";
-          localStorage.setItem("tema", tema);
-          listarCultivos(setCultivos);
-        }, [tema]);
-
-        const handleAdd = (novo) => {
-          setCultivos((prev) => [...prev, novo]);
-        };
-
-        const handleDelete = async (id) => {
-          if (confirm("Excluir cultivo permanentemente?")) {
-            await deletarCultivo(id);
-            listarCultivos(setCultivos);
-          }
-        };
-
-        return (
-          <div className="relative min-h-screen">
-            <AmbientEffect />
-            <Header tema={tema} setTema={setTema} />
-
-            <main className="p-6 space-y-6 max-w-6xl mx-auto">
-              <FormNovoCultivo onAdd={handleAdd} />
-
-              <h2 className="text-xl font-semibold">🌿 Seus cultivos ativos</h2>
-              {cultivos.length === 0 ? (
-                <p className="text-subt text-sm">Nenhum cultivo cadastrado ainda.</p>
-              ) : (
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {cultivos.map((c, i) => (
-                    <CultivoCard
-                      key={c.id || i}
-                      cultivo={c}
-                      onView={() => setSelecionado(c)}
-                      onDelete={handleDelete}
-                    />
-                  ))}
-                </div>
-              )}
-            </main>
-
-            <AnimatePresence>
-              {selecionado && (
-                <DetalhesCultivo
-                  cultivo={selecionado}
-                  onClose={() => setSelecionado(null)}
-                />
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      }
-
-      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-    </script>
-  </body>
+    function setTheme(t) {
+      localStorage.setItem("tema", t);
+      location.reload();
+    }
+  </script>
+</body>
 </html>
-
