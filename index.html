@@ -5,101 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aurora Organics 🌿</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- ✅ React 17 carregado antes do código -->
   <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-
   <style>
     body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background: #0F1115;
-      color: #E6E6E6;
-      transition: background 0.4s ease;
+      margin: 0; font-family: "Inter", sans-serif;
+      background: #0F1115; color: #E6E6E6; transition: background 0.4s ease;
     }
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: #171A1F;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 2rem; background: #171A1F;
+      box-shadow: 0 2px 10px rgba(0,0,0,.3);
     }
     h1 { font-size: 1.5rem; color: #00E676; margin: 0; }
     .container { padding: 2rem; max-width: 1100px; margin: auto; }
     select, input, button {
-      border: none;
-      border-radius: 8px;
-      padding: 8px 10px;
+      border: none; border-radius: 8px; padding: 8px 10px;
       font-family: inherit;
     }
     button {
-      background: #00E676;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
+      background: #00E676; color: #000; font-weight: 600;
+      cursor: pointer; transition: .3s;
     }
-    button:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 10px #00E67688;
-    }
+    button:hover { transform: scale(1.03); box-shadow: 0 0 10px #00E67688; }
     .card {
-      background: #171A1F;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,230,118,0.05);
-      margin-bottom: 1rem;
-      transition: 0.3s;
+      background: #171A1F; padding: 1rem; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,230,118,.05);
+      margin-bottom: 1rem; transition: .3s;
     }
     .card:hover { transform: scale(1.01); }
     .flex { display: flex; gap: 1rem; flex-wrap: wrap; }
     .justify-between { justify-content: space-between; }
-    .progress {
-      height: 8px;
-      border-radius: 4px;
-      background: #1E2228;
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .progress-bar { height: 100%; transition: width 0.5s ease; }
-    .fase { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+    .progress { height: 8px; border-radius: 4px; background: #1E2228; margin-top: 6px; overflow: hidden; }
+    .progress-bar { height: 100%; transition: width .5s ease; }
+    .fase { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.95rem; }
     .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00E676;
-      color: #000;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      animation: slideIn 0.5s ease;
+      position: fixed; bottom: 20px; right: 20px;
+      background: #00E676; color: #000; padding: 10px 20px;
+      border-radius: 8px; font-weight: 600;
+      animation: slideIn .5s ease;
     }
     @keyframes slideIn {
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    .recom {
+      margin-top: 1rem; background: #101216;
+      padding: 0.8rem 1rem; border-radius: 10px;
+      border-left: 4px solid #00E676;
+    }
+    .recom strong { color: #00E676; }
+    .recom-item {
+      margin-top: 4px; font-size: 0.9rem; line-height: 1.4;
+    }
     .theme-selector { position: relative; }
     .theme-options {
-      position: absolute;
-      right: 0;
-      top: 40px;
-      background: #171A1F;
-      border-radius: 8px;
-      display: none;
-      flex-direction: column;
+      position: absolute; right: 0; top: 40px; background: #171A1F;
+      border-radius: 8px; display: none; flex-direction: column;
     }
     .theme-options button {
-      background: none;
-      color: #E6E6E6;
-      padding: 8px 12px;
-      border-radius: 0;
-      text-align: left;
+      background: none; color: #E6E6E6;
+      padding: 8px 12px; text-align: left;
     }
     .theme-options button:hover { background: #00E67622; }
     .show { display: flex; }
     small { color: #A1A1A1; }
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,.6); display: flex;
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: #171A1F; padding: 2rem; border-radius: 12px;
+      width: 90%; max-width: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 
@@ -126,6 +106,8 @@
       "Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula",
       "Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"
     ];
+
+    const litragemOptions = ["700ml","5L","10L","15L"];
 
     const fertRecomendacoes = {
       BioBizz: [
@@ -154,49 +136,35 @@
 
     const getFase = dias => fases.find(f => dias >= f.inicio && dias <= f.fim) || fases[0];
 
-    function App() {
-      const [cultivos, setCultivos] = useState([]);
-      const [planta, setPlanta] = useState("");
-      const [data, setData] = useState("");
-      const [fert, setFert] = useState("BioBizz");
-      const [local, setLocal] = useState("");
-      const [toast, setToast] = useState("");
-      const [tema, setTema] = useState(localStorage.getItem("tema") || "dark");
+    function App(){
+      const [cultivos,setCultivos]=useState([]);
+      const [planta,setPlanta]=useState("");
+      const [data,setData]=useState("");
+      const [fert,setFert]=useState("BioBizz");
+      const [litros,setLitros]=useState("700ml");
+      const [toast,setToast]=useState("");
+      const [editando,setEditando]=useState(null);
 
-      useEffect(() => {
-        const salvo = JSON.parse(localStorage.getItem("cultivos") || "[]");
-        const filtrado = salvo.filter(c => c && c.fertilizante && fertRecomendacoes[c.fertilizante]);
-        setCultivos(filtrado);
-      }, []);
+      useEffect(()=>{
+        const salvo=JSON.parse(localStorage.getItem("cultivos")||"[]");
+        setCultivos(salvo);
+      },[]);
+      useEffect(()=>localStorage.setItem("cultivos",JSON.stringify(cultivos)),[cultivos]);
 
-      useEffect(() => localStorage.setItem("cultivos", JSON.stringify(cultivos)), [cultivos]);
-
-      useEffect(() => {
-        document.body.style.background = tema === "light" ? "#E6E6E6" : tema === "green" ? "#021d11" : "#0F1115";
-        document.body.style.color = tema === "light" ? "#000" : "#E6E6E6";
-        localStorage.setItem("tema", tema);
-      }, [tema]);
-
-      const addCultivo = () => {
-        if (!planta || !data) return alert("Preencha todos os campos!");
-        const germ = new Date(data);
-        const colh = new Date(germ); colh.setDate(germ.getDate() + 60);
-        const novo = {
-          id: Date.now(), planta, dataGerminacao: data, colheita: colh.toISOString().split("T")[0],
-          fertilizante: fert, localCultivo: local, historico: [], criadoEm: new Date().toLocaleDateString()
-        };
-        setCultivos([...cultivos, novo]);
-        setPlanta(""); setData(""); setLocal("");
-        setToast("🌱 Cultivo adicionado com sucesso!");
-        setTimeout(() => setToast(""), 3000);
+      const addCultivo=()=>{
+        if(!planta||!data)return alert("Preencha todos os campos!");
+        const germ=new Date(data); const colh=new Date(germ); colh.setDate(germ.getDate()+60);
+        const novo={id:Date.now(),planta,dataGerminacao:data,colheita:colh.toISOString().split("T")[0],fertilizante:fert,litros,historico:[],criadoEm:new Date().toLocaleDateString()};
+        setCultivos([...cultivos,novo]); setPlanta(""); setData(""); setToast("🌱 Cultivo adicionado!");
+        setTimeout(()=>setToast(""),3000);
       };
 
-      const excluir = id => setCultivos(cultivos.filter(c => c.id !== id));
-      const registrar = (id, acao) => setCultivos(cultivos.map(c => c.id === id ? {...c, historico:[...c.historico,{data:new Date().toLocaleDateString(), acao}]} : c));
-      const diasDesde = germ => Math.floor((new Date() - new Date(germ)) / (1000*60*60*24));
+      const diasDesde=g=>Math.floor((new Date()-new Date(g))/(1000*60*60*24));
+      const excluir=id=>setCultivos(cultivos.filter(c=>c.id!==id));
+      const salvarEdicao=(id,novo)=>{setCultivos(cultivos.map(c=>c.id===id?{...c,...novo}:c)); setEditando(null);};
 
       return React.createElement("div",{className:"container"},
-        React.createElement("h2",null,"🌱 Cadastro de Cultivos"),
+        React.createElement("h2",null,"🌿 Cadastro de Cultivos"),
         React.createElement("div",{className:"flex"},
           React.createElement("select",{value:planta,onChange:e=>setPlanta(e.target.value)},
             React.createElement("option",{value:""},"Selecione a planta"),
@@ -208,44 +176,55 @@
             React.createElement("option",null,"Forth"),
             React.createElement("option",null,"Dimy")
           ),
-          React.createElement("input",{placeholder:"Local (opcional)",value:local,onChange:e=>setLocal(e.target.value)}),
+          React.createElement("select",{value:litros,onChange:e=>setLitros(e.target.value)},
+            litragemOptions.map((l,i)=>React.createElement("option",{key:i},l))
+          ),
           React.createElement("button",{onClick:addCultivo},"Adicionar")
         ),
-        React.createElement("h2",null,"🌿 Cultivos Ativos"),
+        React.createElement("h2",null,"🌱 Cultivos Ativos"),
         cultivos.map(c=>{
-          const dias = diasDesde(c.dataGerminacao);
-          const fase = getFase(dias);
-          const progresso = Math.min((dias/60)*100,100);
-          const fertData = fertRecomendacoes[c.fertilizante] || [];
+          const dias=diasDesde(c.dataGerminacao);
+          const fase=getFase(dias);
+          const progresso=Math.min((dias/60)*100,100);
           return React.createElement("div",{className:"card",key:c.id},
             React.createElement("div",{className:"flex justify-between"},
               React.createElement("strong",null,c.planta),
               React.createElement("span",null,c.fertilizante)
             ),
-            React.createElement("small",null,`Germinação: ${c.dataGerminacao} | Colheita: ${c.colheita}`),
-            React.createElement("div",{className:"fase",style:{color:fase.cor}},fase.icone," ",fase.nome),
+            React.createElement("small",null,`Germinação: ${c.dataGerminacao} | Colheita: ${c.colheita} | ${fase.icone} ${fase.nome}`),
             React.createElement("div",{className:"progress"},
               React.createElement("div",{className:"progress-bar",style:{width:`${progresso}%`,background:fase.cor}})
             ),
-            React.createElement("div",{style:{marginTop:"1rem"}},
-              React.createElement("strong",null,`💧 Recomendações (${c.fertilizante})`),
-              fertData.map((r,i)=>React.createElement("div",{key:i},
-                React.createElement("strong",null,r.fase)," — ",
-                React.createElement("small",null,r.dias),
-                React.createElement("div",null,r.recomendacao)
-              ))
+            React.createElement("div",{className:"recom"},
+              React.createElement("strong",null,"💧 Recomendações (",c.fertilizante,")"),
+              fertRecomendacoes[c.fertilizante].map((r,i)=>
+                React.createElement("div",{className:"recom-item",key:i},
+                  `• ${r.fase} (${r.dias}) → ${r.recomendacao}`)
+              )
             ),
             React.createElement("div",{className:"flex",style:{marginTop:"1rem"}},
-              React.createElement("button",{onClick:()=>registrar(c.id,"Adubação realizada")},"✅ Aplicar"),
+              React.createElement("button",{onClick:()=>setEditando(c)},"✏️ Editar"),
               React.createElement("button",{onClick:()=>excluir(c.id)},"🗑️ Excluir")
             ),
-            c.historico.length>0 && React.createElement("div",{style:{marginTop:"1rem"}},
-              React.createElement("strong",null,"📜 Histórico:"),
-              c.historico.map((h,i)=>React.createElement("div",{key:i},
-                React.createElement("small",null,`${h.data} — ${h.acao}`)
-              ))
+            editando && editando.id===c.id && React.createElement("div",{className:"modal"},
+              React.createElement("div",{className:"modal-content"},
+                React.createElement("h3",null,"✏️ Editar Cultivo"),
+                React.createElement("input",{type:"date",value:editando.dataGerminacao,onChange:e=>setEditando({...editando,dataGerminacao:e.target.value})}),
+                React.createElement("select",{value:editando.fertilizante,onChange:e=>setEditando({...editando,fertilizante:e.target.value})},
+                  React.createElement("option",null,"BioBizz"),
+                  React.createElement("option",null,"Forth"),
+                  React.createElement("option",null,"Dimy")
+                ),
+                React.createElement("select",{value:editando.litros,onChange:e=>setEditando({...editando,litros:e.target.value})},
+                  litragemOptions.map((l,i)=>React.createElement("option",{key:i},l))
+                ),
+                React.createElement("div",{className:"flex",style:{marginTop:"1rem"}},
+                  React.createElement("button",{onClick:()=>salvarEdicao(c.id,editando)},"Salvar"),
+                  React.createElement("button",{onClick:()=>setEditando(null)},"Cancelar")
+                )
+              )
             )
-          );
+          )
         }),
         toast && React.createElement("div",{className:"toast"},toast)
       );
@@ -255,13 +234,10 @@
   </script>
 
   <script>
-    const toggle = document.getElementById("themeToggle");
-    const menu = document.getElementById("themeOptions");
-    toggle.addEventListener("click", () => menu.classList.toggle("show"));
-    function setTheme(t) {
-      localStorage.setItem("tema", t);
-      location.reload();
-    }
+    const toggle=document.getElementById("themeToggle");
+    const menu=document.getElementById("themeOptions");
+    toggle.addEventListener("click",()=>menu.classList.toggle("show"));
+    function setTheme(t){localStorage.setItem("tema",t);location.reload();}
   </script>
 </body>
 </html>
