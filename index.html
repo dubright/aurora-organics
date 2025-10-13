@@ -1,528 +1,271 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aurora Organics | Supervisão Agrícola</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        background-color: #0f1115;
-        color: #f2f2f2;
-      }
-
-      header {
-        background: #15181d;
-        padding: 16px 40px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #222;
-      }
-
-      header h1 {
-        font-size: 20px;
-        color: #7fffa6;
-        margin: 0;
-      }
-
-      header .info {
-        font-size: 14px;
-        color: #bbb;
-      }
-
-      main {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 24px;
-        padding: 24px 40px;
-      }
-
-      .sidebar {
-        background: #15181d;
-        border-radius: 12px;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .sidebar h2 {
-        font-size: 14px;
-        margin-bottom: 8px;
-        color: #aaa;
-      }
-
-      .sidebar select {
-        background: #0f1115;
-        border: 1px solid #2a2d33;
-        border-radius: 8px;
-        color: #f2f2f2;
-        padding: 8px;
-      }
-
-      .stats {
-        background: #15181d;
-        border-radius: 12px;
-        padding: 16px;
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-      }
-
-      .stat {
-        text-align: center;
-      }
-
-      .stat h3 {
-        font-size: 14px;
-        color: #aaa;
-        margin-bottom: 6px;
-      }
-
-      .stat p {
-        font-size: 18px;
-        font-weight: bold;
-        margin: 0;
-      }
-
-      .map {
-        background: linear-gradient(180deg, #1c2026 0%, #121417 100%);
-        border-radius: 16px;
-        padding: 16px;
-        position: relative;
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .map svg {
-        width: 80%;
-        max-width: 500px;
-      }
-
-      .sensor {
-        position: absolute;
-        background: #1f242b;
-        border-radius: 8px;
-        padding: 6px 10px;
-        font-size: 13px;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .sensor.green {
-        border: 1px solid #3cff86;
-        color: #3cff86;
-      }
-
-      .sensor.yellow {
-        border: 1px solid #ffd94d;
-        color: #ffd94d;
-      }
-
-      .sensor.red {
-        border: 1px solid #ff4d4d;
-        color: #ff4d4d;
-      }
-
-      .footer {
-        text-align: center;
-        color: #666;
-        padding: 16px;
-        font-size: 12px;
-        border-top: 1px solid #222;
-      }
-    </style>
-  </head>
-
-  <body>
-    <header>
-      <h1>🌿 Aurora Organics</h1>
-      <div class="info">Última sincronização: há 5 minutos</div>
-    </header>
-
-    <main>
-      <div class="sidebar">
-        <div>
-          <h2>Período</h2>
-          <select>
-            <option>Últimos 7 dias</option>
-            <option>Últimos 30 dias</option>
-            <option>Últimos 3 meses</option>
-          </select>
-        </div>
-
-        <div>
-          <h2>Tipo de alerta</h2>
-          <select>
-            <option>Todos</option>
-            <option>Temperatura</option>
-            <option>Umidade</option>
-            <option>Pragas</option>
-          </select>
-        </div>
-
-        <div class="stats">
-          <div class="stat">
-            <h3>Áreas monitoradas</h3>
-            <p>3</p>
-          </div>
-          <div class="stat">
-            <h3>Alertas ativos</h3>
-            <p style="color:#ffd94d;">2</p>
-          </div>
-          <div class="stat">
-            <h3>Críticos</h3>
-            <p style="color:#ff4d4d;">1</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="map">
-        <svg viewBox="0 0 200 200">
-          <rect x="20" y="20" width="160" height="160" rx="15" ry="15" fill="#263238"/>
-          <rect x="30" y="30" width="60" height="60" rx="10" ry="10" fill="#2e7d32"/>
-          <rect x="110" y="30" width="60" height="60" rx="10" ry="10" fill="#fbc02d"/>
-          <rect x="30" y="110" width="60" height="60" rx="10" ry="10" fill="#e53935"/>
-          <rect x="110" y="110" width="60" height="60" rx="10" ry="10" fill="#43a047"/>
-        </svg>
-
-        <div class="sensor green" style="top: 30%; left: 35%">Estufa 🌡️ 21°C</div>
-        <div class="sensor yellow" style="top: 35%; left: 65%">Horta 💧 24%</div>
-        <div class="sensor red" style="top: 70%; left: 40%">Talhão ⚠️ 15%</div>
-      </div>
-    </main>
-<!-- Formulário de cadastro de cultivos -->
-<section id="cadastro" style="background:#15181d; border-radius:12px; padding:20px; margin-top:30px;">
-  <h2 style="color:#7fffa6; margin-bottom:16px;">📋 Cadastro de Cultivos</h2>
-
-  <form id="cultivoForm" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
-    <div>
-      <label>Tipo de cultivo:</label>
-      <select id="tipo" required style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
-        <optgroup label="Hortaliças">
-          <option>Alface</option>
-          <option>Rúcula</option>
-          <option>Couve</option>
-          <option>Espinafre</option>
-          <option>Cenoura</option>
-          <option>Beterraba</option>
-          <option>Agrião</option>
-          <option>Cebolinha</option>
-          <option>Coentro</option>
-        </optgroup>
-        <optgroup label="Frutas">
-          <option>Tomate</option>
-          <option>Morango</option>
-          <option>Melancia</option>
-          <option>Melão</option>
-          <option>Banana</option>
-          <option>Abacaxi</option>
-          <option>Mamão</option>
-          <option>Goiaba</option>
-          <option>Maracujá</option>
-        </optgroup>
-        <optgroup label="Verduras e Temperos">
-          <option>Manjericão</option>
-          <option>Hortelã</option>
-          <option>Salsa</option>
-          <option>Orégano</option>
-          <option>Alecrim</option>
-          <option>Tomilho</option>
-          <option>Pimentão</option>
-          <option>Quiabo</option>
-          <option>Abobrinha</option>
-        </optgroup>
-      </select>
-    </div>
-
-    <div>
-      <label>Data de germinação:</label>
-      <input type="date" id="germinacao" required style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
-    </div>
-
-    <div>
-      <label>Data de transplante:</label>
-      <input type="date" id="transplante" style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
-    </div>
-
-    <div>
-      <label>Quantidade:</label>
-      <input type="number" id="quantidade" min="1" value="1" style="width:100%; padding:8px; border-radius:8px; border:none; background:#0f1115; color:#fff;">
-    </div>
-
-    <button type="submit" style="grid-column: span 2; background:#7fffa6; color:#0f1115; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
-      Adicionar cultivo
-    </button>
-  </form>
-
-  <div id="listaCultivos" style="margin-top:24px;">
-    <h3 style="margin-bottom:8px;">🌾 Supervisório de Cultivos</h3>
-    <table style="width:100%; border-collapse:collapse; text-align:left;">
-      <thead>
-        <tr style="color:#7fffa6;">
-          <th>Planta</th>
-          <th>Germinação</th>
-          <th>Transplante</th>
-          <th>Colheita Prevista</th>
-          <th>Qtd.</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaCultivos"></tbody>
-    </table>
-  </div>
-</section>
-
-<script>
-  const duracaoPadrao = {
-    Alface: 60, Rúcula: 45, Couve: 90, Espinafre: 75, Cenoura: 100, Beterraba: 90, Agrião: 50, Cebolinha: 80, Coentro: 70,
-    Tomate: 120, Morango: 90, Melancia: 100, Melão: 95, Banana: 180, Abacaxi: 240, Mamão: 150, Goiaba: 210, Maracujá: 150,
-    Manjericão: 70, Hortelã: 60, Salsa: 80, Orégano: 80, Alecrim: 90, Tomilho: 75, Pimentão: 110, Quiabo: 100, Abobrinha: 85
-  };
-
-  const form = document.getElementById("cultivoForm");
-  const tabela = document.getElementById("tabelaCultivos");
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const tipo = document.getElementById("tipo").value;
-    const germinacao = new Date(document.getElementById("germinacao").value);
-    const transplante = document.getElementById("transplante").value || "-";
-    const qtd = document.getElementById("quantidade").value;
-
-    const duracao = duracaoPadrao[tipo] || 90;
-    const colheita = new Date(germinacao);
-    colheita.setDate(colheita.getDate() + duracao);
-    const colheitaFormatada = colheita.toISOString().split("T")[0];
-
-    const linha = `
-      <tr>
-        <td>${tipo}</td>
-        <td>${germinacao.toISOString().split("T")[0]}</td>
-        <td>${transplante}</td>
-        <td>${colheitaFormatada}</td>
-        <td>${qtd}</td>
-      </tr>`;
-    tabela.innerHTML += linha;
-
-    form.reset();
-  });
-</script>
-
-    <div class="footer">
-      © 2025 Aurora Organics – Supervisão Agrícola Inteligente
-    </div>
-    <script>
-  // Simulação de sensores em tempo real
-  const sensores = [
-    { id: 1, nome: "Estufa 🌡️", tipo: "Temperatura", valor: 21, el: null },
-    { id: 2, nome: "Horta 💧", tipo: "Umidade", valor: 24, el: null },
-    { id: 3, nome: "Talhão ⚠️", tipo: "Umidade", valor: 15, el: null },
-  ];
-
-  window.onload = () => {
-    sensores[0].el = document.querySelector(".sensor.green");
-    sensores[1].el = document.querySelector(".sensor.yellow");
-    sensores[2].el = document.querySelector(".sensor.red");
-    atualizarSensores();
-    setInterval(atualizarSensores, 5000);
-  };
-
-  function atualizarSensores() {
-    sensores.forEach((sensor) => {
-      const variacao = (Math.random() * 4 - 2).toFixed(1);
-      sensor.valor = Math.max(10, Math.min(40, sensor.valor + parseFloat(variacao)));
-
-      sensor.el.textContent = `${sensor.nome} ${sensor.valor}${sensor.tipo === "Temperatura" ? "°C" : "%"}`;
-
-      if (sensor.tipo === "Temperatura") {
-        if (sensor.valor > 30) {
-          sensor.el.className = "sensor red";
-        } else if (sensor.valor > 25) {
-          sensor.el.className = "sensor yellow";
-        } else {
-          sensor.el.className = "sensor green";
-        }
-      }
-
-      if (sensor.tipo === "Umidade") {
-        if (sensor.valor < 20) {
-          sensor.el.className = "sensor red";
-        } else if (sensor.valor < 35) {
-          sensor.el.className = "sensor yellow";
-        } else {
-          sensor.el.className = "sensor green";
-        }
-      }
-    });
-  }
-</script>
-<script>
-  // Função para calcular a fase da planta com base nas datas
-  function calcularFasePlanta(dataGerminacao, dataColheita) {
-    const hoje = new Date();
-    const totalDias = (new Date(dataColheita) - new Date(dataGerminacao)) / (1000 * 60 * 60 * 24);
-    const diasDecorridos = (hoje - new Date(dataGerminacao)) / (1000 * 60 * 60 * 24);
-    const progresso = (diasDecorridos / totalDias) * 100;
-
-    if (progresso < 20) return "Germinação";
-    if (progresso < 60) return "Crescimento";
-    if (progresso < 90) return "Floração";
-    if (progresso >= 90) return "Colheita";
-  }
-
-  // Regras de fertilizantes para cada fase
-  const fertilizantes = {
-    Germinação: {
-      descricao: "Use fertilizantes ricos em Nitrogênio e Cálcio para fortalecer raízes e folhas iniciais.",
-      produtos: ["Bio-Grow", "Nitro Max", "CalMag"]
-    },
-    Crescimento: {
-      descricao: "Aplique Magnésio e Fósforo para estimular o crescimento saudável das folhas e caules.",
-      produtos: ["Bio-Grow", "Sensi Grow", "Mag-Pro"]
-    },
-    Floração: {
-      descricao: "Foque em Potássio e micronutrientes para incentivar o florescimento e frutificação.",
-      produtos: ["Bio-Bloom", "Big Bud", "Top Max"]
-    },
-    Colheita: {
-      descricao: "Reduza fertilizantes e faça lavagem das raízes (‘flush’) para purificação final.",
-      produtos: ["Alg-A-Mic", "Water Flush"]
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Organics | Supervisão Agrícola Inteligente</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #0f1115;
+      color: #f2f2f2;
     }
-  };
 
-  // Cria uma área visual para exibir as recomendações
-  const container = document.createElement("section");
-  container.style.background = "#15181d";
-  container.style.borderRadius = "12px";
-  container.style.padding = "20px";
-  container.style.marginTop = "30px";
-  container.innerHTML = `
-    <h2 style="color:#7fffa6;">🧪 Recomendações de Fertilizantes</h2>
-    <div id="recomendacaoTexto" style="margin-top:10px; color:#fff;"></div>
-  `;
-  document.body.appendChild(container);
+    header {
+      background-color: #15181d;
+      color: #7fffa6;
+      padding: 16px 40px;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  // Função principal que atualiza recomendações
-  function atualizarRecomendacoes() {
-    const linhas = document.querySelectorAll("#tabelaCultivos tr");
-    let html = "";
+    main {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
 
-    linhas.forEach((linha) => {
-      const planta = linha.children[0]?.textContent;
-      const germinacao = linha.children[1]?.textContent;
-      const colheita = linha.children[3]?.textContent;
+    h2 {
+      color: #7fffa6;
+      margin-bottom: 8px;
+    }
 
-      if (planta && germinacao && colheita) {
-        const fase = calcularFasePlanta(germinacao, colheita);
-        const dados = fertilizantes[fase];
-        html += `
-          <div style="margin-bottom:18px;">
-            <h3 style="color:#7fffa6;">${planta} — Fase: ${fase}</h3>
-            <p>${dados.descricao}</p>
-            <p><strong>Produtos recomendados:</strong> ${dados.produtos.join(", ")}</p>
-          </div>
-        `;
-      }
+    .card {
+      background: #15181d;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* === TIMELINE === */
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin: 16px 0;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #2c2c2c;
+      z-index: 0;
+    }
+
+    .timeline-step {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      width: 100px;
+    }
+
+    .timeline-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      margin: 0 auto 6px auto;
+      border: 3px solid #7fffa6;
+    }
+
+    .fase-germinacao { background-color: #0099ff; }
+    .fase-crescimento { background-color: #22cc88; }
+    .fase-floracao { background-color: #ffaa00; }
+    .fase-colheita { background-color: #ff4444; }
+
+    /* === SUPERVISÓRIO === */
+    .supervisorio {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .sensor-box {
+      width: 30%;
+      height: 200px;
+      border-radius: 12px;
+      background: #1c1f25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .sensor.green { background: #28a745; }
+    .sensor.yellow { background: #ffc107; }
+    .sensor.red { background: #dc3545; }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      color: #999;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>🌿 Aurora Organics</header>
+
+  <main>
+    <!-- 🔹 RECOMENDAÇÕES DE FERTILIZANTES -->
+    <section id="recomendacoes" class="card">
+      <h2>🧪 Recomendações de Fertilizantes</h2>
+      <div id="recomendacaoTexto">Carregando recomendações...</div>
+    </section>
+
+    <!-- 🔹 CADASTRO DE CULTIVOS -->
+    <section id="cadastro" class="card">
+      <h2>📋 Cadastro de Cultivos</h2>
+      <form id="cultivoForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+        <div>
+          <label>Tipo de cultivo:</label>
+          <select id="tipo" required style="width:100%;padding:8px;border-radius:8px;background:#0f1115;color:#fff;">
+            <option>Alface</option>
+            <option>Rúcula</option>
+            <option>Tomate</option>
+            <option>Morango</option>
+            <option>Cenoura</option>
+            <option>Beterraba</option>
+            <option>Couve</option>
+            <option>Coentro</option>
+            <option>Manjericão</option>
+          </select>
+        </div>
+        <div>
+          <label>Data de germinação:</label>
+          <input type="date" id="germinacao" required style="width:100%;padding:8px;border-radius:8px;background:#0f1115;color:#fff;">
+        </div>
+        <div>
+          <label>Data de transplante:</label>
+          <input type="date" id="transplante" style="width:100%;padding:8px;border-radius:8px;background:#0f1115;color:#fff;">
+        </div>
+        <div>
+          <label>Quantidade:</label>
+          <input type="number" id="quantidade" min="1" value="1" style="width:100%;padding:8px;border-radius:8px;background:#0f1115;color:#fff;">
+        </div>
+        <button type="submit" style="grid-column:span 2;background:#7fffa6;color:#0f1115;border:none;padding:10px;border-radius:8px;font-weight:bold;cursor:pointer;">
+          Adicionar cultivo
+        </button>
+      </form>
+
+      <div id="listaCultivos" style="margin-top:20px;">
+        <h3>🌾 Supervisório de Cultivos</h3>
+        <table style="width:100%;border-collapse:collapse;text-align:left;">
+          <thead>
+            <tr style="color:#7fffa6;">
+              <th>Planta</th>
+              <th>Germinação</th>
+              <th>Transplante</th>
+              <th>Colheita Prevista</th>
+              <th>Qtd.</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaCultivos"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 🔹 SUPERVISÓRIO DE AMBIENTE -->
+    <section id="supervisorio" class="card">
+      <h2>🌡️ Sensores e Ambiente</h2>
+      <div class="supervisorio">
+        <div id="sensor1" class="sensor-box sensor green">Estufa 🌿</div>
+        <div id="sensor2" class="sensor-box sensor yellow">Horta 💧</div>
+        <div id="sensor3" class="sensor-box sensor red">Talhão ⚠️</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 Aurora Organics – Supervisão Agrícola Inteligente</footer>
+
+  <script>
+    // === CULTIVOS E CÁLCULOS DE DATAS ===
+    const duracaoPadrao = { Alface: 60, Rúcula: 45, Tomate: 120, Morango: 90, Cenoura: 100, Beterraba: 90, Couve: 80, Coentro: 70, Manjericão: 70 };
+    const form = document.getElementById("cultivoForm");
+    const tabela = document.getElementById("tabelaCultivos");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById("tipo").value;
+      const germinacao = new Date(document.getElementById("germinacao").value);
+      const transplante = document.getElementById("transplante").value || "-";
+      const qtd = document.getElementById("quantidade").value;
+      const duracao = duracaoPadrao[tipo] || 90;
+
+      const colheita = new Date(germinacao);
+      colheita.setDate(colheita.getDate() + duracao);
+      const colheitaFormatada = colheita.toISOString().split("T")[0];
+
+      const linha = `
+        <tr>
+          <td>${tipo}</td>
+          <td>${germinacao.toISOString().split("T")[0]}</td>
+          <td>${transplante}</td>
+          <td>${colheitaFormatada}</td>
+          <td>${qtd}</td>
+        </tr>`;
+      tabela.innerHTML += linha;
+      form.reset();
+      gerarRecomendacoes();
     });
 
-    document.getElementById("recomendacaoTexto").innerHTML = html || "<p>Nenhum cultivo cadastrado.</p>";
-  }
+    // === FERTILIZANTES POR PERÍODO ===
+    const plano = [
+      { fase: "Germinação", cor: "fase-germinacao", dias: [0, 15], desc: "Use Nitrogênio e Cálcio para brotos iniciais.", prod: ["Bio-Grow", "CalMag", "Nitro Max"] },
+      { fase: "Crescimento", cor: "fase-crescimento", dias: [16, 40], desc: "Magnésio e Fósforo para folhas e caules.", prod: ["Sensi Grow", "Mag-Pro", "Bio-Heaven"] },
+      { fase: "Floração", cor: "fase-floracao", dias: [41, 55], desc: "Potássio e micronutrientes para florescimento.", prod: ["Big Bud", "Bio-Bloom", "Top Max"] },
+      { fase: "Pré-colheita", cor: "fase-colheita", dias: [56, 100], desc: "Manter potássio leve até o flush final.", prod: ["Alg-A-Mic", "Water Flush"] }
+    ];
 
-  // Atualiza automaticamente a cada 10 segundos
-  setInterval(atualizarRecomendacoes, 10000);
-  atualizarRecomendacoes();
-</script>
+    function gerarRecomendacoes() {
+      const linhas = document.querySelectorAll("#tabelaCultivos tr");
+      const container = document.getElementById("recomendacaoTexto");
+      let html = "";
 
-  </body>
+      linhas.forEach((linha) => {
+        const planta = linha.children[0]?.textContent;
+        const germinacao = linha.children[1]?.textContent;
+        const colheita = linha.children[3]?.textContent;
+
+        if (planta && germinacao && colheita) {
+          html += `<div class="card" style="background:#1c1f25;margin-bottom:16px;padding:16px;border-radius:10px;">
+            <h3 style="color:#7fffa6;">${planta}</h3>
+            <div class="timeline">`;
+
+          plano.forEach((p) => {
+            html += `
+              <div class="timeline-step">
+                <div class="timeline-circle ${p.cor}"></div>
+                <small>${p.fase}</small>
+              </div>`;
+          });
+
+          html += `</div><ul>`;
+          plano.forEach((fase) => {
+            html += `
+              <li style="margin-bottom:8px;">
+                <strong>${fase.fase}</strong> — ${fase.desc}
+                <br><b>Produtos:</b> ${fase.prod.join(", ")}
+              </li>`;
+          });
+
+          html += `</ul><p style="color:#ffaa00;margin-top:6px;">⚠️ Lembre-se de registrar a aplicação de fertilizantes nesta fase!</p></div>`;
+        }
+      });
+
+      container.innerHTML = html || "<p>Nenhum cultivo cadastrado.</p>";
+    }
+
+    gerarRecomendacoes();
+  </script>
+</body>
 </html>
-<!-- RECOMENDAÇÕES DE FERTILIZANTES -->
-<section id="recomendacoes" style="background:#15181d; border-radius:12px; padding:24px; margin-bottom:32px;">
-  <h2 style="color:#7fffa6;">🧪 Recomendações de Fertilizantes</h2>
-  <div id="recomendacaoTexto" style="margin-top:14px; color:#fff;"></div>
-</section>
-
-<script>
-  // Durações médias por espécie (em dias)
-  const duracaoCiclo = {
-    Alface: 60, Rúcula: 45, Tomate: 120, Morango: 90, Cenoura: 100, Beterraba: 90, Couve: 80, Manjericão: 70, Coentro: 70
-  };
-
-  // Etapas de fertilização por fases
-  const planoFertilizante = [
-    {
-      fase: "Germinação inicial",
-      intervalo: [0, 15],
-      descricao: "Use Nitrogênio e Cálcio para fortalecer raízes e brotos iniciais.",
-      produtos: ["Bio-Grow", "CalMag", "Nitro Max"]
-    },
-    {
-      fase: "Crescimento vegetativo",
-      intervalo: [16, 40],
-      descricao: "Aplique Magnésio e Fósforo para estimular o crescimento de folhas e caules.",
-      produtos: ["Sensi Grow", "Mag-Pro", "Bio-Heaven"]
-    },
-    {
-      fase: "Floração / frutificação",
-      intervalo: [41, 55],
-      descricao: "Foque em Potássio e micronutrientes para o florescimento e início da frutificação.",
-      produtos: ["Big Bud", "Bio-Bloom", "Top Max"]
-    },
-    {
-      fase: "Pré-colheita",
-      intervalo: [56, 100],
-      descricao: "Reduza fertilizantes, mantendo Potássio e micronutrientes leves até o flush final.",
-      produtos: ["Alg-A-Mic", "Water Flush"]
-    }
-  ];
-
-  // Função para gerar recomendações detalhadas
-  function gerarRecomendacoesDetalhadas() {
-    const linhas = document.querySelectorAll("#tabelaCultivos tr");
-    let html = "";
-
-    linhas.forEach((linha) => {
-      const planta = linha.children[0]?.textContent;
-      const germinacao = linha.children[1]?.textContent;
-      const colheita = linha.children[3]?.textContent;
-
-      if (planta && germinacao && colheita) {
-        const duracao = duracaoCiclo[planta] || 90;
-        html += `<div style="margin-bottom:22px;">
-          <h3 style="color:#7fffa6;">${planta}</h3>
-          <ul style="list-style:none; padding-left:0;">`;
-
-        planoFertilizante.forEach((fase) => {
-          const inicio = new Date(germinacao);
-          const fim = new Date(inicio);
-          fim.setDate(inicio.getDate() + (fase.intervalo[1] * duracao / 100));
-          const inicioFormatado = new Date(inicio.getTime() + (fase.intervalo[0] * duracao / 100) * 24 * 60 * 60 * 1000)
-            .toISOString().split("T")[0];
-          const fimFormatado = fim.toISOString().split("T")[0];
-
-          html += `
-            <li style="margin-bottom:12px;">
-              <strong>${fase.fase}</strong> <br>
-              <small>De ${inicioFormatado} até ${fimFormatado}</small><br>
-              <span>${fase.descricao}</span><br>
-              <b>Produtos:</b> ${fase.produtos.join(", ")}
-            </li>
-          `;
-        });
-
-        html += "</ul></div>";
-      }
-    });
-
-    document.getElementById("recomendacaoTexto").innerHTML =
-      html || "<p>Nenhum cultivo cadastrado.</p>";
-  }
-
-  gerarRecomendacoesDetalhadas();
-</script>
