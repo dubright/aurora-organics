@@ -3,158 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aurora Organics 🌿</title>
+  <title>Aurora Organics 🌿 Multiprojetos</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(160deg, #0f1115 0%, #121814 100%);
-      color: #e6e6e6;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
+      margin:0;
+      font-family:"Inter",sans-serif;
+      background:linear-gradient(160deg,#0f1115 0%,#121814 100%);
+      color:#e6e6e6;
+      display:flex;
+      height:100vh;
+      overflow:hidden;
     }
     /* Sidebar */
     .sidebar {
-      width: 220px;
-      background: #101311;
-      border-right: 1px solid #1e2228;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      gap: 1rem;
+      width:230px;
+      background:#101311;
+      border-right:1px solid #1e2228;
+      display:flex;
+      flex-direction:column;
+      padding:1rem;
+      gap:1rem;
     }
-    .logo {
-      font-weight: 700;
-      color: #00e676;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-    }
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+    .logo {font-weight:700;color:#00e676;display:flex;align-items:center;gap:8px;font-size:1.1rem;}
+    .nav {display:flex;flex-direction:column;gap:0.5rem;}
     .nav button {
-      background: none;
-      color: #a1a1a1;
-      border: none;
-      text-align: left;
-      font-size: 0.95rem;
-      padding: 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background:none;color:#a1a1a1;border:none;text-align:left;
+      font-size:0.95rem;padding:8px;border-radius:6px;cursor:pointer;transition:all 0.2s;
     }
-    .nav button:hover, .nav button.active {
-      background: #00e67622;
-      color: #00e676;
+    .nav button:hover,.nav button.active{background:#00e67622;color:#00e676;}
+    /* Main */
+    .main{flex:1;display:flex;flex-direction:row;height:100%;overflow:hidden;}
+    .content{flex:2;padding:1.5rem;overflow-y:auto;}
+    .dashboard{width:300px;border-left:1px solid #1e2228;background:#141714;padding:1.5rem;overflow-y:auto;}
+    h2{margin-top:0;font-size:1.2rem;color:#00e676;display:flex;align-items:center;gap:6px;}
+    select,input,button{
+      border:none;border-radius:8px;padding:8px 10px;font-family:inherit;
     }
-
-    /* Main Content */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      height: 100%;
-      overflow: hidden;
+    select,input{background:#1a1f1b;color:#e6e6e6;}
+    button{background:#00e676;color:#000;font-weight:600;cursor:pointer;transition:0.3s;}
+    button:hover{transform:scale(1.03);box-shadow:0 0 10px #00e67666;}
+    /* Cards */
+    .card{
+      background:#171a1f;padding:1rem;border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,230,118,0.05);
+      margin-bottom:1rem;transition:0.3s;
     }
-    .content {
-      flex: 2;
-      padding: 1.5rem;
-      overflow-y: auto;
+    .card:hover{transform:scale(1.01);}
+    .flex{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+    small{color:#a1a1a1;}
+    .progress{height:8px;border-radius:4px;background:#1e2228;margin-top:8px;overflow:hidden;}
+    .progress-bar{height:100%;transition:width 0.5s ease;}
+    .fase{font-weight:600;margin-top:6px;}
+    .toast{
+      position:fixed;bottom:20px;right:20px;background:#00e676;color:#000;
+      padding:10px 20px;border-radius:8px;font-weight:600;animation:slideIn 0.5s ease;
     }
-    .dashboard {
-      width: 300px;
-      border-left: 1px solid #1e2228;
-      background: #141714;
-      padding: 1.5rem;
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
-      color: #00e676;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Inputs */
-    select, input, button {
-      border: none;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-family: inherit;
-    }
-    select, input {
-      background: #1a1f1b;
-      color: #e6e6e6;
-    }
-    button {
-      background: #00e676;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 10px #00e67666;
-    }
-
-    /* Cultivo Cards */
-    .card {
-      background: #171a1f;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
-      margin-bottom: 1rem;
-      transition: 0.3s;
-    }
-    .card:hover { transform: scale(1.01); }
-    .flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    small { color: #a1a1a1; }
-
-    .progress {
-      height: 8px;
-      border-radius: 4px;
-      background: #1e2228;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      transition: width 0.5s ease;
-    }
-    .fase { font-weight: 600; margin-top: 6px; }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00e676;
-      color: #000;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      animation: slideIn 0.5s ease;
-    }
-    @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .recommend { margin-top: 1rem; font-size: 0.9rem; line-height: 1.5; }
-    .recommend strong { color: #00e676; }
-
-    /* Dashboard side */
-    canvas { width: 100%; height: 150px; background: #1a1f1b; border-radius: 8px; margin-top: 1rem; }
-    .task { background: #1a1f1b; border-radius: 8px; padding: 10px; margin-top: 10px; }
-    .task small { color: #a1a1a1; }
-
+    @keyframes slideIn{from{transform:translateY(50px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    .recommend{margin-top:1rem;font-size:0.9rem;line-height:1.5;}
+    .recommend strong{color:#00e676;}
+    canvas{width:100%;height:150px;background:#1a1f1b;border-radius:8px;margin-top:1rem;}
+    .task{background:#1a1f1b;border-radius:8px;padding:10px;margin-top:10px;}
+    .task small{color:#a1a1a1;}
+    .project{background:#1a1f1b;border-radius:8px;padding:10px;margin-bottom:10px;cursor:pointer;transition:0.3s;}
+    .project:hover{background:#00e67622;}
+    .activeProject{border-left:4px solid #00e676;}
   </style>
 </head>
 <body>
@@ -162,137 +78,198 @@
     <div class="logo">🌿 Aurora Organics</div>
     <div class="nav">
       <button id="btnDashboard" class="active">📊 Dashboard</button>
-      <button id="btnCultivos">🌱 Cultivos</button>
+      <button id="btnCultivos">🌱 Projetos</button>
       <button id="btnTarefas">🧾 Tarefas</button>
       <button id="btnInsumos">💧 Insumos</button>
     </div>
   </div>
-
   <div class="main">
     <div class="content" id="root"></div>
     <div class="dashboard" id="dashboard">
-      <h2>📈 Produtividade</h2>
+      <h2>📈 Panorama Geral</h2>
       <canvas id="chart"></canvas>
+      <div id="stats"></div>
       <h2>🧾 Tarefas</h2>
       <div id="tarefasList"></div>
     </div>
   </div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const {useState,useEffect}=React;
 
-    const plantas = ["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
-
-    const fertRecomendacoes = {
-      BioBizz: [
-        { fase:"Crescimento", dias:"0–20", recomendacao:"Bio-Grow (2ml/L) + CalMag (1ml/L)" },
-        { fase:"Floração", dias:"21–40", recomendacao:"Bio-Bloom (2ml/L) + Top-Max (1ml/L)" },
-        { fase:"Pré-colheita", dias:"41–60", recomendacao:"Somente Alg-A-Mic (1ml/L)" }
-      ],
-      Forth: [
-        { fase:"Crescimento", dias:"0–20", recomendacao:"Forth Enraizador (3ml/L) + Forth Cálcio (1ml/L)" },
-        { fase:"Floração", dias:"21–40", recomendacao:"Forth Flores (2ml/L) + Forth Potássio (1ml/L)" },
-        { fase:"Pré-colheita", dias:"41–60", recomendacao:"Suspender adubação 5 dias antes da colheita" }
-      ],
-      Dimy: [
-        { fase:"Crescimento", dias:"0–20", recomendacao:"Dimy NPK 10-10-10 (2ml/L)" },
-        { fase:"Floração", dias:"21–40", recomendacao:"Dimy NPK 4-14-8 (2ml/L)" },
-        { fase:"Pré-colheita", dias:"41–60", recomendacao:"Dimy NPK 0-0-30 (1ml/L)" }
-      ]
+    /* --- Dados e helpers --- */
+    const plantas=["Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola","Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula","Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"];
+    const fases=[{nome:"Germinação",icone:"🌱",cor:"#00ff99",inicio:0,fim:7},{nome:"Crescimento",icone:"🌿",cor:"#00e676",inicio:8,fim:35},{nome:"Floração",icone:"🌸",cor:"#c084fc",inicio:36,fim:50},{nome:"Pré-colheita",icone:"🍅",cor:"#fca311",inicio:51,fim:60}];
+    const fertRecomendacoes={
+      BioBizz:[{fase:"Crescimento",dias:"0–20",recomendacao:"Bio-Grow (2ml/L)+ CalMag (1ml/L)"},{fase:"Floração",dias:"21–40",recomendacao:"Bio-Bloom (2ml/L)+ Top-Max (1ml/L)"},{fase:"Pré-colheita",dias:"41–60",recomendacao:"Somente Alg-A-Mic (1ml/L)"}],
+      Forth:[{fase:"Crescimento",dias:"0–20",recomendacao:"Forth Enraizador (3ml/L)+ Cálcio (1ml/L)"},{fase:"Floração",dias:"21–40",recomendacao:"Forth Flores (2ml/L)+ Potássio (1ml/L)"},{fase:"Pré-colheita",dias:"41–60",recomendacao:"Suspender adubação 5 dias antes"}],
+      Dimy:[{fase:"Crescimento",dias:"0–20",recomendacao:"Dimy NPK 10-10-10 (2ml/L)"},{fase:"Floração",dias:"21–40",recomendacao:"Dimy NPK 4-14-8 (2ml/L)"},{fase:"Pré-colheita",dias:"41–60",recomendacao:"Dimy NPK 0-0-30 (1ml/L)"}]
     };
-
-    const fases = [
-      { nome:"Germinação", icone:"🌱", cor:"#00ff99", inicio:0, fim:7 },
-      { nome:"Crescimento", icone:"🌿", cor:"#00e676", inicio:8, fim:35 },
-      { nome:"Floração", icone:"🌸", cor:"#c084fc", inicio:36, fim:50 },
-      { nome:"Pré-colheita", icone:"🍅", cor:"#fca311", inicio:51, fim:60 }
-    ];
-
-    function getFase(dias){ return fases.find(f=>dias>=f.inicio&&dias<=f.fim)||fases[0]; }
-    function formatData(dataStr){ const data = new Date(dataStr); return data.toLocaleDateString("pt-BR", { day:"2-digit", month:"long" }); }
-
+    const formatData=(d)=>new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+    const diasDesde=(d)=>Math.floor((new Date()-new Date(d))/(1000*60*60*24));
+    const getFase=(dias)=>fases.find(f=>dias>=f.inicio&&dias<=f.fim)||fases[0];
+    /* --- Aplicação principal --- */
     function App(){
-      const [cultivos,setCultivos]=useState(JSON.parse(localStorage.getItem("cultivos")||"[]"));
-      const [planta,setPlanta]=useState("");const [data,setData]=useState("");const [fert,setFert]=useState("BioBizz");
-      const [litro,setLitro]=useState("700ml");const [toast,setToast]=useState("");
+      const [projetos,setProjetos]=useState([]);
+      const [projetoAtivo,setProjetoAtivo]=useState(null);
+      const [toast,setToast]=useState("");
+      const [planta,setPlanta]=useState("");
+      const [data,setData]=useState("");
+      const [fert,setFert]=useState("BioBizz");
+      const [litro,setLitro]=useState("700ml");
 
-      useEffect(()=>{localStorage.setItem("cultivos",JSON.stringify(cultivos));updateDashboard();},[cultivos]);
+      /* --- Carregar e migrar dados --- */
+      useEffect(()=>{
+        let dados=JSON.parse(localStorage.getItem("projetos")||"[]");
+        if(dados.length===0){
+          const antigos=JSON.parse(localStorage.getItem("cultivos")||"[]");
+          if(antigos.length>0){
+            dados=[{id:Date.now(),nome:"Projeto Padrão",dataCriacao:new Date().toLocaleDateString(),cultivos:antigos}];
+            localStorage.setItem("projetos",JSON.stringify(dados));
+          }
+        }
+        setProjetos(dados);
+        if(dados[0]) setProjetoAtivo(dados[0].id);
+        updateDashboard(dados);
+      },[]);
+
+      useEffect(()=>{
+        localStorage.setItem("projetos",JSON.stringify(projetos));
+        updateDashboard(projetos);
+      },[projetos]);
+
+      /* --- Ações de Projeto --- */
+      function novoProjeto(){
+        const nome=prompt("Nome do novo projeto:");
+        if(!nome)return;
+        const novo={id:Date.now(),nome,dataCriacao:new Date().toLocaleDateString(),cultivos:[]};
+        setProjetos([...projetos,novo]);
+        setProjetoAtivo(novo.id);
+      }
+      function excluirProjeto(id){
+        if(!confirm("Excluir projeto permanentemente?"))return;
+        setProjetos(projetos.filter(p=>p.id!==id));
+        setProjetoAtivo(null);
+      }
+      function renomearProjeto(id){
+        const novo=prompt("Novo nome do projeto:");
+        if(novo)setProjetos(projetos.map(p=>p.id===id?{...p,nome:novo}:p));
+      }
+
+      /* --- Cultivos dentro do projeto ativo --- */
+      const ativo=projetos.find(p=>p.id===projetoAtivo);
+      const cultivos=ativo?ativo.cultivos:[];
+      const atualizarCultivos=(lista)=>{
+        setProjetos(projetos.map(p=>p.id===projetoAtivo?{...p,cultivos:lista}:p));
+      }
 
       function addCultivo(){
         if(!planta||!data)return alert("Preencha todos os campos!");
-        const germ=new Date(data);const colh=new Date(germ);colh.setDate(germ.getDate()+60);
-        const novo={id:Date.now(),planta,dataGerminacao:data,colheita:colh.toISOString().split("T")[0],fertilizante:fert,litro,historico:[],criadoEm:new Date().toLocaleDateString()};
-        setCultivos([...cultivos,novo]);
-        setPlanta("");setData("");setToast("🌱 Cultivo adicionado com sucesso!");setTimeout(()=>setToast(""),3000);
+        const germ=new Date(data);
+        const colh=new Date(germ);colh.setDate(germ.getDate()+60);
+        const novo={id:Date.now(),planta,dataGerminacao:data,colheita:colh.toISOString().split("T")[0],fertilizante:fert,litro};
+        atualizarCultivos([...cultivos,novo]);
+        setPlanta("");setData("");
+        setToast("🌱 Cultivo adicionado com sucesso!");
+        setTimeout(()=>setToast(""),3000);
+      }
+      function excluirCultivo(id){atualizarCultivos(cultivos.filter(c=>c.id!==id));}
+      function editarCultivo(id){
+        const novoFert=prompt("Novo fertilizante:",cultivos.find(c=>c.id===id).fertilizante);
+        const novaData=prompt("Nova data de germinação (aaaa-mm-dd):",cultivos.find(c=>c.id===id).dataGerminacao);
+        atualizarCultivos(cultivos.map(c=>c.id===id?{...c,fertilizante:novoFert||c.fertilizante,dataGerminacao:novaData||c.dataGerminacao}:c));
       }
 
-      function excluir(id){setCultivos(cultivos.filter(c=>c.id!==id))}
-      function editar(id){
-        const novoFert=prompt("Novo fertilizante (BioBizz/Forth/Dimy):");
-        const novoData=prompt("Nova data de germinação (aaaa-mm-dd):");
-        setCultivos(cultivos.map(c=>c.id===id?{...c,fertilizante:novoFert||c.fertilizante,dataGerminacao:novoData||c.dataGerminacao}:c));
-      }
-
-      function diasDesde(germ){return Math.floor((new Date()-new Date(germ))/(1000*60*60*24))}
-
+      /* --- Renderização --- */
       return(
         <div>
-          <h2>🌿 Cadastro de Cultivos</h2>
-          <div className="flex">
-            <select value={planta} onChange={e=>setPlanta(e.target.value)}><option value="">Selecione planta</option>{plantas.map((p,i)=><option key={i}>{p}</option>)}</select>
-            <input type="date" value={data} onChange={e=>setData(e.target.value)}/>
-            <select value={fert} onChange={e=>setFert(e.target.value)}><option>BioBizz</option><option>Forth</option><option>Dimy</option></select>
-            <select value={litro} onChange={e=>setLitro(e.target.value)}><option>700ml</option><option>5L</option><option>10L</option><option>15L</option></select>
-            <button onClick={addCultivo}>Adicionar</button>
-          </div>
-
-          <h2>🌾 Cultivos Ativos</h2>
-          {cultivos.map(c=>{
-            const dias=diasDesde(c.dataGerminacao);const fase=getFase(dias);
-            const progresso=Math.min((dias/60)*100,100);
-            const ajuste=c.litro==="700ml"?0.5:c.litro==="5L"?1:c.litro==="10L"?1.2:1.5;
-            return(
-              <div className="card" key={c.id}>
-                <div className="flex"><strong>{c.planta}</strong><span>{c.fertilizante}</span></div>
-                <small>Germinação: {formatData(c.dataGerminacao)} | Colheita: {formatData(c.colheita)}</small>
-                <div className="fase" style={{color:fase.cor}}>{fase.icone} {fase.nome}</div>
-                <div className="progress"><div className="progress-bar" style={{width:`${progresso}%`,background:fase.cor}}></div></div>
-                <div className="recommend">
-                  <strong>💧 Recomendações ({c.fertilizante})</strong>
-                  {fertRecomendacoes[c.fertilizante].map((r,i)=>
-                    <div key={i}><b>{r.fase}</b> — {r.dias} dias<br/><small>{r.recomendacao} × {ajuste.toFixed(1)}x</small></div>
-                  )}
-                </div>
-                <div className="flex" style={{marginTop:"1rem"}}>
-                  <button onClick={()=>editar(c.id)}>✏️ Editar</button>
-                  <button onClick={()=>excluir(c.id)}>🗑️ Excluir</button>
-                </div>
+          <h2>🌱 Projetos</h2>
+          {projetos.map(p=>
+            <div key={p.id} className={`project ${projetoAtivo===p.id?'activeProject':''}`} onClick={()=>setProjetoAtivo(p.id)}>
+              <strong>{p.nome}</strong><br/>
+              <small>{p.cultivos.length} cultivos • criado em {p.dataCriacao}</small>
+              <div style={{marginTop:"6px"}}>
+                <button onClick={(e)=>{e.stopPropagation();renomearProjeto(p.id)}}>✏️</button>
+                <button onClick={(e)=>{e.stopPropagation();excluirProjeto(p.id)}}>🗑️</button>
               </div>
-            )
-          })}
+            </div>
+          )}
+          <button onClick={novoProjeto}>+ Novo Projeto</button>
+
+          {ativo && (
+            <div style={{marginTop:"2rem"}}>
+              <h2>🌿 Cultivos — {ativo.nome}</h2>
+              <div className="flex">
+                <select value={planta} onChange={e=>setPlanta(e.target.value)}>
+                  <option value="">Selecione planta</option>
+                  {plantas.map((p,i)=><option key={i}>{p}</option>)}
+                </select>
+                <input type="date" value={data} onChange={e=>setData(e.target.value)}/>
+                <select value={fert} onChange={e=>setFert(e.target.value)}>
+                  <option>BioBizz</option><option>Forth</option><option>Dimy</option>
+                </select>
+                <select value={litro} onChange={e=>setLitro(e.target.value)}>
+                  <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
+                </select>
+                <button onClick={addCultivo}>Adicionar</button>
+              </div>
+
+              {cultivos.length>0 && (
+                <>
+                  <h2>🌾 Cultivos Ativos</h2>
+                  {cultivos.map(c=>{
+                    const dias=diasDesde(c.dataGerminacao);
+                    const fase=getFase(dias);
+                    const progresso=Math.min((dias/60)*100,100);
+                    return(
+                      <div className="card" key={c.id}>
+                        <div className="flex"><strong>{c.planta}</strong><span>{c.fertilizante}</span></div>
+                        <small>Germinação: {formatData(c.dataGerminacao)} | Colheita: {formatData(c.colheita)}</small>
+                        <div className="fase" style={{color:fase.cor}}>{fase.icone} {fase.nome}</div>
+                        <div className="progress"><div className="progress-bar" style={{width:`${progresso}%`,background:fase.cor}}></div></div>
+                        <div className="recommend">
+                          <strong>💧 Recomendações ({c.fertilizante})</strong>
+                          {fertRecomendacoes[c.fertilizante].map((r,i)=>
+                            <div key={i}><b>{r.fase}</b> — {r.dias} dias<br/><small>{r.recomendacao}</small></div>
+                          )}
+                        </div>
+                        <div className="flex" style={{marginTop:"1rem"}}>
+                          <button onClick={()=>editarCultivo(c.id)}>✏️ Editar</button>
+                          <button onClick={()=>excluirCultivo(c.id)}>🗑️ Excluir</button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </div>
+          )}
           {toast&&<div className="toast">{toast}</div>}
         </div>
-      )
+      );
     }
 
-    function updateDashboard(){
-      const cultivos=JSON.parse(localStorage.getItem("cultivos")||"[]");
-      const ctx=document.getElementById("chart").getContext("2d");
+    /* --- Dashboard consolidado --- */
+    function updateDashboard(projetos){
+      const ctx=document.getElementById("chart")?.getContext("2d");
+      if(!ctx)return;
       ctx.clearRect(0,0,300,150);
       ctx.fillStyle="#00e676";
-      const total=cultivos.length;
+      const cultivos=projetos.flatMap(p=>p.cultivos);
       cultivos.forEach((c,i)=>{
-        const dias=Math.floor((new Date()-new Date(c.dataGerminacao))/(1000*60*60*24));
+        const dias=diasDesde(c.dataGerminacao);
         const pct=Math.min((dias/60)*100,100);
-        ctx.fillRect(30+i*50,150-(pct*1.3),30,pct*1.3);
+        ctx.fillRect(30+i*20,150-(pct*1.3),10,pct*1.3);
       });
-
+      const statsDiv=document.getElementById("stats");
+      statsDiv.innerHTML=`<p>🌿 Projetos: <b>${projetos.length}</b></p>
+                          <p>🌱 Cultivos: <b>${cultivos.length}</b></p>`;
       const tarefasDiv=document.getElementById("tarefasList");
       tarefasDiv.innerHTML="";
-      cultivos.forEach(c=>{
+      cultivos.slice(0,5).forEach(c=>{
         const div=document.createElement("div");
         div.className="task";
-        div.innerHTML=`<strong>🌿 ${c.planta}</strong><br/><small>Aplicar ${c.fertilizante} — ${formatData(c.colheita)}</small>`;
+        div.innerHTML=`<strong>${c.planta}</strong><br/><small>Colheita: ${formatData(c.colheita)}</small>`;
         tarefasDiv.appendChild(div);
       });
     }
