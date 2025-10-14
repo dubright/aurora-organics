@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aurora Organics 🌿</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,27 +14,27 @@
     body {
       margin: 0;
       font-family: "Inter", sans-serif;
-      background: radial-gradient(circle at top left, #0b0f0d, #0f1115 70%);
-      color: #E6E6E6;
+      color: #e6e6e6;
+      background: radial-gradient(circle at top left, #0b0f0d 0%, #0f1115 70%);
       display: flex;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Sidebar esquerda */
+    /* ==== SIDEBAR ESQUERDA ==== */
     .sidebar {
-      width: 220px;
+      width: 230px;
       background: #121518;
+      border-right: 1px solid #1e2228;
       padding: 1.5rem 1rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      border-right: 1px solid #1E2228;
+      justify-content: space-between;
     }
     .logo {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #00E676;
+      color: #00e676;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -43,102 +43,155 @@
       display: flex;
       flex-direction: column;
       gap: 0.8rem;
+      margin-top: 2rem;
     }
     .nav button {
       background: none;
-      color: #E6E6E6;
       border: none;
+      color: #cfcfcf;
       text-align: left;
+      font-size: 0.9rem;
       padding: 0.6rem 1rem;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
     }
     .nav button:hover,
     .nav button.active {
-      background: #00E67622;
-      color: #00E676;
+      background: #00e67622;
+      color: #00e676;
+    }
+    .sidebar-footer {
+      font-size: 0.75rem;
+      color: #707070;
+      text-align: center;
     }
 
-    /* Painel central */
+    /* ==== PAINEL CENTRAL ==== */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       padding: 1.5rem;
       overflow-y: auto;
-      gap: 1rem;
+      gap: 1.2rem;
     }
 
-    h2 { margin: 0.5rem 0; font-size: 1.1rem; color: #00E676; }
+    h2 {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      color: #00e676;
+    }
 
-    .card {
-      background: #171A1F;
+    .section {
+      background: #171a1f;
       border-radius: 12px;
-      padding: 1rem 1.5rem;
+      padding: 1.5rem;
       box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
-      transition: transform 0.3s ease;
     }
-    .card:hover { transform: scale(1.01); }
 
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
-    .flex { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    select, input, button {
+    select,
+    input,
+    button {
       border: none;
       border-radius: 8px;
       padding: 0.6rem 0.8rem;
       font-family: inherit;
+      font-size: 0.9rem;
+    }
+    select,
+    input {
+      background: #0f1215;
+      color: #e6e6e6;
+      border: 1px solid #1e2228;
     }
     button {
-      background: #00E676;
+      background: #00e676;
       color: #000;
       font-weight: 600;
       cursor: pointer;
       transition: 0.3s;
     }
-    button:hover { transform: scale(1.03); box-shadow: 0 0 8px #00E67655; }
-
-    /* Painel direito */
-    .right {
-      width: 280px;
-      background: #121518;
-      border-left: 1px solid #1E2228;
-      padding: 1.5rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px #00e67655;
     }
 
-    .small-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #00E676;
-      border-bottom: 1px solid #1E2228;
-      padding-bottom: 0.3rem;
+    /* ==== CARDS DE CULTIVO ==== */
+    .card {
+      background: #171a1f;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 12px rgba(0, 230, 118, 0.08);
     }
 
     .progress-bar {
       height: 6px;
-      background: #1E2228;
+      background: #1e2228;
       border-radius: 4px;
-      margin-top: 4px;
       overflow: hidden;
+      margin-top: 0.4rem;
     }
     .progress-inner {
       height: 100%;
       transition: width 0.5s;
-      background: linear-gradient(90deg, #00E676, #00C16A);
     }
 
     .mini {
       font-size: 0.85rem;
-      color: #A1A1A1;
+      color: #a1a1a1;
+      margin-top: 0.3rem;
     }
+
+    /* ==== PAINEL DIREITO ==== */
+    .right {
+      width: 320px;
+      background: #121518;
+      border-left: 1px solid #1e2228;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      overflow-y: auto;
+    }
+
+    .panel-card {
+      background: #171a1f;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 3px 10px rgba(0, 230, 118, 0.05);
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #00e676;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #1e2228;
+      padding-bottom: 0.3rem;
+    }
+
     .stat {
       display: flex;
       justify-content: space-between;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       margin-bottom: 4px;
     }
 
@@ -146,7 +199,7 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #00E676;
+      background: #00e676;
       color: #000;
       padding: 10px 20px;
       border-radius: 8px;
@@ -157,150 +210,343 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
   </style>
 </head>
 
 <body>
+  <!-- Sidebar -->
   <div class="sidebar">
-    <div class="logo">🌿 Aurora Organics</div>
-    <div class="nav">
-      <button class="active">Dashboard</button>
-      <button>Projetos</button>
-      <button>Tarefas</button>
-      <button>Insumos</button>
+    <div>
+      <div class="logo">🌿 Aurora Organics</div>
+      <div class="nav">
+        <button id="nav-dashboard" class="active">Dashboard</button>
+        <button id="nav-projetos">Projetos</button>
+        <button id="nav-tarefas">Tarefas</button>
+        <button id="nav-insumos">Insumos</button>
+      </div>
     </div>
+    <div class="sidebar-footer">v3 • MVP Aurora Organics</div>
   </div>
 
+  <!-- Painel principal -->
   <div class="main" id="root"></div>
 
+  <!-- Painel lateral direito -->
   <div class="right" id="side"></div>
-
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    const plantas = ["Tomate","Alface","Abobrinha","Cenoura","Morango","Rúcula"];
-    const ferts = ["BioBizz","Forth","Dimy"];
-    const fases = [
-      { nome:"Germinação", cor:"#00FF99", icone:"🌱", inicio:0, fim:7 },
-      { nome:"Crescimento", cor:"#00E676", icone:"🌿", inicio:8, fim:35 },
-      { nome:"Floração", cor:"#C084FC", icone:"🌸", inicio:36, fim:50 },
-      { nome:"Pré-colheita", cor:"#FCA311", icone:"🍅", inicio:51, fim:60 }
+    /* ===============================
+       CONFIGURAÇÕES E DADOS PADRÕES
+    ================================ */
+    const plantas = [
+      "Tomate","Alface","Abobrinha","Cenoura","Morango","Rúcula",
+      "Couve","Pepino","Beterraba","Espinafre","Pimentão","Cebola"
     ];
 
-    function getFase(dias){
-      return fases.find(f=>dias>=f.inicio && dias<=f.fim) || fases[0];
-    }
+    const fertilizantes = {
+      BioBizz: [
+        { fase: "Crescimento", dias: "0–20 dias", recomendacao: "Bio-Grow (2ml/L) + CalMag (1ml/L)" },
+        { fase: "Floração", dias: "21–40 dias", recomendacao: "Bio-Bloom (2ml/L) + Top-Max (1ml/L)" },
+        { fase: "Pré-colheita", dias: "41–60 dias", recomendacao: "Somente Alg-A-Mic (1ml/L)" }
+      ],
+      Forth: [
+        { fase: "Crescimento", dias: "0–20 dias", recomendacao: "Forth Enraizador (3ml/L) + Forth Cálcio (1ml/L)" },
+        { fase: "Floração", dias: "21–40 dias", recomendacao: "Forth Flores (2ml/L) + Forth Potássio (1ml/L)" },
+        { fase: "Pré-colheita", dias: "41–60 dias", recomendacao: "Suspender adubação 5 dias antes da colheita" }
+      ],
+      Dimy: [
+        { fase: "Crescimento", dias: "0–20 dias", recomendacao: "Dimy NPK 10-10-10 (2ml/L)" },
+        { fase: "Floração", dias: "21–40 dias", recomendacao: "Dimy NPK 4-14-8 (2ml/L)" },
+        { fase: "Pré-colheita", dias: "41–60 dias", recomendacao: "Dimy NPK 0-0-30 (1ml/L)" }
+      ]
+    };
 
-    function App(){
-      const [cultivos,setCultivos]=useState(JSON.parse(localStorage.getItem("cultivos")||"[]"));
-      const [planta,setPlanta]=useState("");
-      const [data,setData]=useState("");
-      const [fert,setFert]=useState("BioBizz");
-      const [local,setLocal]=useState("");
-      const [toast,setToast]=useState("");
+    const fases = [
+      { nome: "Germinação", icone: "🌱", cor: "#00ff99", inicio: 0, fim: 7 },
+      { nome: "Crescimento", icone: "🌿", cor: "#00E676", inicio: 8, fim: 35 },
+      { nome: "Floração", icone: "🌸", cor: "#C084FC", inicio: 36, fim: 50 },
+      { nome: "Pré-colheita", icone: "🍅", cor: "#FCA311", inicio: 51, fim: 60 }
+    ];
 
-      useEffect(()=>localStorage.setItem("cultivos",JSON.stringify(cultivos)),[cultivos]);
+    const formatarData = (data) => new Date(data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    const diasDesde = (d) => Math.floor((new Date() - new Date(d)) / (1000 * 60 * 60 * 24));
+    const getFase = (dias) => fases.find(f => dias >= f.inicio && dias <= f.fim) || fases[0];
 
-      function addCultivo(){
-        if(!planta||!data) return alert("Preencha todos os campos!");
-        const germ=new Date(data);
-        const colh=new Date(germ); colh.setDate(germ.getDate()+60);
-        const novo={id:Date.now(),planta,data,fert,local,criado:new Date().toLocaleDateString()};
-        setCultivos([...cultivos,novo]);
-        setPlanta("");setData("");setLocal("");
-        setToast("🌿 Cultivo adicionado com sucesso!");
-        setTimeout(()=>setToast(""),3000);
+
+    /* ===============================
+             COMPONENTE PRINCIPAL
+    ================================ */
+    function App() {
+      const [projetos, setProjetos] = useState(JSON.parse(localStorage.getItem("projetos") || "[]"));
+      const [ativo, setAtivo] = useState(null);
+      const [planta, setPlanta] = useState("");
+      const [data, setData] = useState("");
+      const [fert, setFert] = useState("BioBizz");
+      const [litro, setLitro] = useState("700ml");
+      const [toast, setToast] = useState("");
+
+      /* ====== SALVAR LOCAL ====== */
+      useEffect(() => localStorage.setItem("projetos", JSON.stringify(projetos)), [projetos]);
+
+      /* ====== ADICIONAR PROJETO ====== */
+      function novoProjeto() {
+        const nome = prompt("Nome do novo projeto:");
+        if (!nome) return;
+        const novo = {
+          id: Date.now(),
+          nome,
+          dataCriacao: new Date().toLocaleDateString(),
+          cultivos: []
+        };
+        setProjetos([...projetos, novo]);
+        setAtivo(novo.id);
       }
 
-      function excluir(id){setCultivos(cultivos.filter(c=>c.id!==id))}
-
-      function diasDesde(germ){
-        return Math.floor((new Date()-new Date(germ))/(1000*60*60*24));
+      /* ====== ADICIONAR CULTIVO ====== */
+      function addCultivo() {
+        if (!planta || !data) return alert("Preencha todos os campos!");
+        const germ = new Date(data);
+        const colh = new Date(germ); colh.setDate(germ.getDate() + 60);
+        const novo = {
+          id: Date.now(),
+          planta,
+          dataGerminacao: data,
+          colheita: colh.toISOString().split("T")[0],
+          fertilizante: fert,
+          litro,
+          historico: [],
+          criadoEm: new Date().toLocaleDateString()
+        };
+        const atual = projetos.map(p => p.id === ativo ? { ...p, cultivos: [...p.cultivos, novo] } : p);
+        setProjetos(atual);
+        setPlanta(""); setData("");
+        setToast("🌱 Cultivo adicionado com sucesso!");
+        setTimeout(() => setToast(""), 3000);
       }
 
-      return(
+      /* ====== EXCLUIR CULTIVO ====== */
+      function excluirCultivo(id) {
+        const atual = projetos.map(p => p.id === ativo ? { ...p, cultivos: p.cultivos.filter(c => c.id !== id) } : p);
+        setProjetos(atual);
+      }
+
+      /* ====== EDITAR CULTIVO ====== */
+      function editarCultivo(id) {
+        const atual = projetos.map(p => {
+          if (p.id !== ativo) return p;
+          return {
+            ...p,
+            cultivos: p.cultivos.map(c => {
+              if (c.id !== id) return c;
+              const novoFert = prompt("Novo fertilizante:", c.fertilizante);
+              const novaData = prompt("Nova data de germinação (aaaa-mm-dd):", c.dataGerminacao);
+              const novaLitro = prompt("Nova litragem (ex: 700ml, 5L):", c.litro);
+              return {
+                ...c,
+                fertilizante: novoFert || c.fertilizante,
+                dataGerminacao: novaData || c.dataGerminacao,
+                litro: novaLitro || c.litro
+              };
+            })
+          };
+        });
+        setProjetos(atual);
+      }
+
+      /* ====== REGISTRAR FERTILIZAÇÃO ====== */
+      function registrar(id, acao) {
+        const atual = projetos.map(p => {
+          if (p.id !== ativo) return p;
+          return {
+            ...p,
+            cultivos: p.cultivos.map(c =>
+              c.id === id
+                ? { ...c, historico: [...c.historico, { data: new Date().toLocaleDateString(), acao }] }
+                : c
+            )
+          };
+        });
+        setProjetos(atual);
+      }
+
+      const projetoAtivo = projetos.find(p => p.id === ativo);
+
+      return (
         <div>
-          <h2>🌾 Cadastro de Cultivos</h2>
-          <div className="flex">
-            <select value={planta} onChange={e=>setPlanta(e.target.value)}>
-              <option value="">Selecione a planta</option>
-              {plantas.map((p,i)=><option key={i}>{p}</option>)}
-            </select>
-            <input type="date" value={data} onChange={e=>setData(e.target.value)} />
-            <select value={fert} onChange={e=>setFert(e.target.value)}>
-              {ferts.map(f=><option key={f}>{f}</option>)}
-            </select>
-            <input placeholder="Litragem (ex: 5L)" value={local} onChange={e=>setLocal(e.target.value)} />
-            <button onClick={addCultivo}>Adicionar</button>
+          {/* HEADER DO PROJETO */}
+          <div className="flex-between">
+            <h2>🌿 {projetoAtivo ? projetoAtivo.nome : "Selecione ou crie um projeto"}</h2>
+            <button onClick={novoProjeto}>+ Novo Projeto</button>
           </div>
 
-          <h2>🌱 Cultivos Ativos</h2>
-          {cultivos.map(c=>{
-            const dias=diasDesde(c.data);
-            const fase=getFase(dias);
-            const progresso=Math.min((dias/60)*100,100);
-            return(
-              <div key={c.id} className="card">
-                <div className="flex-between">
-                  <strong>{c.planta}</strong>
-                  <span style={{color:fase.cor}}>{fase.icone} {fase.nome}</span>
-                </div>
-                <div className="mini">
-                  Germinação: {new Date(c.data).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})} |
-                  Colheita prevista: {new Date(new Date(c.data).setDate(new Date(c.data).getDate()+60)).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-inner" style={{width:`${progresso}%`,background:fase.cor}}></div>
-                </div>
-                <div className="mini">Fertilizante: {c.fert} | Vaso: {c.local||"-"}</div>
-                <button style={{marginTop:"0.5rem"}} onClick={()=>excluir(c.id)}>Excluir</button>
+          {/* SELETOR DE PROJETOS */}
+          {projetos.length > 0 && (
+            <div className="flex">
+              {projetos.map(p => (
+                <button
+                  key={p.id}
+                  className={p.id === ativo ? "active" : ""}
+                  style={{
+                    background: p.id === ativo ? "#00E676" : "#0f1215",
+                    color: p.id === ativo ? "#000" : "#E6E6E6"
+                  }}
+                  onClick={() => setAtivo(p.id)}
+                >
+                  {p.nome}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* FORMULÁRIO DE CULTIVO */}
+          {projetoAtivo && (
+            <div className="section">
+              <h2>🌱 Cadastro de Cultivo</h2>
+              <div className="flex">
+                <select value={planta} onChange={e => setPlanta(e.target.value)}>
+                  <option value="">Selecione a planta</option>
+                  {plantas.map((p, i) => <option key={i}>{p}</option>)}
+                </select>
+                <input type="date" value={data} onChange={e => setData(e.target.value)} />
+                <select value={fert} onChange={e => setFert(e.target.value)}>
+                  {Object.keys(fertilizantes).map(f => <option key={f}>{f}</option>)}
+                </select>
+                <select value={litro} onChange={e => setLitro(e.target.value)}>
+                  <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
+                </select>
+                <button onClick={addCultivo}>Adicionar</button>
               </div>
-            )
-          })}
+            </div>
+          )}
+
+          {/* LISTA DE CULTIVOS */}
+          {projetoAtivo && projetoAtivo.cultivos.length > 0 && (
+            <div>
+              <h2>🌾 Cultivos Ativos</h2>
+              {projetoAtivo.cultivos.map(c => {
+                const dias = diasDesde(c.dataGerminacao);
+                const fase = getFase(dias);
+                const progresso = Math.min((dias / 60) * 100, 100);
+                return (
+                  <div className="card" key={c.id}>
+                    <div className="flex-between">
+                      <strong>{c.planta}</strong>
+                      <span style={{ color: fase.cor }}>{fase.icone} {fase.nome}</span>
+                    </div>
+                    <div className="mini">
+                      Germinação: {formatarData(c.dataGerminacao)} • Colheita: {formatarData(c.colheita)}
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-inner" style={{ width: `${progresso}%`, background: fase.cor }}></div>
+                    </div>
+                    <div className="mini">
+                      Fertilizante: {c.fertilizante} | Vaso: {c.litro}
+                    </div>
+                    <div style={{ marginTop: "0.7rem" }}>
+                      <strong>💧 Recomendações</strong>
+                      {fertilizantes[c.fertilizante].map((r, i) => (
+                        <div key={i}><b>{r.fase}</b> — {r.dias}<br /><small>{r.recomendacao}</small></div>
+                      ))}
+                    </div>
+                    <div className="flex" style={{ marginTop: "0.6rem" }}>
+                      <button onClick={() => registrar(c.id, "Adubação aplicada")}>✅ Aplicar</button>
+                      <button onClick={() => editarCultivo(c.id)}>✏️ Editar</button>
+                      <button onClick={() => excluirCultivo(c.id)}>🗑️ Excluir</button>
+                    </div>
+                    {c.historico.length > 0 && (
+                      <div className="mini" style={{ marginTop: "0.5rem" }}>
+                        <strong>📜 Histórico:</strong>
+                        {c.historico.map((h, i) => <div key={i}>{h.data} — {h.acao}</div>)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {toast && <div className="toast">{toast}</div>}
         </div>
-      )
+      );
     }
+    /* ===============================
+              DASHBOARD LATERAL
+    ================================ */
+    function SidePanel({ projetos, ativo }) {
+      const projeto = projetos.find(p => p.id === ativo);
+      const cultivos = projeto ? projeto.cultivos : [];
+      const total = cultivos.length;
 
-    function SidePanel({ cultivos }){
-      const total=cultivos.length;
-      const progresso=Math.round(cultivos.reduce((a,c)=>{
-        const d=Math.min((new Date()-new Date(c.data))/(1000*60*60*24*60)*100,100);
-        return a+d;
-      },0)/(total||1));
+      const progressoMedio = total
+        ? Math.round(cultivos.reduce((acc, c) => {
+            const dias = Math.min((new Date() - new Date(c.dataGerminacao)) / (1000 * 60 * 60 * 24 * 60) * 100, 100);
+            return acc + dias;
+          }, 0) / total)
+        : 0;
 
-      return(
+      /* ======= PARÂMETROS AMBIENTAIS (simulados) ======= */
+      const temperatura = (22 + Math.random() * 6).toFixed(1);
+      const umidade = (55 + Math.random() * 25).toFixed(0);
+      const ph = (6 + Math.random() * 0.6).toFixed(1);
+      const luz = (85 + Math.random() * 10).toFixed(0);
+
+      /* ======= ECONOMIA ======= */
+      const custo = total * 5;
+      const producao = total * 1.5;
+      const lucro = producao * 10;
+      const rent = custo > 0 ? ((lucro - custo) / custo * 100).toFixed(1) : 0;
+
+      return (
         <div>
-          <div className="small-title">📊 Panorama Geral</div>
-          <div className="stat"><span>Projetos:</span><span>1</span></div>
-          <div className="stat"><span>Cultivos:</span><span>{total}</span></div>
-          <div className="progress-bar"><div className="progress-inner" style={{width:`${progresso}%`}}></div></div>
+          <div className="panel-card">
+            <div className="panel-title">📊 Produtividade</div>
+            <div className="stat"><span>Cultivos ativos</span><span>{total}</span></div>
+            <div className="stat"><span>Progresso médio</span><span>{progressoMedio}%</span></div>
+            <div className="progress-bar"><div className="progress-inner" style={{ width:`${progressoMedio}%` }}></div></div>
+          </div>
 
-          <div className="small-title" style={{marginTop:"1rem"}}>📈 Produtividade</div>
-          <div className="stat"><span>Progresso médio</span><span>{progresso}%</span></div>
-          <div className="progress-bar"><div className="progress-inner" style={{width:`${progresso}%`}}></div></div>
+          <div className="panel-card">
+            <div className="panel-title">🌡️ Parâmetros Ambientais</div>
+            <div className="stat"><span>Temperatura</span><span>{temperatura} °C</span></div>
+            <div className="stat"><span>Umidade</span><span>{umidade}%</span></div>
+            <div className="stat"><span>pH</span><span>{ph}</span></div>
+            <div className="stat"><span>Luminosidade</span><span>{luz}%</span></div>
+          </div>
 
-          <div className="small-title" style={{marginTop:"1rem"}}>💰 Painel Econômico</div>
-          <div className="stat"><span>Custo total</span><span>R$ {(total*5).toFixed(2)}</span></div>
-          <div className="stat"><span>Produção estimada</span><span>{(total*1.5).toFixed(1)} kg</span></div>
+          <div className="panel-card">
+            <div className="panel-title">💰 Painel Econômico</div>
+            <div className="stat"><span>Custo total</span><span>R$ {custo.toFixed(2)}</span></div>
+            <div className="stat"><span>Produção estimada</span><span>{producao.toFixed(1)} kg</span></div>
+            <div className="stat"><span>Lucro estimado</span><span>R$ {lucro.toFixed(2)}</span></div>
+            <div className="stat"><span>Rentabilidade</span><span>{rent}%</span></div>
+          </div>
         </div>
-      )
+      );
     }
 
-    const root=ReactDOM.createRoot(document.getElementById("root"));
-    const side=ReactDOM.createRoot(document.getElementById("side"));
-    function Render(){
-      const [data,setData]=React.useState(JSON.parse(localStorage.getItem("cultivos")||"[]"));
-      React.useEffect(()=>{
-        const listener=()=>setData(JSON.parse(localStorage.getItem("cultivos")||"[]"));
-        window.addEventListener("storage",listener);
-        return()=>window.removeEventListener("storage",listener);
-      },[]);
-      return <SidePanel cultivos={data}/>
+    /* ===============================
+               RENDER FINAL
+    ================================ */
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const side = ReactDOM.createRoot(document.getElementById("side"));
+
+    function Render() {
+      const [projetos, setProjetos] = React.useState(JSON.parse(localStorage.getItem("projetos") || "[]"));
+      const [ativo, setAtivo] = React.useState(projetos.length ? projetos[0].id : null);
+
+      /* sincroniza painel lateral */
+      useEffect(() => {
+        const listener = () => setProjetos(JSON.parse(localStorage.getItem("projetos") || "[]"));
+        window.addEventListener("storage", listener);
+        return () => window.removeEventListener("storage", listener);
+      }, []);
+
+      return <SidePanel projetos={projetos} ativo={ativo} />;
     }
-    root.render(<App/>);
-    side.render(<Render/>);
+
+    root.render(<App />);
+    side.render(<Render />);
   </script>
 </body>
 </html>
