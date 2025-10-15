@@ -215,165 +215,170 @@
     <div class="content" id="root"></div>
     <div class="sidebar-right" id="sidePanel"></div>
   </main>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-    const plantas = ["Abóbora","Abobrinha","Alface","Cenoura","Couve","Tomate","Morango","Uva","Laranja","Limão"];
-    const fertilizantes = ["BioBizz","Forth","Dimy"];
+const plantas = ["Abóbora","Abobrinha","Alface","Cenoura","Couve","Tomate","Morango","Uva","Laranja","Limão"];
+const fertilizantes = ["BioBizz","Forth","Dimy"];
 
-    const duracaoCultivo = {
-      "Alface": 60, "Cenoura": 90, "Tomate": 120, "Couve": 100, "Morango": 80,
-      "Abóbora": 100, "Abobrinha": 90, "Uva": 150, "Laranja": 200, "Limão": 200
-    };
+const duracaoCultivo = {
+  "Alface": 60, "Cenoura": 90, "Tomate": 120, "Couve": 100, "Morango": 80,
+  "Abóbora": 100, "Abobrinha": 90, "Uva": 150, "Laranja": 200, "Limão": 200
+};
 
-    const litragemIdeal = {
-      "700ml": 0.5,
-      "5L": 1.5,
-      "10L": 2.5,
-      "15L": 3.5
-    };
+const litragemIdeal = {
+  "700ml": 0.5,
+  "5L": 1.5,
+  "10L": 2.5,
+  "15L": 3.5
+};
 
-    const getFase = dias => {
-      if (dias < 10) return { nome: "Germinação", icone: "🌱", cor: "#00ff99" };
-      if (dias < 40) return { nome: "Crescimento", icone: "🌿", cor: "#00e676" };
-      if (dias < 70) return { nome: "Floração", icone: "🌸", cor: "#c084fc" };
-      return { nome: "Pré-colheita", icone: "🍅", cor: "#fca311" };
-    };
+const getFase = dias => {
+  if (dias < 10) return { nome: "Germinação", icone: "🌱", cor: "#00ff99" };
+  if (dias < 40) return { nome: "Crescimento", icone: "🌿", cor: "#00e676" };
+  if (dias < 70) return { nome: "Floração", icone: "🌸", cor: "#c084fc" };
+  return { nome: "Pré-colheita", icone: "🍅", cor: "#fca311" };
+};
 
-    const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"short" });
+const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"short" });
 
-    function App({ page }) {
-      const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projects") || "[]"));
-      const [selectedProject, setSelectedProject] = useState(null);
-      const [toast, setToast] = useState("");
+function App() {
+  const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projects") || "[]"));
+  const [page, setPage] = useState("dashboard");
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [toast, setToast] = useState("");
+  const [nome, setNome] = useState("");
 
-      useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
+  useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
 
-      const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
+  const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      const addProject = nome => {
-        if (!nome.trim()) return alert("Informe um nome para o projeto.");
-        const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], tarefas: [], historico: [] };
-        setProjects([...projects, novo]);
-        showToast("🌿 Projeto criado!");
-      };
+  const addProject = () => {
+    if (!nome.trim()) return alert("Informe um nome para o projeto.");
+    const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], historico: [] };
+    setProjects([...projects, novo]);
+    setNome("");
+    showToast("🌿 Projeto criado!");
+  };
 
-      const addCultivo = (projId, form) => {
-        const diasTotais = duracaoCultivo[form.planta] || 60;
-        const projeto = projects.find(p => p.id === projId);
+  const addCultivo = (projId, form) => {
+    const diasTotais = duracaoCultivo[form.planta] || 60;
+    const projeto = projects.find(p => p.id === projId);
 
-        const tarefasGeradas = [];
-        const dataInicial = new Date(form.data);
+    const tarefasGeradas = [];
+    const dataInicial = new Date(form.data);
+    for (let i = 0; i < diasTotais; i += 5) {
+      const dataTarefa = new Date(dataInicial.getTime() + i * 86400000);
+      tarefasGeradas.push({
+        data: dataTarefa.toISOString(),
+        tipo: i % 10 === 0 ? "fertilizante" : "água",
+        status: "pendente",
+        qtdLitros: litragemIdeal[form.litragem] || 1
+      });
+    }
 
-        for (let i = 0; i < diasTotais; i += 5) {
-          const dataTarefa = new Date(dataInicial.getTime() + i * 86400000);
-          tarefasGeradas.push({
-            data: dataTarefa.toISOString(),
-            tipo: i % 10 === 0 ? "fertilizante" : "água",
-            status: "pendente",
-            qtdLitros: litragemIdeal[form.litragem] || 1
-          });
-        }
+    const novoCultivo = { ...form, id: Date.now(), tarefas: tarefasGeradas };
+    const atualizado = projects.map(p =>
+      p.id === projId
+        ? { ...p, cultivos: [...p.cultivos, novoCultivo], historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: `🌱 Novo cultivo de ${form.planta}` }] }
+        : p
+    );
+    setProjects(atualizado);
+    showToast("🌱 Cultivo adicionado com tarefas automáticas!");
+  };
+  function Dashboard() {
+    const [selectedId, setSelectedId] = useState(selectedProject ? selectedProject.id : "");
+    const projeto = projects.find(p => p.id === Number(selectedId));
 
-        const novoCultivo = { ...form, id: Date.now(), tarefas: tarefasGeradas, historico: [] };
-        const atualizado = projects.map(p =>
-          p.id === projId
-            ? { ...p, cultivos: [...p.cultivos, novoCultivo], historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: `🌱 Novo cultivo de ${form.planta}` }] }
-            : p
-        );
-        setProjects(atualizado);
-        showToast("🌱 Cultivo adicionado com tarefas automáticas!");
-      };
-      function Dashboard({ projects, selectedProject, setSelectedProject }) {
-        const allCultivos = selectedProject ? selectedProject.cultivos : projects.flatMap(p => p.cultivos);
-        const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
-        const totalTarefas = allCultivos.flatMap(c => c.tarefas || []).length;
-        const pendentes = allCultivos.flatMap(c => c.tarefas || []).filter(t => t.status === "pendente");
-        const concluidas = totalTarefas - pendentes.length;
-        const eficiencia = totalTarefas ? ((concluidas / totalTarefas) * 100).toFixed(1) : 0;
-        const produtividade = totalQ * 1.8;
-        const lucro = produtividade * 9.5;
-        const custo = totalQ * 5;
-        const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
+    const allCultivos = projeto ? projeto.cultivos : [];
+    const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
+    const totalTarefas = allCultivos.flatMap(c => c.tarefas || []).length;
+    const pendentes = allCultivos.flatMap(c => c.tarefas || []).filter(t => t.status === "pendente");
+    const concluidas = totalTarefas - pendentes.length;
+    const eficiencia = totalTarefas ? ((concluidas / totalTarefas) * 100).toFixed(1) : 0;
+    const produtividade = totalQ * 1.8;
+    const lucro = produtividade * 9.5;
+    const custo = totalQ * 5;
 
-        const [selectedId, setSelectedId] = useState(selectedProject ? selectedProject.id : "");
-        const hoje = new Date();
-        const projeto = projects.find(p => p.id === Number(selectedId)) || selectedProject;
-        const proximasTarefas = projeto
-          ? projeto.cultivos.flatMap(c => c.tarefas || [])
-              .filter(t => {
-                const d = new Date(t.data);
-                const diff = (d - hoje) / 86400000;
-                return diff >= 0 && diff <= 5;
-              })
-          : [];
+    const hoje = new Date();
+    const proximasTarefas = projeto
+      ? projeto.cultivos.flatMap(c => c.tarefas || [])
+          .filter(t => {
+            const d = new Date(t.data);
+            const diff = (d - hoje) / 86400000;
+            return diff >= 0 && diff <= 5;
+          })
+      : [];
 
-        return (
+    return (
+      <>
+        <h2>📊 Dashboard Imersivo</h2>
+
+        <div className="form-group">
+          <select value={selectedId} onChange={e=>{
+            const proj = projects.find(p=>p.id===Number(e.target.value));
+            setSelectedProject(proj);
+            setSelectedId(e.target.value);
+          }}>
+            <option value="">Selecione um projeto</option>
+            {projects.map(p=><option key={p.id} value={p.id}>{p.nome}</option>)}
+          </select>
+        </div>
+
+        {projeto ? (
           <>
-            <h2>📊 Dashboard Imersivo</h2>
-            <div className="form-group">
-              <select value={selectedId} onChange={e=>{
-                const proj = projects.find(p=>p.id===Number(e.target.value));
-                setSelectedProject(proj);
-                setSelectedId(e.target.value);
-              }}>
-                <option value="">Selecione um projeto</option>
-                {projects.map(p=><option key={p.id} value={p.id}>{p.nome}</option>)}
-              </select>
-            </div>
-
             <div className="dashboard-cards">
-              <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{allCultivos.length}</p></div>
-              <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
+              <div className="card"><h3>🌿 Cultivos</h3><p>{allCultivos.length}</p></div>
+              <div className="card"><h3>📦 Quantidade</h3><p>{totalQ}</p></div>
               <div className="card"><h3>💧 Eficiência</h3><p>{eficiencia}%</p></div>
-              <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
+              <div className="card"><h3>💰 Lucro</h3><p>R$ {lucro.toFixed(2)}</p></div>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
-              <div className="card">
-                <h3>📅 Próximas Tarefas (5 dias)</h3>
-                {proximasTarefas.length>0
-                  ? proximasTarefas.map((t,i)=>
-                      <div key={i} style={{color:t.tipo==="fertilizante"?"#fca311":"#00e676"}}>
-                        {new Date(t.data).toLocaleDateString("pt-BR")} — 💧 {t.tipo} — {t.qtdLitros}L
-                      </div>
-                    )
-                  : <div style={{opacity:0.7}}>Nenhuma tarefa nos próximos dias</div>}
-              </div>
-              <div className="card">
-                <h3>⚠️ Alertas</h3>
-                {eficiencia < 50
-                  ? <div style={{color:"#f44336"}}>🚨 Eficiência baixa</div>
-                  : eficiencia < 80
-                  ? <div style={{color:"#ffb300"}}>⚠️ Há tarefas atrasadas</div>
-                  : <div style={{color:"#00e676"}}>✅ Cultivo sob controle</div>}
-              </div>
+            <div className="card">
+              <h3>📅 Próximas Tarefas (5 dias)</h3>
+              {proximasTarefas.length>0
+                ? proximasTarefas.map((t,i)=>
+                    <div key={i} style={{color:t.tipo==="fertilizante"?"#fca311":"#00e676"}}>
+                      {new Date(t.data).toLocaleDateString("pt-BR")} — 💧 {t.tipo} — {t.qtdLitros}L
+                    </div>
+                  )
+                : <div style={{opacity:0.7}}>Nenhuma tarefa nos próximos dias</div>}
             </div>
           </>
-        );
-      }
+        ) : (
+          <div style={{opacity:0.6}}>Selecione um projeto para visualizar o painel</div>
+        )}
+      </>
+    );
+  }
 
-      // === RENDERIZAÇÃO FINAL ===
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      let currentPage = "dashboard";
+  return (
+    <div style={{padding:"2rem"}}>
+      <nav style={{marginBottom:"2rem"}}>
+        <button className={`nav-btn ${page==="dashboard"?"active":""}`} onClick={()=>setPage("dashboard")}>Dashboard</button>
+        <button className={`nav-btn ${page==="projects"?"active":""}`} onClick={()=>setPage("projects")}>Projetos</button>
+      </nav>
 
-      function renderApp() {
-        root.render(
-          currentPage === "dashboard"
-            ? <Dashboard projects={JSON.parse(localStorage.getItem("projects")||"[]")} selectedProject={null} setSelectedProject={()=>{}} />
-            : <div style={{color:"#00e676",padding:"2rem"}}>Em construção...</div>
-        );
-      }
+      {page==="dashboard" ? <Dashboard/> : (
+        <>
+          <h2>🌿 Projetos</h2>
+          <div className="form-group">
+            <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
+            <button className="action" onClick={addProject}>+ Novo Projeto</button>
+          </div>
+          {projects.map(p=>(
+            <div key={p.id} className="card">
+              <strong>{p.nome}</strong>
+              <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+            </div>
+          ))}
+        </>
+      )}
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
 
-      renderApp();
-      document.querySelectorAll(".nav-btn").forEach(btn=>{
-        btn.onclick=()=>{
-          document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-          btn.classList.add("active");
-          currentPage=btn.getAttribute("data-page");
-          renderApp();
-        };
-      });
-  </script>
-</body>
-</html>
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
