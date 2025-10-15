@@ -1,4 +1,4 @@
-          <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -62,10 +62,10 @@
       overflow-y: auto;
     }
     .sidebar-right {
-      width: 280px;
+      width: 300px;
       background: #121417;
       border-left: 1px solid #1d1f23;
-      padding: 1rem;
+      padding: 1.2rem;
       overflow-y: auto;
     }
     h2 { color: #00e676; margin-top: 0; }
@@ -171,6 +171,25 @@
     }
     .btn-icon:hover { transform: scale(1.05); }
     .small { color: #a1a1a1; font-size: 0.85rem; }
+
+    /* === PAINEL LATERAL DO DASHBOARD === */
+    .panel-block {
+      margin-bottom: 1rem;
+      background: #171a1f;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+    }
+    .panel-block h4 {
+      color: #00e676;
+      margin: 0 0 0.4rem;
+    }
+    .panel-item {
+      background: #1b1f25;
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -244,7 +263,7 @@
         showToast("🌱 Cultivo adicionado!");
       };
 
-      /* === DASHBOARD COM SELETOR DE PROJETO === */
+      /* === DASHBOARD COM PAINEL LATERAL DINÂMICO === */
       function Dashboard() {
         const [selectedProjId, setSelectedProjId] = useState("");
         const projetoSelecionado = projects.find(p => p.id == selectedProjId);
@@ -256,6 +275,28 @@
         const lucro = producao * 10;
         const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
 
+        // === Tarefas & Alertas automáticos ===
+        const hoje = new Date();
+        const tarefasPendentes = [];
+        const alertas = [];
+
+        cultivos.forEach(c => {
+          const dias = Math.floor((hoje - new Date(c.data)) / (1000*60*60*24));
+          const fase = getFase(dias);
+          const diasRestantes = 60 - dias;
+          if (diasRestantes <= 5 && diasRestantes > 0)
+            alertas.push(`⚠️ ${c.planta} — Colheita em ${diasRestantes} dias`);
+          if (dias > 60)
+            alertas.push(`🚨 ${c.planta} — Atrasado, revisar colheita`);
+          if (fase.nome === "Crescimento" && dias % 7 === 0)
+            tarefasPendentes.push(`🧪 Fertilizar ${c.planta}`);
+          if (fase.nome === "Floração" && dias % 5 === 0)
+            tarefasPendentes.push(`💧 Reforçar irrigação de ${c.planta}`);
+        });
+
+        const historicoRecentes = projetoSelecionado?.historico.slice(-5).reverse() || [];
+
+        // === Renderização principal do Dashboard ===
         return (
           <>
             <div className="form-group">
@@ -296,49 +337,45 @@
                     <div className="small">Nenhum cultivo ativo neste projeto.</div>
                   )}
                 </div>
+
+                {/* === Painel lateral direito dinâmico === */}
+                {ReactDOM.createPortal(
+                  <div>
+                    <div className="panel-block">
+                      <h4>🧾 Tarefas Pendentes</h4>
+                      {tarefasPendentes.length > 0
+                        ? tarefasPendentes.map((t,i)=><div key={i} className="panel-item">{t}</div>)
+                        : <div className="small">Nenhuma tarefa imediata</div>}
+                    </div>
+                    <div className="panel-block">
+                      <h4>⚠️ Alertas</h4>
+                      {alertas.length > 0
+                        ? alertas.map((a,i)=><div key={i} className="panel-item">{a}</div>)
+                        : <div className="small">Sem alertas no momento</div>}
+                    </div>
+                    <div className="panel-block">
+                      <h4>🕓 Histórico Recente</h4>
+                      {historicoRecentes.length > 0
+                        ? historicoRecentes.map((h,i)=><div key={i} className="panel-item">{h.data} — {h.acao}</div>)
+                        : <div className="small">Sem histórico recente</div>}
+                    </div>
+                  </div>,
+                  document.getElementById("sidePanel")
+                )}
               </>
             ) : (
               <div style={{opacity:0.7,marginTop:"2rem"}}>
-                <p>Selecione um projeto para visualizar as métricas e previsões.</p>
+                <p>Selecione um projeto para visualizar métricas, tarefas e previsões.</p>
               </div>
             )}
           </>
         );
       }
-
-      /* === COMPONENTE PROJETOS === */
+      /* === ABA DE PROJETOS === */
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
-        const [expanded, setExpanded] = useState(null);
-
         const projetoAtual = projects.find(p => p.id === expanded);
-
-        const deleteCultivo = (projId, cultId) => {
-          setProjects(projects.map(p =>
-            p.id === projId
-              ? {
-                  ...p,
-                  cultivos: p.cultivos.filter(c => c.id !== cultId),
-                  historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: "🗑️ Cultivo removido" }]
-                }
-              : p
-          ));
-        };
-
-        const registrar = (projId, cultId, acao) => {
-          setProjects(projects.map(p =>
-            p.id === projId
-              ? {
-                  ...p,
-                  cultivos: p.cultivos.map(c => c.id === cultId
-                    ? { ...c, historico: [...c.historico, { data: new Date().toLocaleDateString(), acao }] }
-                    : c),
-                  historico: [...p.historico, { data: new Date().toLocaleDateString(), acao }]
-                }
-              : p
-          ));
-        };
 
         return (
           <>
@@ -360,8 +397,10 @@
                     <button className="btn-icon" onClick={e=>{e.stopPropagation(); deleteProject(p.id);}}>🗑️</button>
                   </div>
                 </div>
+
                 {expanded===p.id && (
                   <div style={{marginTop:"1rem"}}>
+                    {/* FORMULÁRIO DE CULTIVO */}
                     <div className="form-group">
                       <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
                         <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
@@ -382,6 +421,7 @@
                       }}>Adicionar</button>
                     </div>
 
+                    {/* CULTIVOS ATIVOS */}
                     {p.cultivos.map(c=>{
                       const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
                       const fase=getFase(dias);
@@ -395,10 +435,10 @@
                           <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
                           <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
                           <div className="form-group">
-                            <button className="action" onClick={()=>registrar(p.id,c.id,"✅ Adubação realizada")}>Aplicar</button>
-                            <button className="action" onClick={()=>deleteCultivo(p.id,c.id)}>Excluir</button>
+                            <button className="action" onClick={()=>showToast(`✅ ${c.planta} adubado!`)}>Aplicar</button>
+                            <button className="action" onClick={()=>setProjects(projects.map(pr=>pr.id===p.id?{...pr,cultivos:pr.cultivos.filter(x=>x.id!==c.id)}:pr))}>Excluir</button>
                           </div>
-                          {c.historico.length>0&&(
+                          {c.historico?.length>0&&(
                             <div className="small">
                               <strong>📜 Histórico:</strong>
                               {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
@@ -412,6 +452,7 @@
               </div>
             ))}
 
+            {/* MODAL DE EDIÇÃO */}
             {editProj&&(
               <div className="modal-bg" onClick={()=>setEditProj(null)}>
                 <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -428,7 +469,7 @@
         );
       }
 
-      /* === RETORNO FINAL DO APP (CORRIGIDO) === */
+      /* === RETORNO FINAL DO APP === */
       return (
         <div>
           {page === "dashboard" ? <Dashboard /> : <Projetos />}
