@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+          <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -306,11 +306,12 @@
         );
       }
 
-      /* === COMPONENTE PROJETOS (MANTIDO INTACTO) === */
+      /* === COMPONENTE PROJETOS === */
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
         const [expanded, setExpanded] = useState(null);
+
         const projetoAtual = projects.find(p => p.id === expanded);
 
         const deleteCultivo = (projId, cultId) => {
@@ -427,26 +428,35 @@
         );
       }
 
-      /* === APLICAÇÃO PRINCIPAL === */
-      let currentPage = "dashboard";
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      const side = document.getElementById("sidePanel");
+      /* === RETORNO FINAL DO APP (CORRIGIDO) === */
+      return (
+        <div>
+          {page === "dashboard" ? <Dashboard /> : <Projetos />}
+          {toast && <div className="toast">{toast}</div>}
+        </div>
+      );
+    }
 
-      function renderApp() {
-        if (currentPage === "dashboard") side.innerHTML = "";
-        root.render(<App key={currentPage} page={currentPage} />);
-      }
+    /* === APLICAÇÃO PRINCIPAL === */
+    let currentPage = "dashboard";
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const side = document.getElementById("sidePanel");
 
-      renderApp();
+    function renderApp() {
+      if (currentPage === "dashboard") side.innerHTML = "";
+      root.render(<App key={currentPage} page={currentPage} />);
+    }
 
-      document.querySelectorAll(".nav-btn").forEach(btn=>{
-        btn.onclick=()=>{
-          document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-          btn.classList.add("active");
-          currentPage=btn.getAttribute("data-page");
-          renderApp();
-        };
-      });
-    </script>
-  </body>
+    renderApp();
+
+    document.querySelectorAll(".nav-btn").forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        currentPage=btn.getAttribute("data-page");
+        renderApp();
+      };
+    });
+  </script>
+</body>
 </html>
