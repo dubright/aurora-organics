@@ -500,7 +500,29 @@
 }
 
 // Renderiza a primeira vez
+// 🔧 Correção: não usar root.unmount()
+function renderApp() {
+  // Limpa o painel lateral ANTES de renderizar
+  if (currentPage === "dashboard") {
+    side.innerHTML = "";
+  }
+  // Renderiza o componente normalmente
+  root.render(<App page={currentPage} />);
+}
+
+// Renderiza a primeira vez
 renderApp();
+
+// Lida com a troca entre abas
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentPage = btn.getAttribute("data-page");
+    renderApp();
+  };
+});
+
 
 // Lida com a troca entre abas
 document.querySelectorAll(".nav-btn").forEach(btn=>{
