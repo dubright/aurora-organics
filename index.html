@@ -491,20 +491,27 @@
     const side = document.getElementById("sidePanel");
 
     function renderApp() {
-      root.render(<App page={currentPage} />);
-      if (currentPage === "dashboard") side.innerHTML = "";
-    }
+  // Limpa o painel lateral ANTES de renderizar
+  if (currentPage === "dashboard") {
+    side.innerHTML = "";
+  }
+  root.unmount?.(); // desmonta o componente anterior
+  root.render(<App page={currentPage} />);
+}
 
+// Renderiza a primeira vez
+renderApp();
+
+// Lida com a troca entre abas
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentPage = btn.getAttribute("data-page");
     renderApp();
+  };
+});
 
-    document.querySelectorAll(".nav-btn").forEach(btn=>{
-      btn.onclick=()=>{
-        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        currentPage = btn.getAttribute("data-page");
-        renderApp();
-      };
-    });
   </script>
 </body>
 </html>
