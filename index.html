@@ -227,7 +227,6 @@
 
   <!-- === SCRIPT PRINCIPAL REACT === -->
   <script type="text/babel">
-    /* === CONFIGURAÇÕES GERAIS === */
     const { useState, useEffect } = React;
 
     const plantas = ["Abóbora","Abobrinha","Acelga","Agrião","Alface","Batata","Berinjela","Beterraba","Brócolis","Cenoura","Coentro","Couve","Espinafre","Pimentão","Rabanete","Repolho","Rúcula","Tomate","Uva","Morango","Manga","Laranja","Limão","Abacaxi"];
@@ -247,13 +246,13 @@
       const [toast, setToast] = useState("");
       const [editProj, setEditProj] = useState(null);
       const [newName, setNewName] = useState("");
-      const [expanded, setExpanded] = useState(null); // projeto aberto
+      const [expanded, setExpanded] = useState(null);
 
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
 
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      /* === AÇÕES DE PROJETOS === */
+      /* === PROJETOS === */
       const addProject = nome => {
         if (!nome.trim()) return alert("Informe um nome para o projeto.");
         const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], historico: [] };
@@ -342,14 +341,13 @@
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
-
         const projetoAtual = projects.find(p => p.id === expanded);
 
         return (
           <>
             <h2>🌿 Projetos</h2>
             <div className="form-group">
-              <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
+              <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)} />
               <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
             </div>
 
@@ -366,10 +364,9 @@
                   </div>
                 </div>
 
-                {/* EXPANDIDO */}
                 {expanded===p.id && (
                   <div style={{marginTop:"1rem"}}>
-                    {/* FORMULÁRIO DE CULTIVO */}
+                    {/* FORMULÁRIO CULTIVO */}
                     <div className="form-group">
                       <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
                         <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
@@ -383,19 +380,19 @@
                       </select>
                       <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
                       <button className="action" onClick={()=>{
-                        if(!form.planta || !form.data) return alert("Preencha todos os campos!");
-                        addCultivo(p.id, form);
-                        setForm({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+                        if(!form.planta||!form.data) return alert("Preencha todos os campos!");
+                        addCultivo(p.id,form);
+                        setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});
                         setExpanded(p.id);
                       }}>Adicionar</button>
                     </div>
 
-                    {/* LISTA DE CULTIVOS */}
+                    {/* CULTIVOS ATIVOS */}
                     {p.cultivos.map(c=>{
-                      const dias = Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
-                      const fase = getFase(dias);
-                      const prog = Math.min((dias/60)*100,100);
-                      return (
+                      const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                      const fase=getFase(dias);
+                      const prog=Math.min((dias/60)*100,100);
+                      return(
                         <div key={c.id} className="card">
                           <div style={{display:"flex",justifyContent:"space-between"}}>
                             <strong>{c.planta}</strong><span>{c.fertilizante}</span>
@@ -407,7 +404,7 @@
                             <button className="action" onClick={()=>registrar(p.id,c.id,"✅ Adubação realizada")}>Aplicar</button>
                             <button className="action" onClick={()=>deleteCultivo(p.id,c.id)}>Excluir</button>
                           </div>
-                          {c.historico.length>0 && (
+                          {c.historico.length>0&&(
                             <div className="small">
                               <strong>📜 Histórico:</strong>
                               {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
@@ -422,7 +419,7 @@
             ))}
 
             {/* MODAL DE EDIÇÃO */}
-            {editProj && (
+            {editProj&&(
               <div className="modal-bg" onClick={()=>setEditProj(null)}>
                 <div className="modal" onClick={e=>e.stopPropagation()}>
                   <h3>Editar Projeto</h3>
@@ -447,27 +444,22 @@
                     </div>
                     <div className="tasks">
                       <h4>🧾 Tarefas</h4>
-                      {projetoAtual.cultivos.length>0 ? projetoAtual.cultivos.map((c,i)=>{
-                        const colheita = formatDate(new Date(new Date(c.data).getTime() + (60*24*60*60*1000)));
-                        return (
-                          <div key={i} className="task-item">
-                            <strong>{c.planta}</strong><br/>
-                            Colheita: {colheita}
-                          </div>
-                        );
-                      }) : <div className="small">Nenhuma tarefa</div>}
+                      {projetoAtual.cultivos.length>0
+                        ? projetoAtual.cultivos.map((c,i)=>{
+                            const colheita=formatDate(new Date(new Date(c.data).getTime()+(60*24*60*60*1000)));
+                            return(<div key={i} className="task-item"><strong>{c.planta}</strong><br/>Colheita: {colheita}</div>);
+                          })
+                        : <div className="small">Nenhuma tarefa</div>}
                     </div>
                     <div className="history">
                       <h4>🕓 Histórico do Projeto</h4>
-                      {projetoAtual.historico.length>0 ? projetoAtual.historico.slice(-10).reverse().map((h,i)=>(
-                        <div key={i} className="history-item">
-                          {h.data} — {h.acao}
-                        </div>
-                      )) : <div className="small">Nenhuma ação registrada</div>}
+                      {projetoAtual.historico.length>0
+                        ? projetoAtual.historico.slice(-10).reverse().map((h,i)=>(<div key={i} className="history-item">{h.data} — {h.acao}</div>))
+                        : <div className="small">Nenhuma ação registrada</div>}
                     </div>
                   </>
                 ) : (
-                  <div className="small" style={{opacity:0.7, marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>
+                  <div className="small" style={{opacity:0.7,marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>
                 )}
               </div>,
               document.getElementById("sidePanel")
@@ -476,64 +468,34 @@
         );
       }
 
-      /* === RENDERIZAÇÃO === */
       return (
         <div>
           {page==="dashboard"?<Dashboard/>:<Projetos/>}
-          {toast && <div className="toast">{toast}</div>}
+          {toast&&<div className="toast">{toast}</div>}
         </div>
       );
     }
 
     /* === APLICAÇÃO PRINCIPAL === */
-    let currentPage = "dashboard";
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    const side = document.getElementById("sidePanel");
+    let currentPage="dashboard";
+    const root=ReactDOM.createRoot(document.getElementById("root"));
+    const side=document.getElementById("sidePanel");
 
-    function renderApp() {
-  // Limpa o painel lateral ANTES de renderizar
-  if (currentPage === "dashboard") {
-    side.innerHTML = "";
-  }
-  root.unmount?.(); // desmonta o componente anterior
-  root.render(<App page={currentPage} />);
-}
+    function renderApp(){
+      if(currentPage==="dashboard"){ side.innerHTML=""; }
+      root.render(<App page={currentPage}/>);
+    }
 
-// Renderiza a primeira vez
-// 🔧 Correção: não usar root.unmount()
-function renderApp() {
-  // Limpa o painel lateral ANTES de renderizar
-  if (currentPage === "dashboard") {
-    side.innerHTML = "";
-  }
-  // Renderiza o componente normalmente
-  root.render(<App page={currentPage} />);
-}
-
-// Renderiza a primeira vez
-renderApp();
-
-// Lida com a troca entre abas
-document.querySelectorAll(".nav-btn").forEach(btn=>{
-  btn.onclick = () => {
-    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    currentPage = btn.getAttribute("data-page");
     renderApp();
-  };
-});
 
-
-// Lida com a troca entre abas
-document.querySelectorAll(".nav-btn").forEach(btn=>{
-  btn.onclick = () => {
-    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    currentPage = btn.getAttribute("data-page");
-    renderApp();
-  };
-});
-
+    document.querySelectorAll(".nav-btn").forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        currentPage=btn.getAttribute("data-page");
+        renderApp();
+      };
+    });
   </script>
 </body>
 </html>
