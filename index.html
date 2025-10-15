@@ -1,1 +1,472 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Aurora Organics 🌿</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Inter",sans-serif;background:linear-gradient(180deg,#0c0f11 0%,#0f1115 100%);color:#e6e6e6;height:100vh;display:flex;overflow:hidden}aside{width:250px;background:linear-gradient(180deg,#111315 0%,#0c0f11 100%);border-right:1px solid #1c1f22;padding:1.5rem;display:flex;flex-direction:column;gap:.6rem;box-shadow:inset -1px 0 10px rgba(0,230,118,.05)}aside h1{font-size:1.3rem;color:#00e676;display:flex;align-items:center;gap:8px;text-shadow:0 0 6px rgba(0,230,118,.6);margin-bottom:1rem}.nav-btn{background:none;border:none;color:#e6e6e6;font-size:1rem;text-align:left;padding:10px;border-radius:8px;cursor:pointer;transition:.3s}.nav-btn.active,.nav-btn:hover{background:rgba(0,230,118,.08);color:#00e676;font-weight:600}main{flex:1;display:flex;overflow:hidden}.content{flex:1;padding:2rem;overflow-y:auto;background:radial-gradient(circle at top left,rgba(0,230,118,.08),transparent 60%)}h2{color:#00e676;font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1rem;text-shadow:0 0 6px rgba(0,230,118,.5)}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}.metric-card{background:#121417;border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:1rem;text-align:left;box-shadow:0 0 20px rgba(0,230,118,.03)}.metric-card h3{color:#e6e6e6;font-size:1rem;margin-bottom:.4rem}.metric-value{color:#00e676;font-weight:700;font-size:1.1rem;text-shadow:0 0 8px rgba(0,230,118,.6)}.card{background:rgba(23,26,31,.95);border-radius:12px;padding:1rem;margin-bottom:1rem;box-shadow:0 2px 10px rgba(0,230,118,.05)}.action{background:#00e676;color:#000;font-weight:600;cursor:pointer;border:none;border-radius:8px;padding:8px 12px;transition:.3s}.action:hover{transform:scale(1.05)}input,select{border:none;border-radius:8px;padding:8px 10px;font-family:inherit;background:#1b1e22;color:#e6e6e6}::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#00e67633;border-radius:8px}::-webkit-scrollbar-thumb:hover{background:#00e67666}</style></head><body><aside><h1>🌿 Aurora</h1><button class="nav-btn active" data-page="dashboard">Dashboard</button><button class="nav-btn" data-page="projects">Projetos</button><button class="nav-btn" data-page="monitoramento">Monitoramento Manual</button><button class="nav-btn" data-page="planejamento">Planejamento</button><button class="nav-btn" data-page="economico">Painel Econômico</button><button class="nav-btn" data-page="estoque">Estoque</button><button class="nav-btn" data-page="clima">Clima</button><button class="nav-btn" data-page="relatorios">Relatórios</button><button class="nav-btn" data-page="configuracoes">Configurações</button></aside><main><div class="content" id="root"></div></main><script type="text/babel">const{useState,useEffect}=React;function Toast({message,type}){if(!message)return null;const c={success:"#00e676",error:"#ff5252",info:"#00b0ff",warning:"#ffca28"};return <div style={{position:"fixed",bottom:"20px",right:"20px",background:c[type]||"#00e676",color:"#000",padding:"10px 16px",borderRadius:"8px",fontWeight:600,boxShadow:"0 4px 10px rgba(0,0,0,0.2)",zIndex:999}}>{message}</div>}function Dashboard({projetos}){const a=projetos.flatMap(b=>b.cultivos||[]),c=projetos.length,d=a.length,e=a.flatMap(f=>f.tarefas||[]).filter(f=>!f.concluida).length,g=d?(d*8).toFixed(1):0;return <div><h2>📈 Dashboard</h2><div className="dashboard-grid"><div className="metric-card"><h3>🌿 Projetos Ativos</h3><div className="metric-value">{c}</div></div><div className="metric-card"><h3>🌱 Cultivos Ativos</h3><div className="metric-value">{d}</div></div><div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{e}</div></div><div className="metric-card"><h3>💰 Rentabilidade Estimada</h3><div className="metric-value">{g}%</div></div></div></div>}function Projetos({projetos,setProjetos,showToast}){const[a,b]=useState(""),[c,d]=useState({planta:"",data:"",litragem:"",quantidade:1}),[e,f]=useState(null);function g(){if(!a.trim())return showToast("Informe um nome de projeto.","warning");const h={id:Date.now(),nome:a,dataCriacao:new Date().toLocaleDateString(),cultivos:[]};setProjetos([...projetos,h]);b("");showToast("🌿 Projeto criado com sucesso!","success")}function i(h){confirm("Excluir este projeto?")&&(setProjetos(projetos.filter(k=>k.id!==h)),showToast("🗑️ Projeto removido.","info"))}function j(h){if(!c.planta||!c.data)return showToast("Preencha todos os campos.","warning");const k={id:Date.now(),planta:c.planta,data:c.data,litragem:c.litragem,quantidade:c.quantidade,tarefas:[],monitoramento:[]},l=projetos.map(m=>m.id===h?{...m,cultivos:[...m.cultivos,k]}:m);setProjetos(l);showToast("🌱 Cultivo adicionado!","success")}return <div><h2>🌾 Projetos</h2><div style={{display:"flex",gap:"10px",marginBottom:"1rem"}}><input placeholder="Nome do Projeto" value={a} onChange={h=>b(h.target.value)}/><button className="action" onClick={g}>+ Novo Projeto</button></div>{projetos.map(h=><div key={h.id} className="card"><div style={{display:"flex",justifyContent:"space-between"}}><strong>{h.nome}</strong><div style={{display:"flex",gap:"8px"}}><button className="action" onClick={()=>f(e===h.id?null:h.id)}>{e===h.id?"Fechar":"Abrir"}</button><button className="action" onClick={()=>i(h.id)}>Excluir</button></div></div>{e===h.id&&<div style={{marginTop:"1rem"}}><div style={{display:"flex",gap:"8px",marginBottom:"1rem"}}><input placeholder="Planta" value={c.planta} onChange={k=>d({...c,planta:k.target.value})}/><input type="date" value={c.data} onChange={k=>d({...c,data:k.target.value})}/><input placeholder="Litragem" value={c.litragem} onChange={k=>d({...c,litragem:k.target.value})}/><input type="number" min="1" value={c.quantidade} onChange={k=>d({...c,quantidade:k.target.value})}/><button className="action" onClick={()=>j(h.id)}>Adicionar</button></div>{0===h.cultivos.length&&<div style={{opacity:.7}}>Nenhum cultivo ainda.</div>}{h.cultivos.map(k=><div key={k.id} className="card" style={{marginBottom:"1rem"}}><div><strong>{k.planta}</strong> • {k.data}</div><div style={{fontSize:".9rem",opacity:.8}}>Litragem: {k.litragem} • Quantidade: {k.quantidade}</div></div>)}</div>}</div>)}</div>}function MonitoramentoManual({projetos,setProjetos,showToast}){const[a,b]=useState({projetoId:"",cultivoId:"",temp_ar:"",umid_ar:"",umid_solo:"",ph:"",luminosidade:""});function c(){if(!a.projetoId||!a.cultivoId)return showToast("Selecione um projeto e cultivo.","warning");const e=projetos.map(f=>f.id===parseInt(a.projetoId)?{...f,cultivos:f.cultivos.map(g=>g.id===parseInt(a.cultivoId)?{...g,monitoramento:[...(g.monitoramento||[]),{...a,data:new Date().toLocaleString()}]}:g)}:f);setProjetos(e);showToast("📊 Dados registrados!","success")}function d(){const e=projetos.find(f=>f.id===parseInt(a.projetoId))?.cultivos.find(f=>f.id===parseInt(a.cultivoId));if(!e||!e.monitoramento.length)return[];const f=e.monitoramento[e.monitoramento.length-1],g=[];f.umid_solo<40&&g.push("💧 Umidade do solo muito baixa!");f.ph&&(f.ph<5.5||f.ph>7.5)&&g.push("⚗️ pH fora da faixa ideal!");f.temp_ar>32&&g.push("🌡️ Temperatura alta — risco de estresse térmico!");return g}const e=d();return <div><h2>🌡️ Monitoramento Manual</h2><div style={{display:"grid",gap:"10px",maxWidth:"500px"}}><select value={a.projetoId} onChange={f=>b({...a,projetoId:f.target.value,cultivoId:""})}><option value="">Selecione o Projeto</option>{projetos.map(f=><option key={f.id} value={f.id}>{f.nome}</option>)}</select>{a.projetoId&&<select value={a.cultivoId} onChange={f=>b({...a,cultivoId:f.target.value})}><option value="">Selecione o Cultivo</option>{projetos.find(f=>f.id===parseInt(a.projetoId))?.cultivos.map(f=><option key={f.id} value={f.id}>{f.planta}</option>)}</select>}{["temp_ar","umid_ar","umid_solo","luminosidade","ph"].map(f=><input key={f} placeholder={f.replace("_"," ").toUpperCase()} type="number" value={a[f]} onChange={g=>b({...a,[f]:g.target.value})}/>) }<button className="action" onClick={c}>Registrar Leitura</button></div>{e.length>0&&<div style={{marginTop:"1rem"}}><h3 style={{color:"#ffca28"}}>⚠️ Alertas:</h3>{e.map((f,g)=><div key={g} style={{background:"#1a1c1f",padding:"6px",borderRadius:"6px",marginTop:"4px"}}>{f}</div>)}</div>}</div>}function App({page}){const[a,b]=useState(()=>JSON.parse(localStorage.getItem("auroraProjetos")||"[]")),[c,d]=useState({message:"",type:""});function e(f,g="info"){d({message:f,type:g});setTimeout(()=>d({message:"",type:""}),2200)}useEffect(()=>{localStorage.setItem("auroraProjetos",JSON.stringify(a))},[a]);return <div>{"dashboard"===page&&<Dashboard projetos={a}/>,"projects"===page&&<Projetos projetos={a} setProjetos={b} showToast={e}/>,"monitoramento"===page&&<MonitoramentoManual projetos={a} setProjetos={b} showToast={e}/> ,["planejamento","economico","estoque","clima","relatorios","configuracoes"].includes(page)&&<div><h2>🔧 {page.charAt(0).toUpperCase()+page.slice(1)}</h2><p style={{opacity:.7}}>Em breve disponível.</p></div>}<Toast message={c.message} type={c.type}/></div>}let currentPage="dashboard";const root=ReactDOM.createRoot(document.getElementById("root"));function renderApp(){root.render(<App key={currentPage} page={currentPage}/>)}renderApp();document.querySelectorAll(".nav-btn").forEach(a=>{a.onclick=()=>{document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));a.classList.add("active");currentPage=a.getAttribute("data-page");renderApp()}});</script></body></html>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Aurora Organics 🌿</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Inter",sans-serif;background:#0c0f11;color:#e6e6e6;height:100vh;display:flex;overflow:hidden}aside{width:250px;min-width:230px;background:linear-gradient(180deg,#111315 0%,#0c0f11 100%);border-right:1px solid #1c1f22;padding:1.2rem;display:flex;flex-direction:column;gap:.6rem;box-shadow:inset -1px 0 10px rgba(0,230,118,.05);transition:transform .3s ease-in-out}aside h1{font-size:1.3rem;color:#00e676;display:flex;align-items:center;gap:8px;text-shadow:0 0 6px rgba(0,230,118,.6);margin-bottom:1rem}.menu-toggle{display:none;position:absolute;top:1rem;left:1rem;background:none;border:none;color:#00e676;font-size:1.6rem;cursor:pointer;z-index:1001}@media(max-width:768px){aside{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);z-index:1000}aside.open{transform:translateX(0)}.menu-toggle{display:block}}.nav-btn{background:none;border:none;color:#e6e6e6;font-size:1rem;text-align:left;padding:10px;border-radius:8px;cursor:pointer;transition:.3s}.nav-btn.active,.nav-btn:hover{background:rgba(0,230,118,.08);color:#00e676;font-weight:600}main{flex:1;display:flex;overflow:hidden;position:relative}.content{flex:1;padding:2rem;overflow-y:auto;background:radial-gradient(circle at top left,rgba(0,230,118,.08),transparent 60%)}h2{color:#00e676;font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1rem;text-shadow:0 0 6px rgba(0,230,118,.5)}.card{background:rgba(23,26,31,.95);border-radius:12px;padding:1rem;margin-bottom:1rem;box-shadow:0 2px 10px rgba(0,230,118,.05)}.action{background:#00e676;color:#000;font-weight:600;cursor:pointer;border:none;border-radius:8px;padding:8px 12px;transition:.3s}.action:hover{transform:scale(1.05)}input,select{border:none;border-radius:8px;padding:8px 10px;font-family:inherit;background:#1b1e22;color:#e6e6e6;width:100%}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}.metric-card{background:#121417;border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:1rem;text-align:left;box-shadow:0 0 20px rgba(0,230,118,.03)}.metric-card h3{color:#e6e6e6;font-size:1rem;margin-bottom:.4rem}.metric-value{color:#00e676;font-weight:700;font-size:1.1rem;text-shadow:0 0 8px rgba(0,230,118,.6)}::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#00e67633;border-radius:8px}::-webkit-scrollbar-thumb:hover{background:#00e67666}</style></head><body><button class="menu-toggle" id="menuToggle">☰</button><aside id="sidebar"><h1>🌿 Aurora</h1><button class="nav-btn active" data-page="dashboard">Dashboard</button><button class="nav-btn" data-page="projects">Projetos</button><button class="nav-btn" data-page="monitoramento">Monitoramento</button><button class="nav-btn" data-page="planejamento">Planejamento</button><button class="nav-btn" data-page="economico">Painel Econômico</button><button class="nav-btn" data-page="estoque">Estoque</button><button class="nav-btn" data-page="clima">Clima</button><button class="nav-btn" data-page="relatorios">Relatórios</button><button class="nav-btn" data-page="configuracoes">Configurações</button></aside><main><div class="content" id="root"></div></main>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* === COMPONENTE DE ALERTA === */
+function Toast({ message, type }) {
+  if (!message) return null;
+  const colors = {
+    success: "#00e676",
+    error: "#ff5252",
+    info: "#00b0ff",
+    warning: "#ffca28",
+  };
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        background: colors[type] || "#00e676",
+        color: "#000",
+        padding: "10px 16px",
+        borderRadius: "8px",
+        fontWeight: 600,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        zIndex: 999,
+      }}
+    >
+      {message}
+    </div>
+  );
+}
+
+/* === DASHBOARD === */
+function Dashboard({ projects }) {
+  const cultivos = projects.flatMap((p) => p.cultivos || []);
+  const totalProjetos = projects.length;
+  const totalCultivos = cultivos.length;
+  const tarefasPendentes = cultivos.flatMap((c) => c.tarefas || []).filter((t) => !t.concluida).length;
+  const rentabilidade = totalCultivos ? (totalCultivos * 8).toFixed(1) : 0;
+
+  return (
+    <div>
+      <h2>📈 Dashboard</h2>
+      <div className="dashboard-grid">
+        <div className="metric-card"><h3>🌿 Projetos Ativos</h3><div className="metric-value">{totalProjetos}</div></div>
+        <div className="metric-card"><h3>🌱 Cultivos Ativos</h3><div className="metric-value">{totalCultivos}</div></div>
+        <div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{tarefasPendentes}</div></div>
+        <div className="metric-card"><h3>💰 Rentabilidade Estimada</h3><div className="metric-value">{rentabilidade}%</div></div>
+      </div>
+    </div>
+  );
+}
+
+/* === INPUT DE CAMPO DE DESENVOLVIMENTO === */
+function InputCampo({ projetoId, cultivoId, campo, label, icone, unidade, valorInicial, onCommit, savedFields }) {
+  const [valor, setValor] = useState(valorInicial || "");
+  useEffect(() => { setValor(valorInicial || ""); }, [valorInicial]);
+
+  return (
+    <div style={{
+      background:"#181a1d",border:"1px solid rgba(0,230,118,.15)",borderRadius:"10px",
+      padding:"10px 12px",display:"flex",flexDirection:"column"
+    }}>
+      <label style={{color:"#00e676",fontWeight:600,fontSize:".9rem",marginBottom:"4px"}}>
+        {icone} {label}
+      </label>
+      <div style={{
+        display:"flex",alignItems:"center",background:"#1c1f22",borderRadius:"8px",
+        overflow:"hidden",border:"1px solid rgba(0,230,118,.15)",position:"relative"
+      }}>
+        <input type="number" min="0" value={valor}
+          onChange={(e)=>setValor(e.target.value)}
+          onBlur={()=>valor!==valorInicial&&onCommit(projetoId,cultivoId,campo,valor)}
+          style={{flex:1,padding:"8px 10px",background:"transparent",color:"#e6e6e6",
+                  border:"none",fontSize:"1rem",outline:"none"}}
+        />
+        <span style={{
+          background:"#151718",padding:"8px 10px",color:"#00e676",
+          fontWeight:600,borderLeft:"1px solid rgba(0,230,118,.15)"
+        }}>{unidade}</span>
+        {savedFields[`${projetoId}-${cultivoId}-${campo}`] &&
+          <span style={{position:"absolute",right:"35px",color:"#00e676"}}>✅</span>}
+      </div>
+    </div>
+  );
+}
+
+/* === FUNÇÃO PRINCIPAL DE PROJETOS === */
+function Projetos({ projects, setProjects, showToast }) {
+  const [novoProjeto, setNovoProjeto] = useState("");
+  const [novoCultivo, setNovoCultivo] = useState({ planta:"", data:"", litragem:"700ml", quantidade:1 });
+  const [expandido, setExpandido] = useState(null);
+  const [savedFields, setSavedFields] = useState({});
+
+  useEffect(()=>{localStorage.setItem("projectsAurora",JSON.stringify(projects))},[projects]);
+
+  const plantas=["Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿","Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"];
+  const fases=[{nome:"Germinação",icone:"🌱",dias:[0,7]},{nome:"Crescimento",icone:"🌿",dias:[8,35]},{nome:"Floração",icone:"🌸",dias:[36,50]},{nome:"Pré-colheita",icone:"🍅",dias:[51,60]}];
+  const formatDate=d=>new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+  const getFase=dias=>fases.find(f=>dias>=f.dias[0]&&dias<=f.dias[1])||fases[0];
+  const calcularDosagem=l=>{
+    const ml=parseFloat(l);if(isNaN(ml))return"100ml";
+    if(ml<=700)return"100ml";if(ml<=2000)return"250ml";if(ml<=5000)return"400ml";
+    if(ml<=10000)return"600ml";return"1L"
+  };
+
+  const addProject = (nome) => {
+    if(!nome.trim()) return alert("Informe um nome para o projeto.");
+    const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [] };
+    setProjects([...projects, novo]);
+    showToast("🌿 Projeto criado!");
+    setNovoProjeto("");
+  };
+
+  const deleteProject = (id) => {
+    if(confirm("Excluir este projeto?")) {
+      setProjects(projects.filter(p=>p.id!==id));
+      if(expandido===id) setExpandido(null);
+      showToast("🗑️ Projeto removido.");
+    }
+  };
+
+  const addCultivo = (projetoId, c) => {
+    const dataBase=new Date(c.data), tarefas=[];
+    for(let i=0;i<60;i+=3){
+      const f=new Date(dataBase);f.setDate(f.getDate()+i);
+      const tipo=i%15===0&&i!==0?"fertilizante":"água";
+      tarefas.push({tipo,data:f.toISOString(),dosagem:calcularDosagem(c.litragem),concluida:false});
+    }
+    const cultivo={id:Date.now(),planta:c.planta,data:c.data,litragem:c.litragem,
+      quantidade:c.quantidade,tarefas,altura:0,folhas:0,produtividade:0,custo:0};
+    setProjects(projects.map(p=>p.id===projetoId?{...p,cultivos:[...p.cultivos,cultivo]}:p));
+    showToast("🌱 Cultivo adicionado!");
+  };
+  const concluirTarefa = (projetoId, cultivoId, index) => {
+    setProjects(projects.map(p =>
+      p.id === projetoId
+        ? { ...p, cultivos: p.cultivos.map(c =>
+            c.id === cultivoId
+              ? { ...c, tarefas: c.tarefas.map((t, i) =>
+                  i === index ? { ...t, concluida: true } : t
+                )}
+              : c
+          )}
+        : p
+    ));
+    showToast("✅ Tarefa concluída!");
+  };
+
+  const commitEdit = (projetoId, cultivoId, campo, valor) => {
+    if (valor !== undefined) {
+      setProjects(projects.map(p =>
+        p.id === projetoId
+          ? { ...p, cultivos: p.cultivos.map(c =>
+              c.id === cultivoId ? { ...c, [campo]: valor } : c
+            )}
+          : p
+      ));
+      setSavedFields({ [`${projetoId}-${cultivoId}-${campo}`]: true });
+      const audio = new Audio("https://cdn.jsdelivr.net/gh/adam-nascimento/audio-feedbacks@main/drop-water.mp3");
+      audio.volume = 0.35;
+      audio.play();
+      setTimeout(() => setSavedFields({}), 1200);
+    }
+  };
+
+  return (
+    <div>
+      <h2>🌾 Projetos</h2>
+
+      <div style={{ display:"flex", gap:"10px", marginBottom:"1rem" }}>
+        <input placeholder="Nome do Projeto" value={novoProjeto}
+          onChange={(e)=>setNovoProjeto(e.target.value)} />
+        <button className="action" onClick={()=>addProject(novoProjeto)}>+ Novo Projeto</button>
+      </div>
+
+      {projects.map(p => (
+        <div key={p.id} className="card">
+          <div style={{ display:"flex", justifyContent:"space-between" }}>
+            <div>
+              <strong>{p.nome}</strong>
+              <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+            </div>
+            <div style={{ display:"flex", gap:"8px" }}>
+              <button className="action" onClick={()=>setExpandido(expandido===p.id?null:p.id)}>
+                {expandido===p.id?"Fechar":"Abrir"}
+              </button>
+              <button className="action" onClick={()=>deleteProject(p.id)}>Excluir</button>
+            </div>
+          </div>
+
+          {expandido===p.id && (
+            <div style={{ marginTop:"1rem" }}>
+              <div style={{ display:"flex", gap:"8px", marginBottom:"1rem", flexWrap:"wrap" }}>
+                <select value={novoCultivo.planta}
+                  onChange={e=>setNovoCultivo({...novoCultivo,planta:e.target.value})}>
+                  <option value="">Planta</option>
+                  {plantas.map(planta=>(
+                    <option key={planta} value={planta}>{planta}</option>
+                  ))}
+                </select>
+                <input type="date" value={novoCultivo.data}
+                  onChange={e=>setNovoCultivo({...novoCultivo,data:e.target.value})} />
+                <select value={novoCultivo.litragem}
+                  onChange={e=>setNovoCultivo({...novoCultivo,litragem:e.target.value})}>
+                  <option>700ml</option><option>2L</option><option>5L</option><option>10L</option><option>15L</option>
+                </select>
+                <input type="number" min="1" value={novoCultivo.quantidade}
+                  onChange={e=>setNovoCultivo({...novoCultivo,quantidade:e.target.value})} />
+                <button className="action" onClick={()=>addCultivo(p.id,novoCultivo)}>Adicionar</button>
+              </div>
+
+              {p.cultivos.map(c=>{
+                const dias = Math.floor((new Date() - new Date(c.data)) / 86400000);
+                const fase = getFase(dias);
+                const tarefasPendentes = c.tarefas.filter(t=>!t.concluida);
+                const proximas = tarefasPendentes.filter(t=>{
+                  const diff = Math.floor((new Date(t.data)-new Date())/86400000);
+                  return diff<=5 && diff>=0;
+                });
+
+                return (
+                  <div key={c.id} className="card">
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <strong>{c.planta}</strong>
+                      <span>{fase.icone} {fase.nome}</span>
+                    </div>
+                    <div className="small">
+                      Germinação: {formatDate(c.data)} • Litragem: {c.litragem} • Qtd: {c.quantidade}
+                    </div>
+                    <div className="progress" style={{
+                      height:"8px",background:"#1f2329",borderRadius:"4px",
+                      overflow:"hidden",marginTop:"6px"
+                    }}>
+                      <div className="progress-bar" style={{
+                        height:"100%",background:"linear-gradient(90deg,#00e676,#00b050)",
+                        boxShadow:"0 0 8px rgba(0,230,118,.5)",width:`${dias/60*100}%`,
+                        transition:"width .6s ease"
+                      }}/>
+                    </div>
+
+                    {proximas.length>0 && (
+                      <div className="alert" style={{
+                        background:"rgba(255,51,51,.1)",border:"1px solid rgba(255,51,51,.3)",
+                        borderLeft:"4px solid #ff5252",color:"#ff7b7b",padding:"10px",
+                        borderRadius:"6px",fontSize:".9rem",marginTop:"10px"
+                      }}>
+                        ⚠️ Tarefas próximas ({proximas.length}):
+                        {proximas.map((t,i)=>(
+                          <div key={i}>• Rega com {t.tipo} – {t.dosagem} — {formatDate(t.data)}</div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="section-title" style={{
+                      color:"#00e676",fontWeight:700,margin:"1rem 0 .5rem 0",
+                      display:"flex",alignItems:"center",gap:"6px"
+                    }}>🌱 Desenvolvimento</div>
+
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"14px"}}>
+                      {[{label:"Altura",campo:"altura",unidade:"cm",icone:"📏"},
+                        {label:"Folhas",campo:"folhas",unidade:"unid.",icone:"🌿"},
+                        {label:"Produtividade",campo:"produtividade",unidade:"g",icone:"🍅"},
+                        {label:"Custo",campo:"custo",unidade:"R$",icone:"💰"}]
+                        .map(f=>
+                          <InputCampo key={f.campo} projetoId={p.id} cultivoId={c.id}
+                            campo={f.campo} label={f.label} icone={f.icone}
+                            unidade={f.unidade} valorInicial={c[f.campo]}
+                            onCommit={commitEdit} savedFields={savedFields}/>
+                      )}
+                    </div>
+
+                    <div style={{marginTop:"10px"}}>
+                      <strong>📋 Tarefas a Executar</strong>
+                      {tarefasPendentes.length===0 && <div className="small">Tudo concluído!</div>}
+                      {tarefasPendentes.slice(0,5).map((t,i)=>(
+                        <div key={i} style={{
+                          display:"flex",justifyContent:"space-between",alignItems:"center",
+                          background:"#1b1e22",padding:"6px 10px",borderRadius:"6px",marginTop:"5px"
+                        }}>
+                          <span>{formatDate(t.data)} — 💧 {t.tipo} ({t.dosagem})</span>
+                          <button className="action" style={{padding:"4px 8px",fontSize:".8rem"}}
+                            onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+/* === MONITORAMENTO MANUAL === */
+function MonitoramentoManual({ projects, setProjects, showToast }) {
+  const [entrada, setEntrada] = useState({
+    projetoId: "", cultivoId: "",
+    temp_ar: "", umid_ar: "", umid_solo: "", ph: "", luminosidade: ""
+  });
+
+  function registrarLeitura() {
+    if (!entrada.projetoId || !entrada.cultivoId)
+      return showToast("Selecione um projeto e cultivo.", "warning");
+
+    const atualizados = projects.map(p =>
+      p.id === parseInt(entrada.projetoId)
+        ? {
+            ...p,
+            cultivos: p.cultivos.map(c =>
+              c.id === parseInt(entrada.cultivoId)
+                ? {
+                    ...c,
+                    monitoramento: [
+                      ...(c.monitoramento || []),
+                      { ...entrada, data: new Date().toLocaleString() }
+                    ]
+                  }
+                : c
+            )
+          }
+        : p
+    );
+    setProjects(atualizados);
+    showToast("📊 Dados registrados!", "success");
+  }
+
+  function gerarAlertas() {
+    const cultivo = projects
+      .find(p => p.id === parseInt(entrada.projetoId))
+      ?.cultivos.find(c => c.id === parseInt(entrada.cultivoId));
+    if (!cultivo || !cultivo.monitoramento.length) return [];
+    const ultima = cultivo.monitoramento[cultivo.monitoramento.length - 1];
+    const alertas = [];
+    if (ultima.umid_solo < 40) alertas.push("💧 Umidade do solo muito baixa!");
+    if (ultima.ph && (ultima.ph < 5.5 || ultima.ph > 7.5)) alertas.push("⚗️ pH fora da faixa ideal!");
+    if (ultima.temp_ar > 32) alertas.push("🌡️ Temperatura alta — risco de estresse térmico!");
+    return alertas;
+  }
+
+  const alertas = gerarAlertas();
+
+  return (
+    <div>
+      <h2>🌡️ Monitoramento Manual</h2>
+      <div style={{ display: "grid", gap: "10px", maxWidth: "500px" }}>
+        <select value={entrada.projetoId}
+          onChange={e=>setEntrada({...entrada, projetoId:e.target.value, cultivoId:""})}>
+          <option value="">Selecione o Projeto</option>
+          {projects.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+        </select>
+
+        {entrada.projetoId && (
+          <select value={entrada.cultivoId}
+            onChange={e=>setEntrada({...entrada, cultivoId:e.target.value})}>
+            <option value="">Selecione o Cultivo</option>
+            {projects.find(p=>p.id===parseInt(entrada.projetoId))?.cultivos.map(c=>
+              <option key={c.id} value={c.id}>{c.planta}</option>
+            )}
+          </select>
+        )}
+
+        {["temp_ar","umid_ar","umid_solo","luminosidade","ph"].map(campo=>(
+          <input key={campo} placeholder={campo.replace("_"," ").toUpperCase()} type="number"
+            value={entrada[campo]} onChange={e=>setEntrada({...entrada,[campo]:e.target.value})}/>
+        ))}
+        <button className="action" onClick={registrarLeitura}>Registrar Leitura</button>
+      </div>
+
+      {alertas.length > 0 && (
+        <div style={{ marginTop:"1rem" }}>
+          <h3 style={{ color:"#ffca28" }}>⚠️ Alertas:</h3>
+          {alertas.map((a,i)=>(
+            <div key={i} style={{
+              background:"#1a1c1f",padding:"6px",borderRadius:"6px",
+              marginTop:"4px",color:"#ffca28"
+            }}>{a}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* === OUTRAS ABAS (PLACEHOLDERS FUNCIONAIS) === */
+function Planejamento() {
+  return <div><h2>🗓️ Planejamento</h2><p>Visualize tarefas futuras dos cultivos. (em desenvolvimento)</p></div>;
+}
+function Economico() {
+  return <div><h2>💰 Painel Econômico</h2><p>Acompanhe custos e produtividade dos cultivos. (em desenvolvimento)</p></div>;
+}
+function Estoque() {
+  return <div><h2>📦 Estoque</h2><p>Gerencie insumos e fertilizantes. (em desenvolvimento)</p></div>;
+}
+function Clima() {
+  return <div><h2>☀️ Clima</h2><p>Previsão e recomendações automáticas. (em desenvolvimento)</p></div>;
+}
+function Relatorios() {
+  return <div><h2>📄 Relatórios</h2><p>Resumo de produtividade, custos e alertas. (em desenvolvimento)</p></div>;
+}
+function Configuracoes({ setProjects, showToast }) {
+  const limparDados = () => {
+    if(confirm("Tem certeza que deseja apagar todos os dados?")) {
+      localStorage.removeItem("projectsAurora");
+      setProjects([]);
+      showToast("🧹 Dados limpos.", "info");
+    }
+  };
+  return (
+    <div>
+      <h2>⚙️ Configurações</h2>
+      <button className="action" onClick={limparDados}>Limpar Dados</button>
+      <p style={{ marginTop:"1rem", opacity:0.6 }}>Versão Aurora Organics v1.0 🌿</p>
+    </div>
+  );
+}
+
+/* === APP PRINCIPAL === */
+function App({ page }) {
+  const [projects, setProjects] = useState(() => JSON.parse(localStorage.getItem("projectsAurora") || "[]"));
+  const [toast, setToast] = useState({ message:"", type:"" });
+
+  function showToast(message, type="info") {
+    setToast({ message, type });
+    setTimeout(()=>setToast({ message:"", type:"" }), 2200);
+  }
+
+  useEffect(() => {
+    localStorage.setItem("projectsAurora", JSON.stringify(projects));
+  }, [projects]);
+
+  return (
+    <div>
+      {page === "dashboard" && <Dashboard projects={projects} />}
+      {page === "projects" && <Projetos projects={projects} setProjects={setProjects} showToast={showToast} />}
+      {page === "monitoramento" && <MonitoramentoManual projects={projects} setProjects={setProjects} showToast={showToast} />}
+      {page === "planejamento" && <Planejamento />}
+      {page === "economico" && <Economico />}
+      {page === "estoque" && <Estoque />}
+      {page === "clima" && <Clima />}
+      {page === "relatorios" && <Relatorios />}
+      {page === "configuracoes" && <Configuracoes setProjects={setProjects} showToast={showToast} />}
+      <Toast message={toast.message} type={toast.type} />
+    </div>
+  );
+}
+
+/* === NAVEGAÇÃO E INICIALIZAÇÃO === */
+let currentPage = "dashboard";
+const root = ReactDOM.createRoot(document.getElementById("root"));
+function renderApp() {
+  root.render(<App key={currentPage} page={currentPage} />);
+}
+renderApp();
+
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentPage = btn.getAttribute("data-page");
+    renderApp();
+    const sidebar=document.getElementById("sidebar");
+    if(sidebar.classList.contains("open")) sidebar.classList.remove("open");
+  };
+});
+document.getElementById("menuToggle").onclick=()=>{
+  document.getElementById("sidebar").classList.toggle("open");
+};
+</script></body></html>
