@@ -51,8 +51,20 @@
     }
     main {
       flex: 1;
+      display: flex;
       background: #0f1115;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
       padding: 2rem;
+      overflow-y: auto;
+    }
+    .sidebar-right {
+      width: 260px;
+      background: #121417;
+      border-left: 1px solid #1d1f23;
+      padding: 1rem;
       overflow-y: auto;
     }
     h2 { color: #00e676; margin-top: 0; }
@@ -63,6 +75,31 @@
       margin-bottom: 1rem;
       box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
     }
+    .project-card {
+      background: #1b1e24;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .project-card:hover { background: #1f2329; }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-icon {
+      background: #00e676;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-weight: 600;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-icon:hover { transform: scale(1.05); }
     select, input, button {
       border: none;
       border-radius: 8px;
@@ -115,6 +152,37 @@
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+    }
+    .modal {
+      background: #1b1e24;
+      padding: 1.5rem;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    .modal h3 { margin-top: 0; color: #00e676; }
+    .tasks, .summary {
+      margin-bottom: 1rem;
+    }
+    .tasks h4, .summary h4 {
+      margin: 0 0 0.5rem;
+      color: #00e676;
+    }
+    .task-item {
+      background: #171a1f;
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -124,7 +192,10 @@
     <button class="nav-btn" data-page="projects">Projetos</button>
   </aside>
 
-  <main id="root"></main>
+  <main>
+    <div class="content" id="root"></div>
+    <div class="sidebar-right" id="sidePanel"></div>
+  </main>
 
   <script type="text/babel">
     const { useState, useEffect } = React;
@@ -139,45 +210,40 @@
     ];
 
     const getFase = dias => fases.find(f => dias >= f.dias[0] && dias <= f.dias[1]) || fases[0];
-    const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"long" });
+    const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"short" });
 
-    function App() {
-      const [page, setPage] = useState("dashboard");
+    function App({ page }) {
       const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projects") || "[]"));
       const [toast, setToast] = useState("");
+      const [editProj, setEditProj] = useState(null);
+      const [newName, setNewName] = useState("");
 
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
 
-      const addProject = nome => {
-        if (!nome.trim()) return alert("Informe um nome para o projeto.");
-        setProjects([...projects, { id: Date.now(), nome, cultivos: [] }]);
-        showToast("🌿 Projeto criado!");
-      };
-      const deleteProject = id => setProjects(projects.filter(p => p.id !== id));
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      const addCultivo = (projId, c) => {
-        setProjects(projects.map(p =>
-          p.id === projId ? { ...p, cultivos: [...p.cultivos, { ...c, id: Date.now(), historico: [] }] } : p
-        ));
-        showToast("🌱 Cultivo adicionado!");
-      };
-      const deleteCultivo = (projId, cultId) =>
-        setProjects(projects.map(p => p.id === projId ? { ...p, cultivos: p.cultivos.filter(c => c.id !== cultId) } : p));
-      const registrar = (projId, cultId, acao) => {
-        setProjects(projects.map(p =>
-          p.id === projId ? {
-            ...p,
-            cultivos: p.cultivos.map(c => c.id === cultId
-              ? { ...c, historico:[...c.historico, { data:new Date().toLocaleDateString(), acao }] }
-              : c)
-          } : p
-        ));
+      const addProject = nome => {
+        if (!nome.trim()) return alert("Informe um nome para o projeto.");
+        const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [] };
+        setProjects([...projects, novo]);
+        showToast("🌿 Projeto criado!");
       };
 
-      /* ======= DASHBOARD ======= */
-      const all = projects.flatMap(p => p.cultivos);
-      const totalQ = all.reduce((a,b) => a + Number(b.quantidade||0), 0);
+      const deleteProject = id => {
+        if (confirm("Excluir este projeto?")) {
+          setProjects(projects.filter(p => p.id !== id));
+          showToast("🗑️ Projeto removido.");
+        }
+      };
+
+      const saveEdit = () => {
+        setProjects(projects.map(p => p.id === editProj.id ? { ...p, nome: newName } : p));
+        setEditProj(null);
+        showToast("✏️ Projeto atualizado!");
+      };
+
+      const allCultivos = projects.flatMap(p => p.cultivos);
+      const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
       const producao = totalQ * 1.5;
       const custo = totalQ * 5;
       const lucro = producao * 10;
@@ -188,7 +254,7 @@
           <>
             <h2>📊 Painel Geral</h2>
             <div className="dashboard-cards">
-              <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{all.length}</p></div>
+              <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{allCultivos.length}</p></div>
               <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
               <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p></div>
               <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
@@ -200,14 +266,11 @@
 
       function Projetos() {
         const [nome, setNome] = useState("");
-        const [sel, setSel] = useState(null);
-        const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
-        const projeto = projects.find(p => p.id === sel);
-        const handleAdd = () => {
-          if (!form.planta || !form.data) return alert("Preencha todos os campos!");
-          addCultivo(sel, form);
-          setForm({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
-        };
+
+        const tarefas = allCultivos.map(c => ({
+          planta: c.planta,
+          colheita: formatDate(new Date(new Date(c.data).getTime() + (60 * 24 * 60 * 60 * 1000)))
+        }));
 
         return (
           <>
@@ -217,59 +280,53 @@
               <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
             </div>
 
-            {projects.length>0 && (
-              <div className="form-group">
-                <select value={sel||""} onChange={e=>setSel(Number(e.target.value))}>
-                  <option value="">Selecione um projeto</option>
-                  {projects.map(p=><option key={p.id} value={p.id}>{p.nome}</option>)}
-                </select>
-                {sel && <button className="action" onClick={()=>deleteProject(sel)}>🗑️ Excluir Projeto</button>}
+            {projects.map(p => (
+              <div key={p.id} className="project-card">
+                <div className="project-header">
+                  <div>
+                    <strong>{p.nome}</strong>
+                    <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+                  </div>
+                  <div style={{display:"flex",gap:"6px"}}>
+                    <button className="btn-icon" onClick={()=>{setEditProj(p); setNewName(p.nome);}}>✏️</button>
+                    <button className="btn-icon" onClick={()=>deleteProject(p.id)}>🗑️</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {editProj && (
+              <div className="modal-bg" onClick={()=>setEditProj(null)}>
+                <div className="modal" onClick={e=>e.stopPropagation()}>
+                  <h3>Editar Projeto</h3>
+                  <input value={newName} onChange={e=>setNewName(e.target.value)} style={{width:"100%",marginBottom:"10px"}}/>
+                  <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
+                    <button className="action" onClick={saveEdit}>Salvar</button>
+                    <button className="action" onClick={()=>setEditProj(null)}>Cancelar</button>
+                  </div>
+                </div>
               </div>
             )}
 
-            {projeto && (
+            {/* Painel lateral direito */}
+            {ReactDOM.createPortal(
               <div>
-                <div className="form-group">
-                  <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
-                    <option value="">Planta</option>{plantas.map(p=><option key={p}>{p}</option>)}
-                  </select>
-                  <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
-                  <select value={form.fertilizante} onChange={e=>setForm({...form,fertilizante:e.target.value})}>
-                    {fertilizantes.map(f=><option key={f}>{f}</option>)}
-                  </select>
-                  <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
-                    <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
-                  </select>
-                  <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
-                  <button className="action" onClick={handleAdd}>Adicionar</button>
+                <div className="summary">
+                  <h4>📊 Panorama Geral</h4>
+                  <div>🌾 Projetos: {projects.length}</div>
+                  <div>🌿 Cultivos: {allCultivos.length}</div>
                 </div>
-
-                {projeto.cultivos.map(c=>{
-                  const dias = Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
-                  const fase = getFase(dias);
-                  const prog = Math.min((dias/60)*100,100);
-                  return (
-                    <div key={c.id} className="card">
-                      <div style={{display:"flex",justifyContent:"space-between"}}>
-                        <strong>{c.planta}</strong><span>{c.fertilizante}</span>
-                      </div>
-                      <div className="small">🌱 Germinação: {formatDate(c.data)} | {fase.icone} {fase.nome}</div>
-                      <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
-                      <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
-                      <div className="form-group">
-                        <button className="action" onClick={()=>registrar(projeto.id,c.id,"Adubação realizada")}>✅ Aplicar</button>
-                        <button className="action" onClick={()=>deleteCultivo(projeto.id,c.id)}>🗑️ Excluir</button>
-                      </div>
-                      {c.historico.length>0 && (
-                        <div className="small">
-                          <strong>📜 Histórico:</strong>
-                          {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
-                        </div>
-                      )}
+                <div className="tasks">
+                  <h4>🧾 Tarefas</h4>
+                  {tarefas.length>0 ? tarefas.map((t,i)=>(
+                    <div key={i} className="task-item">
+                      <strong>{t.planta}</strong><br/>
+                      Colheita: {t.colheita}
                     </div>
-                  );
-                })}
-              </div>
+                  )):<div className="small">Nenhuma tarefa</div>}
+                </div>
+              </div>,
+              document.getElementById("sidePanel")
             )}
           </>
         );
@@ -283,11 +340,24 @@
       );
     }
 
+    let currentPage = "dashboard";
     const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App/>);
+    const side = document.getElementById("sidePanel");
+
+    function renderApp() {
+      root.render(<App page={currentPage} />);
+      if (currentPage === "dashboard") side.innerHTML = "";
+    }
+
+    renderApp();
 
     document.querySelectorAll(".nav-btn").forEach(btn=>{
-      btn.onclick=()=>{document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");root.render(<App/>);};
+      btn.onclick=()=>{
+        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        currentPage = btn.getAttribute("data-page");
+        renderApp();
+      };
     });
   </script>
 </body>
