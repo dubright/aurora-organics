@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -67,86 +66,67 @@
   <script type="text/babel">
 const { useState, useEffect } = React;
 
-const plantas = [
-  "Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿",
-  "Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"
-];
-const fases = [
-  { nome:"Germinação",icone:"🌱",dias:[0,7]},
-  { nome:"Crescimento",icone:"🌿",dias:[8,35]},
-  { nome:"Floração",icone:"🌸",dias:[36,50]},
-  { nome:"Pré-colheita",icone:"🍅",dias:[51,60]},
-  { nome:"Colheita",icone:"🌾",dias:[61,90]}
-];
+const plantas=["Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿","Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"];
+const fases=[{nome:"Germinação",icone:"🌱",dias:[0,7]},{nome:"Crescimento",icone:"🌿",dias:[8,35]},{nome:"Floração",icone:"🌸",dias:[36,50]},{nome:"Pré-colheita",icone:"🍅",dias:[51,60]},{nome:"Colheita",icone:"🌾",dias:[61,90]}];
 const formatDate=d=>new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
 const getFase=dias=>fases.find(f=>dias>=f.dias[0]&&dias<=f.dias[1])||fases[0];
-const calcularDosagem=l=>{
-  const ml=parseFloat(l);
-  if(isNaN(ml))return"100ml";
-  if(ml<=700)return"100ml";
-  if(ml<=2000)return"250ml";
-  if(ml<=5000)return"400ml";
-  if(ml<=10000)return"600ml";
-  return"1L";
-};
+const calcularDosagem=l=>{const ml=parseFloat(l);if(isNaN(ml))return"100ml";if(ml<=700)return"100ml";if(ml<=2000)return"250ml";if(ml<=5000)return"400ml";if(ml<=10000)return"600ml";return"1L";};
 
 function App({page}){
   const [projects,setProjects]=useState(JSON.parse(localStorage.getItem("projectsAurora")||"[]"));
-  const [toast,setToast]=useState("");
-  const [expanded,setExpanded]=useState(null);
-  useEffect(()=>localStorage.setItem("projectsAurora",JSON.stringify(projects)),[projects]);
+  const [toast,setToast]=useState("");const [expanded,setExpanded]=useState(null);
+  const [edits,setEdits]=useState({});
+  
+  // Debounce para salvar localStorage de forma leve
+  useEffect(()=>{
+    const t=setTimeout(()=>localStorage.setItem("projectsAurora",JSON.stringify(projects)),800);
+    return()=>clearTimeout(t);
+  },[projects]);
+
   const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(""),2500);};
 
   const addProject=nome=>{
     if(!nome.trim())return alert("Informe um nome para o projeto.");
     const novo={id:Date.now(),nome,dataCriacao:new Date().toLocaleDateString(),cultivos:[]};
-    setProjects([...projects,novo]);
-    showToast("🌿 Projeto criado!");
+    setProjects([...projects,novo]);showToast("🌿 Projeto criado!");
   };
   const deleteProject=id=>{
     if(confirm("Excluir este projeto?")){
-      setProjects(projects.filter(p=>p.id!==id));
-      if(expanded===id)setExpanded(null);
+      setProjects(projects.filter(p=>p.id!==id));if(expanded===id)setExpanded(null);
       showToast("🗑️ Projeto removido.");
     }
   };
-
   const addCultivo=(projId,form)=>{
     const dataGerminacao=new Date(form.data);
     const novasTarefas=[];
     for(let i=0;i<60;i+=3){
-      const dataT=new Date(dataGerminacao);
-      dataT.setDate(dataT.getDate()+i);
+      const dataT=new Date(dataGerminacao);dataT.setDate(dataT.getDate()+i);
       const tipo=(i%15===0&&i!==0)?"fertilizante":"água";
       novasTarefas.push({tipo,data:dataT.toISOString(),dosagem:calcularDosagem(form.litragem),concluida:false});
     }
-    const novo={
-      id:Date.now(),planta:form.planta,data:form.data,
-      litragem:form.litragem,quantidade:form.quantidade,
-      altura:0,folhas:0,produtividade:0,custo:0,pragas:"",
-      tarefas:novasTarefas
-    };
+    const novo={id:Date.now(),planta:form.planta,data:form.data,litragem:form.litragem,quantidade:form.quantidade,altura:0,folhas:0,produtividade:0,custo:0,pragas:"",tarefas:novasTarefas};
     setProjects(projects.map(p=>p.id===projId?{...p,cultivos:[...p.cultivos,novo]}:p));
     showToast("🌱 Cultivo adicionado!");
   };
-  const atualizarCultivo=(projId,cultId,campo,valor)=>{
-    setProjects(projects.map(p=>p.id===projId?{
-      ...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,[campo]:valor}:c)
-    }:p));
+  
+  const handleEdit=(projId,cultId,campo,valor)=>{
+    setEdits(prev=>({...prev,[`${projId}-${cultId}-${campo}`]:valor}));
+  };
+  const commitEdit=(projId,cultId,campo)=>{
+    const valor=edits[`${projId}-${cultId}-${campo}`];
+    if(valor!==undefined){
+      setProjects(projects.map(p=>p.id===projId?{...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,[campo]:valor}:c)}:p));
+    }
   };
   const concluirTarefa=(projId,cultId,index)=>{
-    setProjects(projects.map(p=>p.id===projId?{
-      ...p,cultivos:p.cultivos.map(c=>c.id===cultId?{
-        ...c,tarefas:c.tarefas.map((t,i)=>i===index?{...t,concluida:true}:t)
-      }:c)
-    }:p));
+    setProjects(projects.map(p=>p.id===projId?{...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,tarefas:c.tarefas.map((t,i)=>i===index?{...t,concluida:true}:t)}:c)}:p));
     showToast("✅ Tarefa concluída!");
   };
-
   function Projetos(){
     const [nome,setNome]=useState("");
     const [form,setForm]=useState({planta:"",data:"",litragem:"700ml",quantidade:1});
-    return(<>
+    return(
+      <>
       <h2>🌿 Projetos</h2>
       <div style={{display:"flex",gap:"10px",marginBottom:"1rem"}}>
         <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
@@ -162,6 +142,7 @@ function App({page}){
               <button className="action" onClick={()=>deleteProject(p.id)}>Excluir</button>
             </div>
           </div>
+
           {expanded===p.id&&(
             <div style={{marginTop:"1rem"}}>
               <div style={{display:"flex",gap:"8px",marginBottom:"1rem"}}>
@@ -194,6 +175,7 @@ function App({page}){
                     <div className="small">Germinação: {formatDate(c.data)} • Litragem: {c.litragem} • Qtd: {c.quantidade}</div>
                     <div className="progress"><div className="progress-bar" style={{width:`${(dias/60)*100}%`}}></div></div>
 
+                    {/* === ALERTAS === */}
                     {tarefasProximas.length>0&&(
                       <div className="alert">
                         ⚠️ Tarefas próximas ({tarefasProximas.length}):
@@ -201,25 +183,44 @@ function App({page}){
                       </div>
                     )}
 
+                    {/* === DESENVOLVIMENTO === */}
                     <div className="section-title">🌱 Desenvolvimento</div>
-                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:"10px"}}>
-                      <label>Altura (cm)
-                        <input type="number" value={c.altura} onChange={e=>atualizarCultivo(p.id,c.id,"altura",e.target.value)}/>
-                      </label>
-                      <label>Folhas
-                        <input type="number" value={c.folhas} onChange={e=>atualizarCultivo(p.id,c.id,"folhas",e.target.value)}/>
-                      </label>
-                      <label>Produtividade (g)
-                        <input type="number" value={c.produtividade} onChange={e=>atualizarCultivo(p.id,c.id,"produtividade",e.target.value)}/>
-                      </label>
-                      <label>Custo (R$)
-                        <input type="number" value={c.custo} onChange={e=>atualizarCultivo(p.id,c.id,"custo",e.target.value)}/>
-                      </label>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"14px"}}>
+                      {[
+                        { label:"Altura", campo:"altura", unidade:"cm", icone:"📏" },
+                        { label:"Folhas", campo:"folhas", unidade:"unid.", icone:"🌿" },
+                        { label:"Produtividade", campo:"produtividade", unidade:"g", icone:"🍅" },
+                        { label:"Custo", campo:"custo", unidade:"R$", icone:"💰" }
+                      ].map(item=>(
+                        <div key={item.campo}
+                          style={{background:"#181a1d",border:"1px solid rgba(0,230,118,.15)",borderRadius:"10px",padding:"10px 12px",display:"flex",flexDirection:"column",boxShadow:"inset 0 0 10px rgba(0,230,118,.05)"}}>
+                          <label style={{color:"#00e676",fontWeight:600,fontSize:".9rem",marginBottom:"4px"}}>
+                            {item.icone} {item.label}
+                          </label>
+                          <div style={{display:"flex",alignItems:"center",background:"#1c1f22",borderRadius:"8px",overflow:"hidden",border:"1px solid rgba(0,230,118,.15)"}}>
+                            <input
+                              type="number"
+                              min="0"
+                              defaultValue={c[item.campo]}
+                              onChange={e=>handleEdit(p.id,c.id,item.campo,e.target.value)}
+                              onBlur={()=>commitEdit(p.id,c.id,item.campo)}
+                              style={{flex:1,padding:"8px 10px",background:"transparent",color:"#e6e6e6",border:"none",fontSize:"1rem",outline:"none"}}
+                            />
+                            <span style={{background:"#151718",padding:"8px 10px",color:"#00e676",fontWeight:600,borderLeft:"1px solid rgba(0,230,118,.15)"}}>{item.unidade}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
 
+                    {/* === PRAGAS === */}
                     <div className="section-title">🐛 Pragas e Ocorrências</div>
-                    <textarea rows="2" placeholder="Descreva pragas, doenças ou deficiências observadas..." style={{width:"100%",background:"#1b1e22",color:"#e6e6e6",borderRadius:"8px",padding:"8px",marginTop:"4px"}} value={c.pragas} onChange={e=>atualizarCultivo(p.id,c.id,"pragas",e.target.value)}></textarea>
+                    <textarea rows="2" placeholder="Descreva pragas, doenças ou deficiências observadas..."
+                      value={edits[`${p.id}-${c.id}-pragas`]!==undefined?edits[`${p.id}-${c.id}-pragas`]:c.pragas}
+                      onChange={e=>handleEdit(p.id,c.id,"pragas",e.target.value)}
+                      onBlur={()=>commitEdit(p.id,c.id,"pragas")}
+                      style={{width:"100%",background:"#1b1e22",color:"#e6e6e6",borderRadius:"8px",padding:"8px",marginTop:"4px"}}></textarea>
 
+                    {/* === EFICIÊNCIA AGRONÔMICA === */}
                     <div className="section-title">⚙️ Eficiência Agronômica</div>
                     <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
                       <div className="metric-value">{eficiencia}%</div>
@@ -227,6 +228,7 @@ function App({page}){
                       {eficiencia>0&&<span style={{color:"#00e676"}}>✅ Lucro</span>}
                     </div>
 
+                    {/* === TAREFAS === */}
                     <div style={{marginTop:"10px"}}>
                       <strong>📋 Tarefas a Executar</strong>
                       {tarefasPendentes.length===0&&<div className="small">Tudo concluído!</div>}
@@ -244,10 +246,11 @@ function App({page}){
           )}
         </div>
       ))}
-    </>);
+      </>
+    );
   }
 
-  // === DASHBOARD COMPLETO ===
+  // === DASHBOARD ===
   function Dashboard(){
     const todosCultivos=projects.flatMap(p=>p.cultivos);
     const totalPlantas=todosCultivos.length;
@@ -261,38 +264,25 @@ function App({page}){
     const rent=custo?(((producao*10-custo)/custo)*100).toFixed(1):0;
 
     useEffect(()=>{
-      // === Atualiza gráficos ===
       if(!todosCultivos.length)return;
       const ctx1=document.getElementById("graficoCrescimento");
       if(ctx1){
-        new Chart(ctx1,{type:"line",data:{
-          labels:["Semana 1","Semana 2","Semana 3","Semana 4"],
-          datasets:[{data:[10,14,18,21],borderColor:"#00e676",tension:0.4}]
-        },options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#ccc"}},y:{ticks:{color:"#ccc"}}}}});
+        new Chart(ctx1,{type:"line",data:{labels:["Sem1","Sem2","Sem3","Sem4"],datasets:[{data:[10,14,18,21],borderColor:"#00e676",tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#ccc"}},y:{ticks:{color:"#ccc"}}}}});
       }
       const ctx2=document.getElementById("graficoUmidade");
       if(ctx2){
-        new Chart(ctx2,{type:"bar",data:{
-          labels:["Seg","Ter","Qua","Qui","Sex"],
-          datasets:[{data:[58,60,63,61,59],backgroundColor:"#00b050"}]
-        },options:{plugins:{legend:{display:false}}}});
+        new Chart(ctx2,{type:"bar",data:{labels:["Seg","Ter","Qua","Qui","Sex"],datasets:[{data:[58,60,63,61,59],backgroundColor:"#00b050"}]},options:{plugins:{legend:{display:false}}}});
       }
       const ctx3=document.getElementById("graficoEficiencia");
       if(ctx3){
-        new Chart(ctx3,{type:"doughnut",data:{
-          labels:["Eficiência"],
-          datasets:[{data:[eficiencia,100-eficiencia],backgroundColor:["#00e676","#1b1e22"],borderWidth:0}]
-        },options:{cutout:"75%",plugins:{legend:{display:false}}}});
+        new Chart(ctx3,{type:"doughnut",data:{labels:["Eficiência"],datasets:[{data:[eficiencia,100-eficiencia],backgroundColor:["#00e676","#1b1e22"],borderWidth:0}]},options:{cutout:"75%",plugins:{legend:{display:false}}}});
       }
-
-      // === Atualiza insights laterais ===
       const insightsDiv=document.getElementById("insights");
       insightsDiv.innerHTML=`
         <div class='card'>🌱 Crescimento médio: <b>${(producao/totalPlantas||0).toFixed(1)}g</b></div>
         <div class='card'>💧 Eficiência: <b>${eficiencia}%</b></div>
         <div class='card'>📈 Rentabilidade média: <b>${rent}%</b></div>
-        <div class='card'>🐛 Ocorrências registradas: <b>${todosCultivos.filter(c=>c.pragas).length}</b></div>
-      `;
+        <div class='card'>🐛 Ocorrências registradas: <b>${todosCultivos.filter(c=>c.pragas).length}</b></div>`;
     },[projects]);
 
     return(<>
@@ -303,28 +293,22 @@ function App({page}){
         <div className="metric-card"><h3>💰 Rentabilidade</h3><div className="metric-value">{rent}%</div></div>
         <div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{pendentes}</div></div>
       </div>
-
-      {/* === GRÁFICOS === */}
       <div className="dashboard-grid" style={{marginTop:"2rem"}}>
         <div className="metric-card"><h3>📈 Crescimento</h3><canvas id="graficoCrescimento" height="100"></canvas></div>
         <div className="metric-card"><h3>💧 Umidade</h3><canvas id="graficoUmidade" height="100"></canvas></div>
         <div className="metric-card"><h3>⚙️ Eficiência</h3><canvas id="graficoEficiencia" height="100"></canvas></div>
       </div>
-
-      {/* === ALERTAS === */}
-      {eficiencia<60&&<div className="alert">⚠️ Eficiência baixa ({eficiencia}%). Verifique atrasos nas regas ou fertilizações.</div>}
-      {pendentes>0&&<div className="alert">🚨 {pendentes} tarefa(s) atrasada(s). Avalie redistribuir atividades para evitar perdas.</div>}
+      {eficiencia<60&&<div className="alert">⚠️ Eficiência baixa ({eficiencia}%). Verifique atrasos nas regas.</div>}
+      {pendentes>0&&<div className="alert">🚨 {pendentes} tarefa(s) atrasada(s).</div>}
     </>);
   }
 
-  // === RENDERIZAÇÃO FINAL ===
   return(<div>{page==="dashboard"?<Dashboard/>:<Projetos/>}{toast&&<div className="toast">{toast}</div>}</div>);
 }
 
-// === APP PRINCIPAL ===
 let currentPage="dashboard";
 const root=ReactDOM.createRoot(document.getElementById("root"));
-function renderApp(){root.render(<App key={currentPage} page={currentPage}/>);}
+function renderApp(){root.render(<App page={currentPage}/>);}
 renderApp();
 document.querySelectorAll(".nav-btn").forEach(btn=>{
   btn.onclick=()=>{
@@ -337,3 +321,4 @@ document.querySelectorAll(".nav-btn").forEach(btn=>{
   </script>
 </body>
 </html>
+
