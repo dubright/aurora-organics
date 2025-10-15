@@ -8,6 +8,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -170,13 +171,20 @@
     }
     .btn-icon:hover { transform: scale(1.05); }
     .small { color: #a1a1a1; font-size: 0.85rem; }
-    .panel-block { margin-bottom: 1rem; }
+    .alert {
+      border-left: 4px solid #ff5252;
+      padding-left: 10px;
+      margin-bottom: 0.5rem;
+      background: #1b1e24;
+      border-radius: 6px;
+    }
     .panel-item {
       background: #171a1f;
       border-radius: 8px;
       padding: 0.5rem;
       margin-bottom: 0.5rem;
     }
+    canvas { background: #121417; border-radius: 12px; margin-top: 1.5rem; padding: 1rem; }
   </style>
 </head>
 
@@ -195,7 +203,7 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    /* === CONFIGURAÇÃO DE PLANTAS COM CICLO MÉDIO E REGRAS === */
+    /* === MAPA DE PLANTAS COM CICLOS, FREQUÊNCIAS E DURAÇÕES === */
     const mapaPlantas = {
       "Alface": { ciclo: 45, agua: 2, fertilizante: 10 },
       "Tomate": { ciclo: 90, agua: 2, fertilizante: 7 },
@@ -207,8 +215,6 @@
       "Morango": { ciclo: 95, agua: 2, fertilizante: 6 },
       "Agrião": { ciclo: 50, agua: 1, fertilizante: 10 }
     };
-
-    const fertilizantes = ["BioBizz", "Forth", "Dimy"];
 
     const fases = [
       { nome:"Germinação", icone:"🌱", cor:"#00ff99", dias:[0,7] },
@@ -231,6 +237,7 @@
       for (let i = 0; i <= conf.ciclo; i++) {
         const data = new Date(germinacao);
         data.setDate(data.getDate() + i);
+
         if (i % conf.agua === 0)
           tarefas.push({ tipo: "💧 Rega com água", data: data.toISOString(), status: "pendente" });
         if (i % conf.fertilizante === 0 && i !== 0)
@@ -251,7 +258,7 @@
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      /* === FUNÇÕES DE PROJETO === */
+      /* === PROJETOS === */
       const addProject = nome => {
         if (!nome.trim()) return alert("Informe um nome para o projeto.");
         const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], historico: [] };
@@ -273,7 +280,7 @@
         showToast("✏️ Projeto atualizado!");
       };
 
-      /* === FUNÇÕES DE CULTIVO === */
+      /* === CULTIVOS === */
       const addCultivo = (projId, form) => {
         const tarefasAuto = gerarTarefas(form.planta, form.data);
         setProjects(projects.map(p =>
@@ -307,18 +314,53 @@
         showToast("✅ Tarefa concluída!");
       };
 
-      /* === DASHBOARD GERAL === */
-      const allCultivos = selectedProjeto
-        ? (projects.find(p=>p.id===parseInt(selectedProjeto))?.cultivos || [])
-        : projects.flatMap(p => p.cultivos);
+      /* === ALERTAS AUTOMÁTICOS === */
+      const tarefasAtrasadas = [];
+      projects.forEach(p=>{
+        p.cultivos.forEach(c=>{
+          (c.tarefas||[]).forEach(t=>{
+            const dataT = new Date(t.data);
+            if (t.status==="pendente" && dataT < new Date()) tarefasAtrasadas.push({ projeto:p.nome, planta:c.planta, tipo:t.tipo, data:t.data });
+          });
+        });
+      });
 
-      const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
-      const producao = totalQ * 1.5;
-      const custo = totalQ * 5;
-      const lucro = producao * 10;
-      const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
+      /* === DASHBOARD === */
+      const projetoSelecionado = projects.find(p=>p.id===parseInt(selectedProjeto));
+      const cultivos = projetoSelecionado ? projetoSelecionado.cultivos : projects.flatMap(p=>p.cultivos);
+
+      const totalTarefas = cultivos.reduce((a,b)=>a+(b.tarefas?.length||0),0);
+      const concluidas = cultivos.reduce((a,b)=>a+(b.tarefas?.filter(t=>t.status==="concluído").length||0),0);
+      const eficiencia = totalTarefas ? ((concluidas/totalTarefas)*100).toFixed(1) : 0;
+
+      const aguaConcluidas = cultivos.flatMap(c=>c.tarefas||[]).filter(t=>t.tipo.includes("água") && t.status==="concluído").length;
+      const fertConcluidas = cultivos.flatMap(c=>c.tarefas||[]).filter(t=>t.tipo.includes("fertilizante") && t.status==="concluído").length;
 
       function Dashboard() {
+        useEffect(()=>{
+          const ctx = document.getElementById("graficoProdutividade");
+          if (ctx) {
+            new Chart(ctx, {
+              type: "bar",
+              data: {
+                labels: ["Rega com Água", "Rega com Fertilizante"],
+                datasets: [{
+                  label: "Tarefas Concluídas",
+                  data: [aguaConcluidas, fertConcluidas],
+                  backgroundColor: ["#00e676", "#fca311"]
+                }]
+              },
+              options: {
+                plugins: { legend: { labels: { color: "#e6e6e6" } } },
+                scales: {
+                  x: { ticks: { color: "#e6e6e6" } },
+                  y: { ticks: { color: "#e6e6e6" } }
+                }
+              }
+            });
+          }
+        }, [aguaConcluidas, fertConcluidas]);
+
         return (
           <>
             <h2>📊 Dashboard Inteligente</h2>
@@ -330,37 +372,36 @@
             </div>
 
             <div className="dashboard-cards">
-              <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{allCultivos.length}</p></div>
-              <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
-              <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p></div>
-              <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
-              <div className="card"><h3>📈 Rentabilidade</h3><p>{rent}%</p></div>
+              <div className="card"><h3>🌿 Cultivos</h3><p>{cultivos.length}</p></div>
+              <div className="card"><h3>✅ Eficiência</h3><p>{eficiencia}%</p></div>
+              <div className="card"><h3>💧 Rega</h3><p>{aguaConcluidas}</p></div>
+              <div className="card"><h3>🧪 Fertilização</h3><p>{fertConcluidas}</p></div>
             </div>
 
-            <h3 style={{marginTop:"2rem",color:"#00e676"}}>🗓️ Próximas Tarefas</h3>
-            {allCultivos.length>0 ? (
-              allCultivos.flatMap(c=>c.tarefas||[])
-              .filter(t=>new Date(t.data)>=new Date() && t.status==="pendente")
-              .sort((a,b)=>new Date(a.data)-new Date(b.data))
-              .slice(0,8)
-              .map((t,i)=>(
-                <div key={i} className="panel-item">
-                  <strong>{t.tipo}</strong> — {new Date(t.data).toLocaleDateString("pt-BR")}
-                </div>
-              ))
-            ) : <div className="small">Nenhuma tarefa pendente.</div>}
+            {tarefasAtrasadas.length>0 && (
+              <>
+                <h3 style={{color:"#ff5252",marginTop:"2rem"}}>⚠️ Tarefas Atrasadas</h3>
+                {tarefasAtrasadas.slice(0,6).map((t,i)=>(
+                  <div key={i} className="alert">
+                    {t.tipo} — {t.planta} ({t.projeto}) em {new Date(t.data).toLocaleDateString("pt-BR")}
+                  </div>
+                ))}
+              </>
+            )}
+
+            <canvas id="graficoProdutividade" height="140"></canvas>
           </>
         );
       }
       /* === ABA DE PROJETOS === */
       function Projetos() {
         const [nome, setNome] = useState("");
-        const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+        const [form, setForm] = useState({ planta:"", data:"", litragem:"700ml", quantidade:1 });
         const projetoAtual = projects.find(p => p.id === expanded);
 
         return (
           <>
-            <h2>🌿 Projetos</h2>
+            <h2>🌱 Projetos</h2>
             <div className="form-group">
               <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)} />
               <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
@@ -381,24 +422,21 @@
 
                 {expanded===p.id && (
                   <div style={{marginTop:"1rem"}}>
-                    {/* FORM DE CULTIVO */}
+                    {/* FORMULÁRIO CULTIVO */}
                     <div className="form-group">
                       <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
                         <option value="">Planta</option>
                         {Object.keys(mapaPlantas).map(pl=><option key={pl}>{pl}</option>)}
                       </select>
                       <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
-                      <select value={form.fertilizante} onChange={e=>setForm({...form,fertilizante:e.target.value})}>
-                        {fertilizantes.map(f=><option key={f}>{f}</option>)}
-                      </select>
                       <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
                         <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
                       </select>
                       <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
                       <button className="action" onClick={()=>{
                         if(!form.planta||!form.data) return alert("Preencha todos os campos!");
-                        addCultivo(p.id, form);
-                        setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});
+                        addCultivo(p.id,form);
+                        setForm({planta:"",data:"",litragem:"700ml",quantidade:1});
                         setExpanded(p.id);
                       }}>Adicionar</button>
                     </div>
@@ -408,34 +446,40 @@
                       const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
                       const fase=getFase(dias);
                       const prog=Math.min((dias/(mapaPlantas[c.planta]?.ciclo||60))*100,100);
+                      const tarefasPendentes=(c.tarefas||[]).filter(t=>t.status==="pendente").length;
+
                       return(
                         <div key={c.id} className="card">
                           <div style={{display:"flex",justifyContent:"space-between"}}>
-                            <strong>{c.planta}</strong><span>{c.fertilizante}</span>
+                            <strong>{c.planta}</strong>
+                            <span>{fase.icone} {fase.nome}</span>
                           </div>
-                          <div className="small">🌱 Germinação: {formatDate(c.data)} | {fase.icone} {fase.nome}</div>
-                          <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
-                          <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
-                          <div className="form-group">
-                            <button className="action" onClick={()=>registrar(p.id,c.id,"✅ Adubação realizada")}>Aplicar</button>
-                            <button className="action" onClick={()=>deleteCultivo(p.id,c.id)}>Excluir</button>
+                          <div className="small">
+                            🌱 Germinação: {formatDate(c.data)} • 💧 {c.tarefas?.length||0} tarefas
                           </div>
+                          <div className="progress">
+                            <div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div>
+                          </div>
+                          <div className="small">📦 Quantidade: {c.quantidade} • 💧 Pendentes: {tarefasPendentes}</div>
 
-                          {/* TAREFAS AUTOMÁTICAS */}
-                          {c.tarefas && c.tarefas.length>0 && (
-                            <div className="small">
-                              <strong>🧾 Tarefas Programadas:</strong>
-                              {c.tarefas.slice(0,4).map((t,i)=>(
-                                <div key={i} style={{marginTop:"3px"}}>
-                                  {new Date(t.data).toLocaleDateString("pt-BR")} — {t.tipo} {t.status==="concluído"?"✅":""}
-                                  {t.status==="pendente" && (
-                                    <button className="btn-icon" style={{marginLeft:"6px",padding:"3px 8px"}}
-                                      onClick={()=>concluirTarefa(p.id,c.id,i)}>✔</button>
-                                  )}
+                          <h4 style={{color:"#00e676",marginTop:"0.5rem"}}>Tarefas</h4>
+                          {(c.tarefas||[]).slice(0,6).map((t,i)=>{
+                            const atraso = t.status==="pendente" && new Date(t.data)<new Date();
+                            return(
+                              <div key={i} className="panel-item" style={{borderLeft: atraso?"4px solid #ff5252":"4px solid #00e676"}}>
+                                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                                  <span>{t.tipo}</span>
+                                  <small>{new Date(t.data).toLocaleDateString("pt-BR")}</small>
                                 </div>
-                              ))}
-                            </div>
-                          )}
+                                <div style={{marginTop:"4px"}}>
+                                  {t.status==="concluído"
+                                    ? <span style={{color:"#00e676"}}>✅ Concluído</span>
+                                    : <button className="action" style={{padding:"4px 8px",fontSize:"0.8rem"}}
+                                        onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       );
                     })}
@@ -444,8 +488,8 @@
               </div>
             ))}
 
-            {/* MODAL DE EDIÇÃO */}
-            {editProj && (
+            {/* MODAL EDIÇÃO */}
+            {editProj&&(
               <div className="modal-bg" onClick={()=>setEditProj(null)}>
                 <div className="modal" onClick={e=>e.stopPropagation()}>
                   <h3>Editar Projeto</h3>
@@ -457,51 +501,19 @@
                 </div>
               </div>
             )}
-
-            {/* PAINEL LATERAL */}
-            {ReactDOM.createPortal(
-              <div>
-                {projetoAtual ? (
-                  <>
-                    <div className="panel-block">
-                      <h4 style={{color:"#00e676"}}>📊 Panorama</h4>
-                      <div>🌾 Cultivos: {projetoAtual.cultivos.length}</div>
-                      <div>📦 Quantidade Total: {projetoAtual.cultivos.reduce((a,b)=>a+Number(b.quantidade||0),0)}</div>
-                    </div>
-
-                    <div className="panel-block">
-                      <h4 style={{color:"#00e676"}}>🧾 Tarefas Automáticas</h4>
-                      {projetoAtual.cultivos.flatMap(c=>c.tarefas||[])
-                        .filter(t=>t.status==="pendente" && new Date(t.data)>=new Date())
-                        .slice(0,8)
-                        .map((t,i)=><div key={i} className="panel-item">{t.tipo} — {new Date(t.data).toLocaleDateString("pt-BR")}</div>)
-                      }
-                    </div>
-
-                    <div className="panel-block">
-                      <h4 style={{color:"#00e676"}}>🕓 Histórico</h4>
-                      {projetoAtual.historico.slice(-10).reverse().map((h,i)=><div key={i} className="panel-item">{h.data} — {h.acao}</div>)}
-                    </div>
-                  </>
-                ) : (
-                  <div className="small" style={{opacity:0.7,marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>
-                )}
-              </div>,
-              document.getElementById("sidePanel")
-            )}
           </>
         );
       }
 
       return (
         <div>
-          {page==="dashboard" ? <Dashboard/> : <Projetos/>}
-          {toast && <div className="toast">{toast}</div>}
+          {page==="dashboard"?<Dashboard/>:<Projetos/>}
+          {toast&&<div className="toast">{toast}</div>}
         </div>
       );
     }
 
-    /* === RENDERIZAÇÃO === */
+    /* === APLICAÇÃO PRINCIPAL === */
     let currentPage="dashboard";
     const root=ReactDOM.createRoot(document.getElementById("root"));
     const side=document.getElementById("sidePanel");
@@ -510,7 +522,6 @@
       if (currentPage === "dashboard") side.innerHTML = "";
       root.render(<App key={currentPage} page={currentPage} />);
     }
-
     renderApp();
 
     document.querySelectorAll(".nav-btn").forEach(btn=>{
@@ -524,3 +535,4 @@
   </script>
 </body>
 </html>
+
