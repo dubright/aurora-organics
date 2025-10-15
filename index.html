@@ -481,10 +481,13 @@
     const root=ReactDOM.createRoot(document.getElementById("root"));
     const side=document.getElementById("sidePanel");
 
-    function renderApp(){
-      if(currentPage==="dashboard"){ side.innerHTML=""; }
-      root.render(<App page={currentPage}/>);
-    }
+    function renderApp() {
+  // Limpa o painel lateral ao voltar pro Dashboard
+  if (currentPage === "dashboard") side.innerHTML = "";
+
+  // 🔧 Força o React a recriar o componente App quando muda de página
+  root.render(<App key={currentPage} page={currentPage} />);
+}
 
     renderApp();
 
