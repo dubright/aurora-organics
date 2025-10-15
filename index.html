@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,111 +12,42 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(180deg, #0c0f11 0%, #0f1115 100%);
-      color: #e6e6e6; height: 100vh; display: flex; overflow: hidden;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:"Inter",sans-serif;
+      background:linear-gradient(180deg,#0c0f11 0%,#0f1115 100%);
+      color:#e6e6e6;height:100vh;display:flex;overflow:hidden;
     }
-    aside {
-      width: 240px;
-      background: linear-gradient(180deg, #111315 0%, #0c0f11 100%);
-      border-right: 1px solid #1c1f22;
-      padding: 1.5rem;
-      display: flex; flex-direction: column; gap: 1rem;
-      box-shadow: inset -1px 0 10px rgba(0,230,118,.05);
+    aside{
+      width:240px;background:linear-gradient(180deg,#111315 0%,#0c0f11 100%);
+      border-right:1px solid #1c1f22;padding:1.5rem;display:flex;
+      flex-direction:column;gap:1rem;box-shadow:inset -1px 0 10px rgba(0,230,118,.05);
     }
-    aside h1 {
-      font-size: 1.3rem;
-      color: #00e676;
-      display: flex; align-items: center; gap: 8px;
-      text-shadow: 0 0 6px rgba(0,230,118,.6);
-    }
-    .nav-btn {
-      background: none; border: none; color: #e6e6e6;
-      font-size: 1rem; text-align: left;
-      padding: 10px; border-radius: 8px; cursor: pointer; transition: .3s;
-    }
-    .nav-btn.active, .nav-btn:hover {
-      background: rgba(0,230,118,.08);
-      color: #00e676; font-weight: 600;
-    }
-    main { flex: 1; display: flex; overflow: hidden; }
-    .content {
-      flex: 1; padding: 2rem; overflow-y: auto;
-      background: radial-gradient(circle at top left, rgba(0,230,118,.08), transparent 60%);
-    }
-    .sidebar-right {
-      width: 320px;
-      background: linear-gradient(180deg, #121417 0%, #0f1115 100%);
-      border-left: 1px solid #1d1f23;
-      padding: 1.2rem; overflow-y: auto;
-    }
-    h2 {
-      color: #00e676; font-size: 1.3rem; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 1rem; text-shadow: 0 0 6px rgba(0,230,118,.5);
-    }
-    .card {
-      background: rgba(23,26,31,.95);
-      border-radius: 12px; padding: 1.2rem 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 20px rgba(0,230,118,.05);
-      transition: .2s;
-    }
-    .card:hover { transform: translateY(-2px); }
-    select, input, button {
-      border: none; border-radius: 8px; padding: 8px 10px;
-      font-family: inherit;
-    }
-    input, select { background: #1b1e22; color: #e6e6e6; }
-    button.action {
-      background: #00e676; color: #000; font-weight: 600;
-      cursor: pointer; transition: .3s;
-    }
-    button.action:hover { transform: scale(1.05); }
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem; margin-bottom: 1.5rem;
-    }
-    .metric-card {
-      background: #121417;
-      border: 1px solid rgba(0,230,118,.15);
-      border-radius: 10px; padding: 1rem; text-align: left;
-      box-shadow: 0 0 20px rgba(0,230,118,.03);
-    }
-    .metric-card h3 { color: #e6e6e6; font-size: 1rem; margin-bottom: .4rem; }
-    .metric-value {
-      color: #00e676; font-weight: 700; font-size: 1.1rem;
-      text-shadow: 0 0 8px rgba(0,230,118,.6);
-    }
-    .progress {
-      height: 8px; background: #1f2329;
-      border-radius: 4px; overflow: hidden; margin-top: 6px;
-    }
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #00e676, #00b050);
-      box-shadow: 0 0 8px rgba(0,230,118,.5);
-      transition: width .6s ease;
-    }
-    .alert {
-      background: rgba(255,51,51,.1);
-      border: 1px solid rgba(255,51,51,.3);
-      border-left: 4px solid #ff5252;
-      color: #ff7b7b;
-      padding: 10px; border-radius: 6px;
-      font-size: .9rem; margin-top: 10px;
-    }
-    .section-title {
-      font-weight: 600; color: #00e676;
-      margin-top: 1rem; margin-bottom: .5rem;
-      font-size: 1.1rem;
-    }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-thumb { background: #00e67633; border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: #00e67666; }
+    aside h1{font-size:1.3rem;color:#00e676;display:flex;align-items:center;gap:8px;text-shadow:0 0 6px rgba(0,230,118,.6)}
+    .nav-btn{background:none;border:none;color:#e6e6e6;font-size:1rem;text-align:left;padding:10px;border-radius:8px;cursor:pointer;transition:.3s}
+    .nav-btn.active,.nav-btn:hover{background:rgba(0,230,118,.08);color:#00e676;font-weight:600}
+    main{flex:1;display:flex;overflow:hidden}
+    .content{flex:1;padding:2rem;overflow-y:auto;background:radial-gradient(circle at top left,rgba(0,230,118,.08),transparent 60%)}
+    .sidebar-right{width:320px;background:linear-gradient(180deg,#121417 0%,#0f1115 100%);border-left:1px solid #1d1f23;padding:1.2rem;overflow-y:auto}
+    h2{color:#00e676;font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1rem;text-shadow:0 0 6px rgba(0,230,118,.5)}
+    .card{background:rgba(23,26,31,.95);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 4px 20px rgba(0,230,118,.05);transition:.2s}
+    .card:hover{transform:translateY(-2px)}
+    select,input,button{border:none;border-radius:8px;padding:8px 10px;font-family:inherit}
+    input,select{background:#1b1e22;color:#e6e6e6}
+    button.action{background:#00e676;color:#000;font-weight:600;cursor:pointer;transition:.3s}
+    button.action:hover{transform:scale(1.05)}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .metric-card{background:#121417;border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:1rem;text-align:left;box-shadow:0 0 20px rgba(0,230,118,.03)}
+    .metric-card h3{color:#e6e6e6;font-size:1rem;margin-bottom:.4rem}
+    .metric-value{color:#00e676;font-weight:700;font-size:1.1rem;text-shadow:0 0 8px rgba(0,230,118,.6)}
+    .progress{height:8px;background:#1f2329;border-radius:4px;overflow:hidden;margin-top:6px}
+    .progress-bar{height:100%;background:linear-gradient(90deg,#00e676,#00b050);box-shadow:0 0 8px rgba(0,230,118,.5);transition:width .6s ease}
+    .alert{background:rgba(255,51,51,.1);border:1px solid rgba(255,51,51,.3);border-left:4px solid #ff5252;color:#ff7b7b;padding:10px;border-radius:6px;font-size:.9rem;margin-top:10px}
+    .section-title{font-weight:600;color:#00e676;margin-top:1rem;margin-bottom:.5rem;font-size:1.1rem}
+    textarea{resize:none}
+    ::-webkit-scrollbar{width:8px}
+    ::-webkit-scrollbar-thumb{background:#00e67633;border-radius:8px}
+    ::-webkit-scrollbar-thumb:hover{background:#00e67666}
   </style>
 </head>
 <body>
@@ -136,274 +68,264 @@
 const { useState, useEffect } = React;
 
 const plantas = [
-  "Tomate 🍅", "Alface 🥬", "Cenoura 🥕", "Rúcula 🌿",
-  "Abobrinha", "Abóbora 🎃", "Pimentão 🌶️", "Couve 🥬", "Espinafre 🌱"
+  "Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿",
+  "Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"
 ];
-
 const fases = [
-  { nome:"Germinação", icone:"🌱", cor:"#00ff99", dias:[0,7]},
-  { nome:"Crescimento", icone:"🌿", cor:"#00e676", dias:[8,35]},
-  { nome:"Floração", icone:"🌸", cor:"#c084fc", dias:[36,50]},
-  { nome:"Pré-colheita", icone:"🍅", cor:"#fca311", dias:[51,60]},
-  { nome:"Colheita", icone:"🌾", cor:"#fca903", dias:[61,90]}
+  { nome:"Germinação",icone:"🌱",dias:[0,7]},
+  { nome:"Crescimento",icone:"🌿",dias:[8,35]},
+  { nome:"Floração",icone:"🌸",dias:[36,50]},
+  { nome:"Pré-colheita",icone:"🍅",dias:[51,60]},
+  { nome:"Colheita",icone:"🌾",dias:[61,90]}
 ];
-
-const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
-const getFase = dias => fases.find(f=>dias>=f.dias[0] && dias<=f.dias[1]) || fases[0];
-const calcularDosagem = l => {
-  const ml = parseFloat(l);
-  if (isNaN(ml)) return "100ml";
-  if (ml <= 700) return "100ml";
-  if (ml <= 2000) return "250ml";
-  if (ml <= 5000) return "400ml";
-  if (ml <= 10000) return "600ml";
-  return "1L";
+const formatDate=d=>new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+const getFase=dias=>fases.find(f=>dias>=f.dias[0]&&dias<=f.dias[1])||fases[0];
+const calcularDosagem=l=>{
+  const ml=parseFloat(l);
+  if(isNaN(ml))return"100ml";
+  if(ml<=700)return"100ml";
+  if(ml<=2000)return"250ml";
+  if(ml<=5000)return"400ml";
+  if(ml<=10000)return"600ml";
+  return"1L";
 };
 
-function App({ page }) {
-  const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projectsAurora") || "[]"));
-  const [toast, setToast] = useState("");
-  const [expanded, setExpanded] = useState(null);
+function App({page}){
+  const [projects,setProjects]=useState(JSON.parse(localStorage.getItem("projectsAurora")||"[]"));
+  const [toast,setToast]=useState("");
+  const [expanded,setExpanded]=useState(null);
+  useEffect(()=>localStorage.setItem("projectsAurora",JSON.stringify(projects)),[projects]);
+  const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(""),2500);};
 
-  useEffect(() => localStorage.setItem("projectsAurora", JSON.stringify(projects)), [projects]);
-  const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
-
-  // === AÇÕES DE PROJETO ===
-  const addProject = nome => {
-    if (!nome.trim()) return alert("Informe um nome para o projeto.");
-    const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [] };
-    setProjects([...projects, novo]);
+  const addProject=nome=>{
+    if(!nome.trim())return alert("Informe um nome para o projeto.");
+    const novo={id:Date.now(),nome,dataCriacao:new Date().toLocaleDateString(),cultivos:[]};
+    setProjects([...projects,novo]);
     showToast("🌿 Projeto criado!");
   };
-  const deleteProject = id => {
-    if (confirm("Excluir este projeto?")) {
-      setProjects(projects.filter(p => p.id !== id));
-      if (expanded === id) setExpanded(null);
+  const deleteProject=id=>{
+    if(confirm("Excluir este projeto?")){
+      setProjects(projects.filter(p=>p.id!==id));
+      if(expanded===id)setExpanded(null);
       showToast("🗑️ Projeto removido.");
     }
   };
 
-  // === AÇÕES DE CULTIVO ===
-  const addCultivo = (projId, form) => {
-    const dataGerminacao = new Date(form.data);
-    const novasTarefas = [];
-    for (let i = 0; i < 60; i += 3) {
-      const dataT = new Date(dataGerminacao);
-      dataT.setDate(dataT.getDate() + i);
-      const tipo = (i % 15 === 0 && i !== 0) ? "fertilizante" : "água";
-      novasTarefas.push({ tipo, data: dataT.toISOString(), dosagem: calcularDosagem(form.litragem), concluida: false });
+  const addCultivo=(projId,form)=>{
+    const dataGerminacao=new Date(form.data);
+    const novasTarefas=[];
+    for(let i=0;i<60;i+=3){
+      const dataT=new Date(dataGerminacao);
+      dataT.setDate(dataT.getDate()+i);
+      const tipo=(i%15===0&&i!==0)?"fertilizante":"água";
+      novasTarefas.push({tipo,data:dataT.toISOString(),dosagem:calcularDosagem(form.litragem),concluida:false});
     }
-
-    const novo = {
-      id: Date.now(),
-      planta: form.planta,
-      data: form.data,
-      litragem: form.litragem,
-      quantidade: form.quantidade,
-      altura: 0,
-      folhas: 0,
-      pragas: "",
-      produtividade: 0,
-      custo: 0,
-      tarefas: novasTarefas
+    const novo={
+      id:Date.now(),planta:form.planta,data:form.data,
+      litragem:form.litragem,quantidade:form.quantidade,
+      altura:0,folhas:0,produtividade:0,custo:0,pragas:"",
+      tarefas:novasTarefas
     };
-    setProjects(projects.map(p => p.id === projId ? { ...p, cultivos: [...p.cultivos, novo] } : p));
+    setProjects(projects.map(p=>p.id===projId?{...p,cultivos:[...p.cultivos,novo]}:p));
     showToast("🌱 Cultivo adicionado!");
   };
-
-  const atualizarCultivo = (projId, cultId, campo, valor) => {
-    setProjects(projects.map(p => p.id === projId
-      ? { ...p, cultivos: p.cultivos.map(c => c.id === cultId ? { ...c, [campo]: valor } : c) }
-      : p
-    ));
+  const atualizarCultivo=(projId,cultId,campo,valor)=>{
+    setProjects(projects.map(p=>p.id===projId?{
+      ...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,[campo]:valor}:c)
+    }:p));
   };
-
-  const concluirTarefa = (projId, cultId, index) => {
-    setProjects(projects.map(p =>
-      p.id === projId
-        ? { ...p, cultivos: p.cultivos.map(c =>
-          c.id === cultId ? { ...c, tarefas: c.tarefas.map((t, i) => i === index ? { ...t, concluida: true } : t) } : c
-        ) }
-        : p
-    ));
+  const concluirTarefa=(projId,cultId,index)=>{
+    setProjects(projects.map(p=>p.id===projId?{
+      ...p,cultivos:p.cultivos.map(c=>c.id===cultId?{
+        ...c,tarefas:c.tarefas.map((t,i)=>i===index?{...t,concluida:true}:t)
+      }:c)
+    }:p));
     showToast("✅ Tarefa concluída!");
   };
 
-  // === COMPONENTE DE PROJETOS ===
-  function Projetos() {
-    const [nome, setNome] = useState("");
-    const [form, setForm] = useState({ planta:"", data:"", litragem:"700ml", quantidade:1 });
+  function Projetos(){
+    const [nome,setNome]=useState("");
+    const [form,setForm]=useState({planta:"",data:"",litragem:"700ml",quantidade:1});
+    return(<>
+      <h2>🌿 Projetos</h2>
+      <div style={{display:"flex",gap:"10px",marginBottom:"1rem"}}>
+        <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
+        <button className="action" onClick={()=>{addProject(nome);setNome("");}}>+ Novo Projeto</button>
+      </div>
 
-    return (
-      <>
-        <h2>🌿 Projetos</h2>
-        <div style={{ display:"flex", gap:"10px", marginBottom:"1rem" }}>
-          <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)} />
-          <button className="action" onClick={()=>{ addProject(nome); setNome(""); }}>+ Novo Projeto</button>
-        </div>
-
-        {projects.map(p => (
-          <div key={p.id} className="card">
-            <div style={{ display:"flex", justifyContent:"space-between" }}>
-              <div>
-                <strong>{p.nome}</strong>
-                <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
-              </div>
-              <div style={{ display:"flex", gap:"8px" }}>
-                <button className="action" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>{expanded===p.id?"Fechar":"Abrir"}</button>
-                <button className="action" onClick={()=>deleteProject(p.id)}>Excluir</button>
-              </div>
+      {projects.map(p=>(
+        <div key={p.id} className="card">
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div><strong>{p.nome}</strong><div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div></div>
+            <div style={{display:"flex",gap:"8px"}}>
+              <button className="action" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>{expanded===p.id?"Fechar":"Abrir"}</button>
+              <button className="action" onClick={()=>deleteProject(p.id)}>Excluir</button>
             </div>
-            {expanded === p.id && (
-              <div style={{ marginTop:"1rem" }}>
-                <div style={{ display:"flex", gap:"8px", marginBottom:"1rem" }}>
-                  <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
-                    <option value="">Planta</option>
-                    {plantas.map(pl => <option key={pl}>{pl}</option>)}
-                  </select>
-                  <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
-                  <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
-                    <option>700ml</option><option>2L</option><option>5L</option><option>10L</option><option>15L</option>
-                  </select>
-                  <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
-                  <button className="action" onClick={()=>addCultivo(p.id,form)}>Adicionar</button>
-                </div>
-
-                {p.cultivos.map(c => {
-                  const dias = Math.floor((new Date() - new Date(c.data)) / (1000*60*60*24));
-                  const fase = getFase(dias);
-                  const tarefasPendentes = c.tarefas.filter(t => !t.concluida);
-                  const tarefasProximas = tarefasPendentes.filter(t => {
-                    const diasRest = Math.floor((new Date(t.data) - new Date()) / (1000*60*60*24));
-                    return diasRest <= 5 && diasRest >= 0;
-                  });
-                  const eficiencia = c.produtividade && c.custo ? ((c.produtividade - c.custo) / c.custo * 100).toFixed(1) : 0;
-
-                  return (
-                    <div key={c.id} className="card">
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <strong>{c.planta}</strong>
-                        <span>{fase.icone} {fase.nome}</span>
-                      </div>
-                      <div className="small">Germinação: {formatDate(c.data)} • Litragem: {c.litragem} • Qtd: {c.quantidade}</div>
-
-                      <div className="progress">
-                        <div className="progress-bar" style={{ width:`${(dias/60)*100}%` }}></div>
-                      </div>
-
-                      {tarefasProximas.length>0 && (
-                        <div className="alert">
-                          ⚠️ Tarefas próximas ({tarefasProximas.length}):
-                          {tarefasProximas.map((t,i)=>(
-                            <div key={i}>• {t.tipo} — {t.dosagem} — {formatDate(t.data)}</div>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="section-title">🌱 Desenvolvimento</div>
-                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(140px, 1fr))", gap:"10px" }}>
-                        <label>Altura (cm)
-                          <input type="number" value={c.altura} onChange={e=>atualizarCultivo(p.id,c.id,"altura",e.target.value)}/>
-                        </label>
-                        <label>Folhas
-                          <input type="number" value={c.folhas} onChange={e=>atualizarCultivo(p.id,c.id,"folhas",e.target.value)}/>
-                        </label>
-                        <label>Produtividade (g)
-                          <input type="number" value={c.produtividade} onChange={e=>atualizarCultivo(p.id,c.id,"produtividade",e.target.value)}/>
-                        </label>
-                        <label>Custo (R$)
-                          <input type="number" value={c.custo} onChange={e=>atualizarCultivo(p.id,c.id,"custo",e.target.value)}/>
-                        </label>
-                      </div>
-
-                      <div className="section-title">🐛 Pragas e Ocorrências</div>
-                      <textarea
-                        rows="2"
-                        placeholder="Descreva pragas, doenças ou deficiências observadas..."
-                        style={{ width:"100%", background:"#1b1e22", color:"#e6e6e6", borderRadius:"8px", padding:"8px", marginTop:"4px" }}
-                        value={c.pragas}
-                        onChange={e=>atualizarCultivo(p.id,c.id,"pragas",e.target.value)}
-                      ></textarea>
-
-                      <div className="section-title">⚙️ Eficiência Agronômica</div>
-                      <div style={{ display:"flex", gap:"10px", alignItems:"center" }}>
-                        <div className="metric-value">{eficiencia}%</div>
-                        {eficiencia < 0 && <span style={{color:"#ff5252"}}>🚨 Prejuízo</span>}
-                        {eficiencia > 0 && <span style={{color:"#00e676"}}>✅ Lucro</span>}
-                      </div>
-
-                      <div style={{ marginTop:"10px" }}>
-                        <strong>📋 Tarefas a Executar</strong>
-                        {tarefasPendentes.length===0 && <div className="small">Tudo concluído!</div>}
-                        {tarefasPendentes.slice(0,5).map((t,i)=>(
-                          <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", background:"#1b1e22", padding:"6px 10px", borderRadius:"6px", marginTop:"5px" }}>
-                            <span>{formatDate(t.data)} — 💧 {t.tipo} ({t.dosagem})</span>
-                            <button className="action" style={{ padding:"4px 8px", fontSize:".8rem" }} onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
-        ))}
-      </>
-    );
+          {expanded===p.id&&(
+            <div style={{marginTop:"1rem"}}>
+              <div style={{display:"flex",gap:"8px",marginBottom:"1rem"}}>
+                <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
+                  <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
+                </select>
+                <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
+                <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
+                  <option>700ml</option><option>2L</option><option>5L</option><option>10L</option><option>15L</option>
+                </select>
+                <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
+                <button className="action" onClick={()=>addCultivo(p.id,form)}>Adicionar</button>
+              </div>
+
+              {p.cultivos.map(c=>{
+                const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                const fase=getFase(dias);
+                const tarefasPendentes=c.tarefas.filter(t=>!t.concluida);
+                const tarefasProximas=tarefasPendentes.filter(t=>{
+                  const diasRest=Math.floor((new Date(t.data)-new Date())/(1000*60*60*24));
+                  return diasRest<=5&&diasRest>=0;
+                });
+                const eficiencia=c.produtividade&&c.custo?(((c.produtividade-c.custo)/c.custo)*100).toFixed(1):0;
+
+                return(
+                  <div key={c.id} className="card">
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <strong>{c.planta}</strong><span>{fase.icone} {fase.nome}</span>
+                    </div>
+                    <div className="small">Germinação: {formatDate(c.data)} • Litragem: {c.litragem} • Qtd: {c.quantidade}</div>
+                    <div className="progress"><div className="progress-bar" style={{width:`${(dias/60)*100}%`}}></div></div>
+
+                    {tarefasProximas.length>0&&(
+                      <div className="alert">
+                        ⚠️ Tarefas próximas ({tarefasProximas.length}):
+                        {tarefasProximas.map((t,i)=>(<div key={i}>• {t.tipo} — {t.dosagem} — {formatDate(t.data)}</div>))}
+                      </div>
+                    )}
+
+                    <div className="section-title">🌱 Desenvolvimento</div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:"10px"}}>
+                      <label>Altura (cm)
+                        <input type="number" value={c.altura} onChange={e=>atualizarCultivo(p.id,c.id,"altura",e.target.value)}/>
+                      </label>
+                      <label>Folhas
+                        <input type="number" value={c.folhas} onChange={e=>atualizarCultivo(p.id,c.id,"folhas",e.target.value)}/>
+                      </label>
+                      <label>Produtividade (g)
+                        <input type="number" value={c.produtividade} onChange={e=>atualizarCultivo(p.id,c.id,"produtividade",e.target.value)}/>
+                      </label>
+                      <label>Custo (R$)
+                        <input type="number" value={c.custo} onChange={e=>atualizarCultivo(p.id,c.id,"custo",e.target.value)}/>
+                      </label>
+                    </div>
+
+                    <div className="section-title">🐛 Pragas e Ocorrências</div>
+                    <textarea rows="2" placeholder="Descreva pragas, doenças ou deficiências observadas..." style={{width:"100%",background:"#1b1e22",color:"#e6e6e6",borderRadius:"8px",padding:"8px",marginTop:"4px"}} value={c.pragas} onChange={e=>atualizarCultivo(p.id,c.id,"pragas",e.target.value)}></textarea>
+
+                    <div className="section-title">⚙️ Eficiência Agronômica</div>
+                    <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
+                      <div className="metric-value">{eficiencia}%</div>
+                      {eficiencia<0&&<span style={{color:"#ff5252"}}>🚨 Prejuízo</span>}
+                      {eficiencia>0&&<span style={{color:"#00e676"}}>✅ Lucro</span>}
+                    </div>
+
+                    <div style={{marginTop:"10px"}}>
+                      <strong>📋 Tarefas a Executar</strong>
+                      {tarefasPendentes.length===0&&<div className="small">Tudo concluído!</div>}
+                      {tarefasPendentes.slice(0,5).map((t,i)=>(
+                        <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"#1b1e22",padding:"6px 10px",borderRadius:"6px",marginTop:"5px"}}>
+                          <span>{formatDate(t.data)} — 💧 {t.tipo} ({t.dosagem})</span>
+                          <button className="action" style={{padding:"4px 8px",fontSize:".8rem"}} onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ))}
+    </>);
   }
 
-  // === DASHBOARD ===
-  function Dashboard() {
-    const todosCultivos = projects.flatMap(p=>p.cultivos);
-    const totalPlantas = todosCultivos.length;
-    const totalTarefas = todosCultivos.flatMap(c=>c.tarefas).length;
-    const concluidas = todosCultivos.flatMap(c=>c.tarefas).filter(t=>t.concluida).length;
-    const hoje = new Date();
-    const pendentes = todosCultivos.flatMap(c=>c.tarefas).filter(t=>!t.concluida && new Date(t.data)<hoje).length;
-    const eficiencia = totalTarefas ? ((concluidas/totalTarefas)*100).toFixed(1) : 0;
-    const producao = todosCultivos.reduce((acc,c)=>acc+(parseFloat(c.produtividade)||0),0);
-    const custo = todosCultivos.reduce((acc,c)=>acc+(parseFloat(c.custo)||0),0);
-    const rent = custo ? (((producao*10 - custo)/custo)*100).toFixed(1) : 0;
+  // === DASHBOARD COMPLETO ===
+  function Dashboard(){
+    const todosCultivos=projects.flatMap(p=>p.cultivos);
+    const totalPlantas=todosCultivos.length;
+    const totalTarefas=todosCultivos.flatMap(c=>c.tarefas).length;
+    const concluidas=todosCultivos.flatMap(c=>c.tarefas).filter(t=>t.concluida).length;
+    const hoje=new Date();
+    const pendentes=todosCultivos.flatMap(c=>c.tarefas).filter(t=>!t.concluida&&new Date(t.data)<hoje).length;
+    const eficiencia=totalTarefas?((concluidas/totalTarefas)*100).toFixed(1):0;
+    const producao=todosCultivos.reduce((a,c)=>a+(parseFloat(c.produtividade)||0),0);
+    const custo=todosCultivos.reduce((a,c)=>a+(parseFloat(c.custo)||0),0);
+    const rent=custo?(((producao*10-custo)/custo)*100).toFixed(1):0;
 
     useEffect(()=>{
-      const insightsDiv = document.getElementById("insights");
-      insightsDiv.innerHTML = `
+      // === Atualiza gráficos ===
+      if(!todosCultivos.length)return;
+      const ctx1=document.getElementById("graficoCrescimento");
+      if(ctx1){
+        new Chart(ctx1,{type:"line",data:{
+          labels:["Semana 1","Semana 2","Semana 3","Semana 4"],
+          datasets:[{data:[10,14,18,21],borderColor:"#00e676",tension:0.4}]
+        },options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#ccc"}},y:{ticks:{color:"#ccc"}}}}});
+      }
+      const ctx2=document.getElementById("graficoUmidade");
+      if(ctx2){
+        new Chart(ctx2,{type:"bar",data:{
+          labels:["Seg","Ter","Qua","Qui","Sex"],
+          datasets:[{data:[58,60,63,61,59],backgroundColor:"#00b050"}]
+        },options:{plugins:{legend:{display:false}}}});
+      }
+      const ctx3=document.getElementById("graficoEficiencia");
+      if(ctx3){
+        new Chart(ctx3,{type:"doughnut",data:{
+          labels:["Eficiência"],
+          datasets:[{data:[eficiencia,100-eficiencia],backgroundColor:["#00e676","#1b1e22"],borderWidth:0}]
+        },options:{cutout:"75%",plugins:{legend:{display:false}}}});
+      }
+
+      // === Atualiza insights laterais ===
+      const insightsDiv=document.getElementById("insights");
+      insightsDiv.innerHTML=`
         <div class='card'>🌱 Crescimento médio: <b>${(producao/totalPlantas||0).toFixed(1)}g</b></div>
         <div class='card'>💧 Eficiência: <b>${eficiencia}%</b></div>
         <div class='card'>📈 Rentabilidade média: <b>${rent}%</b></div>
         <div class='card'>🐛 Ocorrências registradas: <b>${todosCultivos.filter(c=>c.pragas).length}</b></div>
       `;
-    }, [projects]);
+    },[projects]);
 
-    return (
-      <>
-        <h2>📈 Dashboard Inteligente</h2>
-        <div className="dashboard-grid">
-          <div className="metric-card"><h3>🌿 Cultivos Ativos</h3><div className="metric-value">{totalPlantas}</div></div>
-          <div className="metric-card"><h3>⚙️ Eficiência Operacional</h3><div className="metric-value">{eficiencia}%</div></div>
-          <div className="metric-card"><h3>💰 Rentabilidade</h3><div className="metric-value">{rent}%</div></div>
-          <div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{pendentes}</div></div>
-        </div>
-      </>
-    );
+    return(<>
+      <h2>📈 Dashboard Inteligente</h2>
+      <div className="dashboard-grid">
+        <div className="metric-card"><h3>🌿 Cultivos Ativos</h3><div className="metric-value">{totalPlantas}</div></div>
+        <div className="metric-card"><h3>⚙️ Eficiência Operacional</h3><div className="metric-value">{eficiencia}%</div></div>
+        <div className="metric-card"><h3>💰 Rentabilidade</h3><div className="metric-value">{rent}%</div></div>
+        <div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{pendentes}</div></div>
+      </div>
+
+      {/* === GRÁFICOS === */}
+      <div className="dashboard-grid" style={{marginTop:"2rem"}}>
+        <div className="metric-card"><h3>📈 Crescimento</h3><canvas id="graficoCrescimento" height="100"></canvas></div>
+        <div className="metric-card"><h3>💧 Umidade</h3><canvas id="graficoUmidade" height="100"></canvas></div>
+        <div className="metric-card"><h3>⚙️ Eficiência</h3><canvas id="graficoEficiencia" height="100"></canvas></div>
+      </div>
+
+      {/* === ALERTAS === */}
+      {eficiencia<60&&<div className="alert">⚠️ Eficiência baixa ({eficiencia}%). Verifique atrasos nas regas ou fertilizações.</div>}
+      {pendentes>0&&<div className="alert">🚨 {pendentes} tarefa(s) atrasada(s). Avalie redistribuir atividades para evitar perdas.</div>}
+    </>);
   }
 
-  // === RENDER PRINCIPAL ===
-  return (
-    <div>
-      {page === "dashboard" ? <Dashboard /> : <Projetos />}
-      {toast && <div className="toast">{toast}</div>}
-    </div>
-  );
+  // === RENDERIZAÇÃO FINAL ===
+  return(<div>{page==="dashboard"?<Dashboard/>:<Projetos/>}{toast&&<div className="toast">{toast}</div>}</div>);
 }
 
-// === APP RAIZ ===
-let currentPage = "dashboard";
-const root = ReactDOM.createRoot(document.getElementById("root"));
-function renderApp() { root.render(<App key={currentPage} page={currentPage} />); }
+// === APP PRINCIPAL ===
+let currentPage="dashboard";
+const root=ReactDOM.createRoot(document.getElementById("root"));
+function renderApp(){root.render(<App key={currentPage} page={currentPage}/>);}
 renderApp();
-
 document.querySelectorAll(".nav-btn").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
