@@ -315,7 +315,7 @@
         ));
       };
 
-      /* === MÉTRICAS GERAIS === */
+      /* === DASHBOARD === */
       const allCultivos = projects.flatMap(p => p.cultivos);
       const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
       const producao = totalQ * 1.5;
@@ -323,7 +323,6 @@
       const lucro = producao * 10;
       const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
 
-      /* === DASHBOARD === */
       function Dashboard() {
         return (
           <>
@@ -343,11 +342,6 @@
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
-
-        const tarefas = allCultivos.map(c => ({
-          planta: c.planta,
-          colheita: formatDate(new Date(new Date(c.data).getTime() + (60 * 24 * 60 * 60 * 1000)))
-        }));
 
         const projetoAtual = projects.find(p => p.id === expanded);
 
@@ -444,30 +438,36 @@
             {/* PAINEL LATERAL DIREITO */}
             {ReactDOM.createPortal(
               <div>
-                <div className="summary">
-                  <h4>📊 Panorama Geral</h4>
-                  <div>🌾 Projetos: {projects.length}</div>
-                  <div>🌿 Cultivos: {allCultivos.length}</div>
-                </div>
-                <div className="tasks">
-                  <h4>🧾 Tarefas</h4>
-                  {tarefas.length>0 ? tarefas.map((t,i)=>(
-                    <div key={i} className="task-item">
-                      <strong>{t.planta}</strong><br/>
-                      Colheita: {t.colheita}
+                {projetoAtual ? (
+                  <>
+                    <div className="summary">
+                      <h4>📊 Panorama Geral</h4>
+                      <div>🌾 Cultivos: {projetoAtual.cultivos.length}</div>
+                      <div>📦 Quantidade Total: {projetoAtual.cultivos.reduce((a,b)=>a+Number(b.quantidade||0),0)}</div>
                     </div>
-                  )):<div className="small">Nenhuma tarefa</div>}
-                </div>
-
-                {projetoAtual && (
-                  <div className="history">
-                    <h4>🕓 Histórico do Projeto</h4>
-                    {projetoAtual.historico.length>0 ? projetoAtual.historico.slice(-10).reverse().map((h,i)=>(
-                      <div key={i} className="history-item">
-                        {h.data} — {h.acao}
-                      </div>
-                    )) : <div className="small">Nenhuma ação registrada</div>}
-                  </div>
+                    <div className="tasks">
+                      <h4>🧾 Tarefas</h4>
+                      {projetoAtual.cultivos.length>0 ? projetoAtual.cultivos.map((c,i)=>{
+                        const colheita = formatDate(new Date(new Date(c.data).getTime() + (60*24*60*60*1000)));
+                        return (
+                          <div key={i} className="task-item">
+                            <strong>{c.planta}</strong><br/>
+                            Colheita: {colheita}
+                          </div>
+                        );
+                      }) : <div className="small">Nenhuma tarefa</div>}
+                    </div>
+                    <div className="history">
+                      <h4>🕓 Histórico do Projeto</h4>
+                      {projetoAtual.historico.length>0 ? projetoAtual.historico.slice(-10).reverse().map((h,i)=>(
+                        <div key={i} className="history-item">
+                          {h.data} — {h.acao}
+                        </div>
+                      )) : <div className="small">Nenhuma ação registrada</div>}
+                    </div>
+                  </>
+                ) : (
+                  <div className="small" style={{opacity:0.7, marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>
                 )}
               </div>,
               document.getElementById("sidePanel")
