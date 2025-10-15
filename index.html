@@ -11,36 +11,166 @@
 
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: "Inter", sans-serif; background: #0f1115; color: #e6e6e6; display: flex; height: 100vh; overflow: hidden; }
-    aside { width: 230px; background: #121417; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-    aside h1 { font-size: 1.25rem; color: #00e676; display: flex; align-items: center; gap: 6px; }
-    .nav-btn { background: none; border: none; color: #e6e6e6; font-size: 1rem; text-align: left; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-    .nav-btn.active, .nav-btn:hover { background: #0f271d; color: #00e676; }
-    main { flex: 1; display: flex; background: #0f1115; overflow: hidden; }
-    .content { flex: 1; padding: 2rem; overflow-y: auto; }
-    .sidebar-right { width: 280px; background: #121417; border-left: 1px solid #1d1f23; padding: 1rem; overflow-y: auto; }
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0f1115;
+      color: #e6e6e6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    aside {
+      width: 230px;
+      background: #121417;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    aside h1 {
+      font-size: 1.25rem;
+      color: #00e676;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #e6e6e6;
+      font-size: 1rem;
+      text-align: left;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .nav-btn.active, .nav-btn:hover {
+      background: #0f271d;
+      color: #00e676;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      background: #0f1115;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .sidebar-right {
+      width: 280px;
+      background: #121417;
+      border-left: 1px solid #1d1f23;
+      padding: 1rem;
+      overflow-y: auto;
+    }
     h2 { color: #00e676; margin-top: 0; }
-    .card { background: #171a1f; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,230,118,0.05); }
-    select, input, button { border: none; border-radius: 8px; padding: 8px 10px; font-family: inherit; }
-    button.action { background: #00e676; color: #000; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .card {
+      background: #171a1f;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
+    }
+    select, input, button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: inherit;
+    }
+    button.action {
+      background: #00e676;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
     button.action:hover { transform: scale(1.03); }
-    .form-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
-    .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-    .progress { height: 8px; background: #1e2228; border-radius: 4px; overflow: hidden; margin-top: 6px; }
-    .progress-bar { height: 100%; transition: width 0.5s ease; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #00e676; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: 600; animation: slideIn .5s ease; }
-    @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 99; }
-    .modal { background: #1b1e24; padding: 1.5rem; border-radius: 12px; width: 320px; }
-    .modal h3 { margin-top: 0; color: #00e676; }
-    .project-card { background: #1b1e24; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: 0.3s; }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .progress {
+      height: 8px;
+      background: #1e2228;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-bar {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00e676;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      animation: slideIn .5s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+    }
+    .modal {
+      background: #1b1e24;
+      padding: 1.5rem;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    .project-card {
+      background: #1b1e24;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
     .project-card:hover { background: #1f2329; }
-    .project-header { display: flex; justify-content: space-between; align-items: center; }
-    .btn-icon { background: #00e676; border: none; border-radius: 6px; color: #000; font-weight: 600; padding: 6px 10px; cursor: pointer; transition: 0.3s; }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-icon {
+      background: #00e676;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-weight: 600;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
     .btn-icon:hover { transform: scale(1.05); }
     .small { color: #a1a1a1; font-size: 0.85rem; }
-    .summary h4, .tasks h4, .history h4 { margin: 0 0 0.5rem; color: #00e676; }
-    .task-item, .history-item { background: #171a1f; border-radius: 8px; padding: 0.5rem; margin-bottom: 0.5rem; }
   </style>
 </head>
 <body>
@@ -57,7 +187,8 @@
 
   <script type="text/babel">
     const { useState, useEffect } = React;
-    const plantas = ["Abóbora","Alface","Batata","Tomate","Uva","Morango"];
+
+    const plantas = ["Abóbora","Alface","Cenoura","Coentro","Couve","Tomate","Uva","Morango","Laranja","Abacaxi"];
     const fertilizantes = ["BioBizz","Forth","Dimy"];
     const fases = [
       { nome:"Germinação", icone:"🌱", cor:"#00ff99", dias:[0,7] },
@@ -76,267 +207,246 @@
       const [newName, setNewName] = useState("");
       const [expanded, setExpanded] = useState(null);
 
-      useEffect(()=>localStorage.setItem("projects",JSON.stringify(projects)),[projects]);
-      const showToast = msg => { setToast(msg); setTimeout(()=>setToast(""),2500); };
+      useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
+      const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
       const addProject = nome => {
-        if(!nome.trim()) return alert("Informe um nome para o projeto.");
-        const novo = { id:Date.now(), nome, dataCriacao:new Date().toLocaleDateString(), cultivos:[], historico:[] };
-        setProjects([...projects,novo]); showToast("🌿 Projeto criado!");
+        if (!nome.trim()) return alert("Informe um nome para o projeto.");
+        const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], historico: [] };
+        setProjects([...projects, novo]);
+        showToast("🌿 Projeto criado!");
       };
       const deleteProject = id => {
-        if(confirm("Excluir este projeto?")){
-          setProjects(projects.filter(p=>p.id!==id));
-          if(expanded===id) setExpanded(null);
+        if (confirm("Excluir este projeto?")) {
+          setProjects(projects.filter(p => p.id !== id));
+          if (expanded === id) setExpanded(null);
           showToast("🗑️ Projeto removido.");
         }
       };
-      const saveEdit = ()=>{
-        setProjects(projects.map(p=>p.id===editProj.id?{...p,nome:newName}:p));
-        setEditProj(null); showToast("✏️ Projeto atualizado!");
+
+      const saveEdit = () => {
+        setProjects(projects.map(p => p.id === editProj.id ? { ...p, nome: newName } : p));
+        setEditProj(null);
+        showToast("✏️ Projeto atualizado!");
       };
-      const addCultivo=(projId,form)=>{
-        setProjects(projects.map(p=>p.id===projId
-          ?{...p,cultivos:[...p.cultivos,{...form,id:Date.now(),historico:[]}],
-            historico:[...p.historico,{data:new Date().toLocaleDateString(),acao:`🌱 Cultivo de ${form.planta} adicionado`}]}
-          :p));
+
+      /* === CULTIVOS === */
+      const addCultivo = (projId, form) => {
+        setProjects(projects.map(p =>
+          p.id === projId
+            ? { 
+                ...p,
+                cultivos: [...p.cultivos, { ...form, id: Date.now(), historico: [] }],
+                historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: `🌱 Cultivo de ${form.planta} adicionado` }]
+              }
+            : p
+        ));
         showToast("🌱 Cultivo adicionado!");
       };
-      const deleteCultivo=(projId,cultId)=>{
-        setProjects(projects.map(p=>p.id===projId
-          ?{...p,cultivos:p.cultivos.filter(c=>c.id!==cultId),
-            historico:[...p.historico,{data:new Date().toLocaleDateString(),acao:"🗑️ Cultivo removido"}]}
-          :p));
-      };
-      const registrar=(projId,cultId,acao)=>{
-        setProjects(projects.map(p=>p.id===projId
-          ?{...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,historico:[...c.historico,{data:new Date().toLocaleDateString(),acao}]}:c),
-            historico:[...p.historico,{data:new Date().toLocaleDateString(),acao}]}
-          :p));
-      };
 
-      /* === ABA DE PROJETOS === */
-      function Projetos(){
-        const [nome,setNome]=useState("");
-        const [form,setForm]=useState({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});
-        const projetoAtual=projects.find(p=>p.id===expanded);
+      /* === DASHBOARD COM SELETOR DE PROJETO === */
+      function Dashboard() {
+        const [selectedProjId, setSelectedProjId] = useState("");
+        const projetoSelecionado = projects.find(p => p.id == selectedProjId);
+        const cultivos = projetoSelecionado ? projetoSelecionado.cultivos : [];
 
-        return(<>
-          <h2>🌿 Projetos</h2>
-          <div className="form-group">
-            <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
-            <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
-          </div>
-          {projects.map(p=>(
-            <div key={p.id} className="project-card">
-              <div className="project-header" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>
-                <div>
-                  <strong>{p.nome}</strong>
-                  <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
-                </div>
-                <div style={{display:"flex",gap:"6px"}}>
-                  <button className="btn-icon" onClick={e=>{e.stopPropagation(); setEditProj(p); setNewName(p.nome);}}>✏️</button>
-                  <button className="btn-icon" onClick={e=>{e.stopPropagation(); deleteProject(p.id);}}>🗑️</button>
-                </div>
-              </div>
-              {expanded===p.id && (
-                <div style={{marginTop:"1rem"}}>
-                  {/* FORMULÁRIO DE CULTIVO */}
-                  <div className="form-group">
-                    <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
-                      <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
-                    </select>
-                    <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
-                    <select value={form.fertilizante} onChange={e=>setForm({...form,fertilizante:e.target.value})}>
-                      {fertilizantes.map(f=><option key={f}>{f}</option>)}
-                    </select>
-                    <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
-                      <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
-                    </select>
-                    <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
-                    <button className="action" onClick={()=>{
-                      if(!form.planta||!form.data) return alert("Preencha todos os campos!");
-                      addCultivo(p.id,form);
-                      setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});
-                      setExpanded(p.id);
-                    }}>Adicionar</button>
-                  </div>
+        const totalQ = cultivos.reduce((a,b)=>a+Number(b.quantidade||0),0);
+        const producao = totalQ * 1.5;
+        const custo = totalQ * 5;
+        const lucro = producao * 10;
+        const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
 
-                  {/* CULTIVOS ATIVOS */}
-                  {p.cultivos.map(c=>{
-                    const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
-                    const fase=getFase(dias);
-                    const prog=Math.min((dias/60)*100,100);
-                    return(
-                      <div key={c.id} className="card">
-                        <div style={{display:"flex",justifyContent:"space-between"}}>
-                          <strong>{c.planta}</strong><span>{c.fertilizante}</span>
-                        </div>
-                        <div className="small">🌱 Germinação: {formatDate(c.data)} | {fase.icone} {fase.nome}</div>
-                        <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
-                        <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
-                        <div className="form-group">
-                          <button className="action" onClick={()=>registrar(p.id,c.id,"✅ Adubação realizada")}>Aplicar</button>
-                          <button className="action" onClick={()=>deleteCultivo(p.id,c.id)}>Excluir</button>
-                        </div>
-                        {c.historico.length>0&&(
-                          <div className="small">
-                            <strong>📜 Histórico:</strong>
-                            {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+        return (
+          <>
+            <div className="form-group">
+              <label>📁 Projeto:</label>
+              <select value={selectedProjId} onChange={e=>setSelectedProjId(e.target.value)}>
+                <option value="">Selecione um projeto</option>
+                {projects.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+              </select>
             </div>
-          ))}
 
-          {/* MODAL DE EDIÇÃO */}
-          {editProj&&(
-            <div className="modal-bg" onClick={()=>setEditProj(null)}>
-              <div className="modal" onClick={e=>e.stopPropagation()}>
-                <h3>Editar Projeto</h3>
-                <input value={newName} onChange={e=>setNewName(e.target.value)} style={{width:"100%",marginBottom:"10px"}}/>
-                <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
-                  <button className="action" onClick={saveEdit}>Salvar</button>
-                  <button className="action" onClick={()=>setEditProj(null)}>Cancelar</button>
+            {projetoSelecionado ? (
+              <>
+                <h2>📊 Dashboard — {projetoSelecionado.nome}</h2>
+                <div className="dashboard-cards">
+                  <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{cultivos.length}</p></div>
+                  <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
+                  <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p></div>
+                  <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
+                  <div className="card"><h3>📈 Rentabilidade</h3><p>{rent}%</p></div>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* PAINEL LATERAL DIREITO */}
-          {ReactDOM.createPortal(
-            <div>
-              {projetoAtual ? (
-                <>
-                  <div className="summary">
-                    <h4>📊 Panorama Geral</h4>
-                    <div>🌾 Cultivos: {projetoAtual.cultivos.length}</div>
-                    <div>📦 Quantidade Total: {projetoAtual.cultivos.reduce((a,b)=>a+Number(b.quantidade||0),0)}</div>
-                  </div>
-                  <div className="tasks">
-                    <h4>🧾 Tarefas</h4>
-                    {projetoAtual.cultivos.length>0
-                      ? projetoAtual.cultivos.map((c,i)=>{
-                          const colheita=formatDate(new Date(new Date(c.data).getTime()+(60*24*60*60*1000)));
-                          return(<div key={i} className="task-item"><strong>{c.planta}</strong><br/>Colheita: {colheita}</div>);
-                        })
-                      : <div className="small">Nenhuma tarefa</div>}
-                  </div>
-                  <div className="history">
-                    <h4>🕓 Histórico do Projeto</h4>
-                    {projetoAtual.historico.length>0
-                      ? projetoAtual.historico.slice(-10).reverse().map((h,i)=>(<div key={i} className="history-item">{h.data} — {h.acao}</div>))
-                      : <div className="small">Nenhuma ação registrada</div>}
-                  </div>
-                </>
-              ) : (
-                <div className="small" style={{opacity:0.7,marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>
-              )}
-            </div>,
-            document.getElementById("sidePanel")
-          )}
-        </>);
+                <div className="card">
+                  <h3>📆 Previsão de Colheita</h3>
+                  {cultivos.length > 0 ? (
+                    cultivos.map((c,i)=>{
+                      const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                      const fase=getFase(dias);
+                      const colheita=formatDate(new Date(new Date(c.data).getTime()+(60*24*60*60*1000)));
+                      return(
+                        <div key={i} style={{marginBottom:"8px"}}>
+                          <strong>{c.planta}</strong> — {fase.icone} {fase.nome}<br/>
+                          <small>🌱 Germinação: {formatDate(c.data)} | 🧭 Colheita prevista: {colheita}</small>
+                          <div className="progress"><div className="progress-bar" style={{width:`${(dias/60)*100}%`,background:fase.cor}}></div></div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="small">Nenhum cultivo ativo neste projeto.</div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div style={{opacity:0.7,marginTop:"2rem"}}>
+                <p>Selecione um projeto para visualizar as métricas e previsões.</p>
+              </div>
+            )}
+          </>
+        );
       }
 
-      /* === DASHBOARD INTELIGENTE COM PREVISÃO COLORIDA === */
-      function DashboardInteligente(){
-        const allCultivos=projects.flatMap(p=>p.cultivos);
-        const totalQ=allCultivos.reduce((a,b)=>a+Number(b.quantidade||0),0);
-        const producao=totalQ*1.5;
-        const custo=totalQ*5;
-        const lucro=producao*10;
-        const rent=custo?(((lucro-custo)/custo)*100).toFixed(1):0;
-        const roi=custo?((lucro/custo)*100).toFixed(1):0;
+      /* === COMPONENTE PROJETOS (MANTIDO INTACTO) === */
+      function Projetos() {
+        const [nome, setNome] = useState("");
+        const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+        const [expanded, setExpanded] = useState(null);
+        const projetoAtual = projects.find(p => p.id === expanded);
 
-        const dias=Array.from({length:30},(_,i)=>i+1);
-        const dados=dias.map(()=>producao/30+(Math.random()*15-7));
-        const media=dados.reduce((a,b)=>a+b,0)/dados.length;
-        const ult7=dados.slice(-7).reduce((a,b)=>a+b,0)/7;
-        const variacao=((ult7-media)/media*100).toFixed(1);
-        const previsao = variacao>5 ? `📈 A produção deve aumentar ${variacao}% nas próximas 2 semanas — mantenha o ritmo!`
-                        : variacao<-5 ? `📉 Atenção: tendência de queda de ${Math.abs(variacao)}% — revise irrigação e adubação.`
-                        : `⚖️ Produção estável — mantenha os parâmetros atuais.`;
+        const deleteCultivo = (projId, cultId) => {
+          setProjects(projects.map(p =>
+            p.id === projId
+              ? {
+                  ...p,
+                  cultivos: p.cultivos.filter(c => c.id !== cultId),
+                  historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: "🗑️ Cultivo removido" }]
+                }
+              : p
+          ));
+        };
 
-        const renderBar=(v,cor="#00e676")=>
-          <div style={{background:"#1f2329",height:"8px",borderRadius:"4px",overflow:"hidden",marginTop:"4px"}}>
-            <div style={{width:`${v}%`,height:"100%",background:cor,transition:"width 0.4s ease"}}/>
-          </div>;
+        const registrar = (projId, cultId, acao) => {
+          setProjects(projects.map(p =>
+            p.id === projId
+              ? {
+                  ...p,
+                  cultivos: p.cultivos.map(c => c.id === cultId
+                    ? { ...c, historico: [...c.historico, { data: new Date().toLocaleDateString(), acao }] }
+                    : c),
+                  historico: [...p.historico, { data: new Date().toLocaleDateString(), acao }]
+                }
+              : p
+          ));
+        };
 
-        useEffect(()=>{
-          const canvas=document.getElementById("graficoTrend");
-          if(!canvas)return;
-          const ctx=canvas.getContext("2d");
-          ctx.clearRect(0,0,canvas.width,canvas.height);
-          const max=Math.max(...dados,1);
-          const chartH=canvas.height-40;
-          const stepX=canvas.width/(dias.length-1);
-          ctx.strokeStyle="#1f2329";
-          ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,chartH+20);ctx.lineTo(canvas.width-10,chartH+20);ctx.stroke();
-          const cor=variacao>5?"#00e676":variacao<-5?"#ff9800":"#9e9e9e";
-          ctx.strokeStyle=cor;ctx.lineWidth=2;ctx.beginPath();
-          dados.forEach((v,i)=>{const x=i*stepX+40;const y=chartH-(v/max)*chartH+20;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
-          ctx.fillStyle=cor;dados.forEach((v,i)=>{const x=i*stepX+40;const y=chartH-(v/max)*chartH+20;ctx.beginPath();ctx.arc(x,y,2.8,0,2*Math.PI);ctx.fill();});
-        },[projects]);
-
-        return(<div>
-          <h2>📈 Dashboard Inteligente</h2>
-          <h3 style={{color:"#00e676",marginTop:"1rem"}}>🟢 Panorama Produtivo</h3>
-          <div className="dashboard-cards">
-            <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{allCultivos.length}</p></div>
-            <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
-            <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p>{renderBar((producao/1000)*100)}</div>
-            <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p>{renderBar(Math.min((lucro/5000)*100,100),"#00bfa5")}</div>
-            <div className="card"><h3>📈 Rentabilidade</h3><p>{rent}%</p>{renderBar(rent,"#7cfc00")}</div>
-            <div className="card"><h3>💹 ROI</h3><p>{roi}%</p>{renderBar(roi,"#4caf50")}</div>
-          </div>
-
-          <div style={{marginTop:"2rem"}}>
-            <h3 style={{color:"#00e676"}}>📊 Tendência da Produção (30 dias)</h3>
-            <canvas id="graficoTrend" width="700" height="220" style={{background:"#121417",borderRadius:"12px",padding:"1rem"}}></canvas>
-            <p style={{color:variacao>5?"#00e676":variacao<-5?"#ff9800":"#9e9e9e",fontWeight:600,marginTop:"0.8rem"}}>{previsao}</p>
-          </div>
-
-          <h3 style={{color:"#00e676",marginTop:"2rem"}}>🟠 Eficiência Operacional</h3>
-          <div className="dashboard-cards">
-            <div className="card"><h3>🧪 Fertilização</h3><p>88%</p>{renderBar(88)}</div>
-            <div className="card"><h3>💧 Irrigação</h3><p>93%</p>{renderBar(93)}</div>
-            <div className="card"><h3>🌱 Progresso Médio</h3><p>79%</p>{renderBar(79,"#b0ff92")}</div>
-            <div className="card"><h3>⏳ Atrasos</h3><p>6%</p>{renderBar(6,"#fca311")}</div>
-            <div className="card"><h3>📅 Dias até Colheita</h3><p>27</p></div>
-          </div>
-
-          <h3 style={{color:"#00e676",marginTop:"2rem"}}>🔵 Risco & Ações</h3>
-          <div className="dashboard-cards">
-            <div className="card"><h3>⚠️ Risco Geral</h3>{renderBar((Math.random()*80+10).toFixed(0),"#f44336")}</div>
-            <div className="card"><h3>🌾 Próximas Colheitas</h3>
-              {allCultivos.length?allCultivos.slice(0,3).map((c,i)=><p key={i}>{c.planta} – {formatDate(new Date(new Date(c.data).getTime()+(60*24*60*60*1000)))}</p>):<p>Nenhuma prevista</p>}
+        return (
+          <>
+            <h2>🌿 Projetos</h2>
+            <div className="form-group">
+              <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)} />
+              <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
             </div>
-            <div className="card"><h3>🧠 Insight Automático</h3><p>{previsao}</p></div>
-          </div>
-        </div>);
+
+            {projects.map(p => (
+              <div key={p.id} className="project-card">
+                <div className="project-header" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>
+                  <div>
+                    <strong>{p.nome}</strong>
+                    <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+                  </div>
+                  <div style={{display:"flex",gap:"6px"}}>
+                    <button className="btn-icon" onClick={e=>{e.stopPropagation(); setEditProj(p); setNewName(p.nome);}}>✏️</button>
+                    <button className="btn-icon" onClick={e=>{e.stopPropagation(); deleteProject(p.id);}}>🗑️</button>
+                  </div>
+                </div>
+                {expanded===p.id && (
+                  <div style={{marginTop:"1rem"}}>
+                    <div className="form-group">
+                      <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
+                        <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
+                      </select>
+                      <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
+                      <select value={form.fertilizante} onChange={e=>setForm({...form,fertilizante:e.target.value})}>
+                        {fertilizantes.map(f=><option key={f}>{f}</option>)}
+                      </select>
+                      <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
+                        <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
+                      </select>
+                      <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
+                      <button className="action" onClick={()=>{
+                        if(!form.planta||!form.data) return alert("Preencha todos os campos!");
+                        addCultivo(p.id,form);
+                        setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});
+                        setExpanded(p.id);
+                      }}>Adicionar</button>
+                    </div>
+
+                    {p.cultivos.map(c=>{
+                      const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                      const fase=getFase(dias);
+                      const prog=Math.min((dias/60)*100,100);
+                      return(
+                        <div key={c.id} className="card">
+                          <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <strong>{c.planta}</strong><span>{c.fertilizante}</span>
+                          </div>
+                          <div className="small">🌱 Germinação: {formatDate(c.data)} | {fase.icone} {fase.nome}</div>
+                          <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
+                          <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
+                          <div className="form-group">
+                            <button className="action" onClick={()=>registrar(p.id,c.id,"✅ Adubação realizada")}>Aplicar</button>
+                            <button className="action" onClick={()=>deleteCultivo(p.id,c.id)}>Excluir</button>
+                          </div>
+                          {c.historico.length>0&&(
+                            <div className="small">
+                              <strong>📜 Histórico:</strong>
+                              {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {editProj&&(
+              <div className="modal-bg" onClick={()=>setEditProj(null)}>
+                <div className="modal" onClick={e=>e.stopPropagation()}>
+                  <h3>Editar Projeto</h3>
+                  <input value={newName} onChange={e=>setNewName(e.target.value)} style={{width:"100%",marginBottom:"10px"}}/>
+                  <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
+                    <button className="action" onClick={saveEdit}>Salvar</button>
+                    <button className="action" onClick={()=>setEditProj(null)}>Cancelar</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
       }
 
       /* === APLICAÇÃO PRINCIPAL === */
-      return(<div>{page==="dashboard"?<DashboardInteligente/>:<Projetos/>}{toast&&<div className="toast">{toast}</div>}</div>);
-    }
+      let currentPage = "dashboard";
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      const side = document.getElementById("sidePanel");
 
-    let currentPage="dashboard";
-    const root=ReactDOM.createRoot(document.getElementById("root"));
-    const side=document.getElementById("sidePanel");
-    function renderApp(){if(currentPage==="dashboard")side.innerHTML="";root.render(<App key={currentPage} page={currentPage}/>);}
-    renderApp();
-    document.querySelectorAll(".nav-btn").forEach(btn=>{
-      btn.onclick=()=>{
-        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        currentPage=btn.getAttribute("data-page");
-        renderApp();
-      };
-    });
-  </script>
-</body>
+      function renderApp() {
+        if (currentPage === "dashboard") side.innerHTML = "";
+        root.render(<App key={currentPage} page={currentPage} />);
+      }
+
+      renderApp();
+
+      document.querySelectorAll(".nav-btn").forEach(btn=>{
+        btn.onclick=()=>{
+          document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+          btn.classList.add("active");
+          currentPage=btn.getAttribute("data-page");
+          renderApp();
+        };
+      });
+    </script>
+  </body>
 </html>
