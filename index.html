@@ -8,7 +8,6 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -21,6 +20,7 @@
       height: 100vh;
       overflow: hidden;
     }
+
     aside {
       width: 230px;
       background: #121417;
@@ -51,6 +51,7 @@
       background: #0f271d;
       color: #00e676;
     }
+
     main {
       flex: 1;
       display: flex;
@@ -62,6 +63,7 @@
       padding: 2rem;
       overflow-y: auto;
     }
+
     .sidebar-right {
       width: 280px;
       background: #121417;
@@ -69,6 +71,7 @@
       padding: 1rem;
       overflow-y: auto;
     }
+
     h2 { color: #00e676; margin-top: 0; }
     .card {
       background: #171a1f;
@@ -77,6 +80,7 @@
       margin-bottom: 1rem;
       box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
     }
+
     select, input, button {
       border: none;
       border-radius: 8px;
@@ -91,17 +95,20 @@
       transition: 0.3s;
     }
     button.action:hover { transform: scale(1.03); }
+
     .form-group {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 1rem;
     }
+
     .dashboard-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
     }
+
     .progress {
       height: 8px;
       background: #1e2228;
@@ -113,6 +120,7 @@
       height: 100%;
       transition: width 0.5s ease;
     }
+
     .toast {
       position: fixed;
       bottom: 20px;
@@ -128,6 +136,7 @@
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+
     .modal-bg {
       position: fixed;
       top: 0; left: 0;
@@ -145,6 +154,8 @@
       width: 320px;
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
+    .modal h3 { margin-top: 0; color: #00e676; }
+
     .project-card {
       background: #1b1e24;
       border-radius: 10px;
@@ -170,21 +181,15 @@
       transition: 0.3s;
     }
     .btn-icon:hover { transform: scale(1.05); }
+
     .small { color: #a1a1a1; font-size: 0.85rem; }
-    .alert {
-      border-left: 4px solid #ff5252;
-      padding-left: 10px;
-      margin-bottom: 0.5rem;
-      background: #1b1e24;
-      border-radius: 6px;
-    }
+
     .panel-item {
       background: #171a1f;
       border-radius: 8px;
-      padding: 0.5rem;
+      padding: 0.6rem;
       margin-bottom: 0.5rem;
     }
-    canvas { background: #121417; border-radius: 12px; margin-top: 1.5rem; padding: 1rem; }
   </style>
 </head>
 
@@ -203,32 +208,32 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    /* === MAPA DE PLANTAS COM CICLOS, FREQUÊNCIAS E DURAÇÕES === */
+    /* === MAPA DE PLANTAS === */
     const mapaPlantas = {
-      "Alface": { ciclo: 45, agua: 2, fertilizante: 10 },
-      "Tomate": { ciclo: 90, agua: 2, fertilizante: 7 },
-      "Abobrinha": { ciclo: 70, agua: 2, fertilizante: 8 },
-      "Beterraba": { ciclo: 60, agua: 3, fertilizante: 9 },
-      "Rúcula": { ciclo: 40, agua: 1, fertilizante: 10 },
-      "Cenoura": { ciclo: 80, agua: 3, fertilizante: 10 },
-      "Couve": { ciclo: 75, agua: 2, fertilizante: 7 },
-      "Morango": { ciclo: 95, agua: 2, fertilizante: 6 },
-      "Agrião": { ciclo: 50, agua: 1, fertilizante: 10 }
+      "Tomate": { ciclo: 60, agua: 2, fertilizante: 7 },
+      "Alface": { ciclo: 40, agua: 2, fertilizante: 10 },
+      "Abobrinha": { ciclo: 55, agua: 3, fertilizante: 8 },
+      "Agrião": { ciclo: 45, agua: 1, fertilizante: 10 },
+      "Cenoura": { ciclo: 80, agua: 4, fertilizante: 15 }
     };
 
+    /* === FUNÇÃO DE FASE DE CRESCIMENTO === */
     const fases = [
       { nome:"Germinação", icone:"🌱", cor:"#00ff99", dias:[0,7] },
       { nome:"Crescimento", icone:"🌿", cor:"#00e676", dias:[8,35] },
       { nome:"Floração", icone:"🌸", cor:"#c084fc", dias:[36,50] },
-      { nome:"Pré-colheita", icone:"🍅", cor:"#fca311", dias:[51,60] }
+      { nome:"Pré-colheita", icone:"🍅", cor:"#fca311", dias:[51,70] }
     ];
-
     const getFase = dias => fases.find(f => dias >= f.dias[0] && dias <= f.dias[1]) || fases[0];
     const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"short" });
     /* === GERADOR AUTOMÁTICO DE TAREFAS === */
-    function gerarTarefas(planta, dataGerminacao) {
+    function gerarTarefas(planta, dataGerminacao, litragem = "700ml") {
       const conf = mapaPlantas[planta];
       if (!conf) return [];
+
+      const doses = { "700ml": 100, "5L": 350, "10L": 600, "15L": 900 };
+      const dose = doses[litragem] || 100;
+
       const tarefas = [];
       const germinacao = new Date(dataGerminacao);
       const fim = new Date(germinacao);
@@ -239,10 +244,20 @@
         data.setDate(data.getDate() + i);
 
         if (i % conf.agua === 0)
-          tarefas.push({ tipo: "💧 Rega com água", data: data.toISOString(), status: "pendente" });
+          tarefas.push({
+            tipo: `💧 Rega com água (${dose} ml)`,
+            data: data.toISOString(),
+            status: "pendente"
+          });
+
         if (i % conf.fertilizante === 0 && i !== 0)
-          tarefas.push({ tipo: "🧪 Rega com fertilizante", data: data.toISOString(), status: "pendente" });
+          tarefas.push({
+            tipo: `🧪 Rega com fertilizante (${dose} ml)`,
+            data: data.toISOString(),
+            status: "pendente"
+          });
       }
+
       return tarefas;
     }
 
@@ -253,7 +268,6 @@
       const [editProj, setEditProj] = useState(null);
       const [newName, setNewName] = useState("");
       const [expanded, setExpanded] = useState(null);
-      const [selectedProjeto, setSelectedProjeto] = useState(null);
 
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
@@ -282,122 +296,96 @@
 
       /* === CULTIVOS === */
       const addCultivo = (projId, form) => {
-        const tarefasAuto = gerarTarefas(form.planta, form.data);
+        const tarefasGeradas = gerarTarefas(form.planta, form.data, form.litragem);
         setProjects(projects.map(p =>
           p.id === projId
-            ? {
+            ? { 
                 ...p,
-                cultivos: [...p.cultivos, { ...form, id: Date.now(), historico: [], tarefas: tarefasAuto }],
+                cultivos: [...p.cultivos, { ...form, id: Date.now(), tarefas: tarefasGeradas, historico: [] }],
                 historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: `🌱 Cultivo de ${form.planta} adicionado` }]
               }
             : p
         ));
-        showToast("🌾 Cultivo e tarefas criados!");
+        showToast("🌱 Cultivo adicionado!");
       };
 
-      const concluirTarefa = (projId, cultId, index) => {
+      const deleteCultivo = (projId, cultId) => {
         setProjects(projects.map(p =>
           p.id === projId
             ? {
                 ...p,
-                cultivos: p.cultivos.map(c =>
-                  c.id === cultId
-                    ? {
-                        ...c,
-                        tarefas: c.tarefas.map((t,i)=> i===index ? {...t, status:"concluído"} : t)
-                      }
-                    : c
-                )
+                cultivos: p.cultivos.filter(c => c.id !== cultId),
+                historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: "🗑️ Cultivo removido" }]
               }
             : p
         ));
-        showToast("✅ Tarefa concluída!");
       };
 
-      /* === ALERTAS AUTOMÁTICOS === */
-      const tarefasAtrasadas = [];
-      projects.forEach(p=>{
-        p.cultivos.forEach(c=>{
-          (c.tarefas||[]).forEach(t=>{
-            const dataT = new Date(t.data);
-            if (t.status==="pendente" && dataT < new Date()) tarefasAtrasadas.push({ projeto:p.nome, planta:c.planta, tipo:t.tipo, data:t.data });
-          });
-        });
-      });
+      const registrar = (projId, cultId, tarefaIndex) => {
+        setProjects(projects.map(p =>
+          p.id === projId
+            ? {
+                ...p,
+                cultivos: p.cultivos.map(c => {
+                  if (c.id === cultId) {
+                    const novasTarefas = [...c.tarefas];
+                    novasTarefas[tarefaIndex].status = "concluida";
+                    return { ...c, tarefas: novasTarefas };
+                  }
+                  return c;
+                }),
+                historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: "✅ Tarefa concluída" }]
+              }
+            : p
+        ));
+      };
 
       /* === DASHBOARD === */
-      const projetoSelecionado = projects.find(p=>p.id===parseInt(selectedProjeto));
-      const cultivos = projetoSelecionado ? projetoSelecionado.cultivos : projects.flatMap(p=>p.cultivos);
+      const [selectedProject, setSelectedProject] = useState(null);
+      const projetoAtual = projects.find(p => p.id === selectedProject);
+      const allCultivos = projetoAtual ? projetoAtual.cultivos : [];
 
-      const totalTarefas = cultivos.reduce((a,b)=>a+(b.tarefas?.length||0),0);
-      const concluidas = cultivos.reduce((a,b)=>a+(b.tarefas?.filter(t=>t.status==="concluído").length||0),0);
-      const eficiencia = totalTarefas ? ((concluidas/totalTarefas)*100).toFixed(1) : 0;
-
-      const aguaConcluidas = cultivos.flatMap(c=>c.tarefas||[]).filter(t=>t.tipo.includes("água") && t.status==="concluído").length;
-      const fertConcluidas = cultivos.flatMap(c=>c.tarefas||[]).filter(t=>t.tipo.includes("fertilizante") && t.status==="concluído").length;
+      const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
+      const producao = totalQ * 1.5;
+      const custo = totalQ * 5;
+      const lucro = producao * 10;
+      const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
 
       function Dashboard() {
-        useEffect(()=>{
-          const ctx = document.getElementById("graficoProdutividade");
-          if (ctx) {
-            new Chart(ctx, {
-              type: "bar",
-              data: {
-                labels: ["Rega com Água", "Rega com Fertilizante"],
-                datasets: [{
-                  label: "Tarefas Concluídas",
-                  data: [aguaConcluidas, fertConcluidas],
-                  backgroundColor: ["#00e676", "#fca311"]
-                }]
-              },
-              options: {
-                plugins: { legend: { labels: { color: "#e6e6e6" } } },
-                scales: {
-                  x: { ticks: { color: "#e6e6e6" } },
-                  y: { ticks: { color: "#e6e6e6" } }
-                }
-              }
-            });
-          }
-        }, [aguaConcluidas, fertConcluidas]);
-
         return (
           <>
             <h2>📊 Dashboard Inteligente</h2>
-            <div className="form-group">
-              <select value={selectedProjeto||""} onChange={e=>setSelectedProjeto(e.target.value)}>
-                <option value="">Todos os Projetos</option>
-                {projects.map(p=><option key={p.id} value={p.id}>{p.nome}</option>)}
+
+            <div style={{marginBottom:"1rem"}}>
+              <select value={selectedProject||""} onChange={e=>setSelectedProject(Number(e.target.value)||null)}>
+                <option value="">Selecione um projeto</option>
+                {projects.map(p=>(
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
               </select>
             </div>
 
-            <div className="dashboard-cards">
-              <div className="card"><h3>🌿 Cultivos</h3><p>{cultivos.length}</p></div>
-              <div className="card"><h3>✅ Eficiência</h3><p>{eficiencia}%</p></div>
-              <div className="card"><h3>💧 Rega</h3><p>{aguaConcluidas}</p></div>
-              <div className="card"><h3>🧪 Fertilização</h3><p>{fertConcluidas}</p></div>
-            </div>
-
-            {tarefasAtrasadas.length>0 && (
-              <>
-                <h3 style={{color:"#ff5252",marginTop:"2rem"}}>⚠️ Tarefas Atrasadas</h3>
-                {tarefasAtrasadas.slice(0,6).map((t,i)=>(
-                  <div key={i} className="alert">
-                    {t.tipo} — {t.planta} ({t.projeto}) em {new Date(t.data).toLocaleDateString("pt-BR")}
-                  </div>
-                ))}
-              </>
+            {projetoAtual ? (
+              <div className="dashboard-cards">
+                <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{allCultivos.length}</p></div>
+                <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
+                <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p></div>
+                <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
+                <div className="card"><h3>📈 Rentabilidade</h3><p>{rent}%</p></div>
+              </div>
+            ) : (
+              <p style={{opacity:0.7}}>Selecione um projeto para visualizar o dashboard.</p>
             )}
-
-            <canvas id="graficoProdutividade" height="140"></canvas>
           </>
         );
       }
-      /* === ABA DE PROJETOS === */
+      /* === COMPONENTE PROJETOS === */
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", litragem:"700ml", quantidade:1 });
         const projetoAtual = projects.find(p => p.id === expanded);
+
+        const hoje = new Date();
 
         return (
           <>
@@ -443,43 +431,52 @@
 
                     {/* CULTIVOS ATIVOS */}
                     {p.cultivos.map(c=>{
-                      const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                      const dias=Math.floor((hoje - new Date(c.data))/(1000*60*60*24));
                       const fase=getFase(dias);
                       const prog=Math.min((dias/(mapaPlantas[c.planta]?.ciclo||60))*100,100);
-                      const tarefasPendentes=(c.tarefas||[]).filter(t=>t.status==="pendente").length;
+                      
+                      // 🔍 Filtrar tarefas — apenas até 5 dias antes da data
+                      const tarefasFiltradas = c.tarefas.filter(t=>{
+                        const dataT = new Date(t.data);
+                        const diff = (dataT - hoje)/(1000*60*60*24);
+                        return diff <= 5 && diff >= -1;
+                      });
 
                       return(
                         <div key={c.id} className="card">
                           <div style={{display:"flex",justifyContent:"space-between"}}>
-                            <strong>{c.planta}</strong>
-                            <span>{fase.icone} {fase.nome}</span>
+                            <strong>{c.planta}</strong><span>{fase.icone} {fase.nome}</span>
                           </div>
-                          <div className="small">
-                            🌱 Germinação: {formatDate(c.data)} • 💧 {c.tarefas?.length||0} tarefas
-                          </div>
-                          <div className="progress">
-                            <div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div>
-                          </div>
-                          <div className="small">📦 Quantidade: {c.quantidade} • 💧 Pendentes: {tarefasPendentes}</div>
+                          <div className="small">🌱 Germinação: {formatDate(c.data)}</div>
+                          <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
+                          <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
 
-                          <h4 style={{color:"#00e676",marginTop:"0.5rem"}}>Tarefas</h4>
-                          {(c.tarefas||[]).slice(0,6).map((t,i)=>{
-                            const atraso = t.status==="pendente" && new Date(t.data)<new Date();
-                            return(
-                              <div key={i} className="panel-item" style={{borderLeft: atraso?"4px solid #ff5252":"4px solid #00e676"}}>
-                                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                                  <span>{t.tipo}</span>
-                                  <small>{new Date(t.data).toLocaleDateString("pt-BR")}</small>
+                          <div style={{marginTop:"0.6rem"}}>
+                            <h4 style={{color:"#00e676"}}>Tarefas</h4>
+                            {tarefasFiltradas.length>0 ? tarefasFiltradas.map((t,idx)=>{
+                              const vencida = new Date(t.data) < hoje && t.status!=="concluida";
+                              return(
+                                <div key={idx} style={{
+                                  display:"flex",justifyContent:"space-between",alignItems:"center",
+                                  background:vencida?"#2a1c1c":"#1b1e24",
+                                  borderRadius:"6px",padding:"6px",marginBottom:"4px"
+                                }}>
+                                  <div>{t.tipo}</div>
+                                  <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+                                    <small style={{opacity:0.7}}>{formatDate(t.data)}</small>
+                                    {t.status==="pendente" && (
+                                      <button className="action" style={{padding:"4px 6px"}}
+                                        onClick={()=>registrar(p.id,c.id,c.tarefas.indexOf(t))}>
+                                        Concluir
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
-                                <div style={{marginTop:"4px"}}>
-                                  {t.status==="concluído"
-                                    ? <span style={{color:"#00e676"}}>✅ Concluído</span>
-                                    : <button className="action" style={{padding:"4px 8px",fontSize:"0.8rem"}}
-                                        onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>}
-                                </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            }) : (
+                              <div className="small" style={{opacity:0.7}}>Nenhuma tarefa nos próximos 5 dias</div>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
@@ -488,7 +485,7 @@
               </div>
             ))}
 
-            {/* MODAL EDIÇÃO */}
+            {/* MODAL DE EDIÇÃO */}
             {editProj&&(
               <div className="modal-bg" onClick={()=>setEditProj(null)}>
                 <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -505,6 +502,7 @@
         );
       }
 
+      /* === RENDERIZAÇÃO FINAL === */
       return (
         <div>
           {page==="dashboard"?<Dashboard/>:<Projetos/>}
@@ -513,7 +511,7 @@
       );
     }
 
-    /* === APLICAÇÃO PRINCIPAL === */
+    /* === APLICAÇÃO === */
     let currentPage="dashboard";
     const root=ReactDOM.createRoot(document.getElementById("root"));
     const side=document.getElementById("sidePanel");
@@ -535,4 +533,3 @@
   </script>
 </body>
 </html>
-
