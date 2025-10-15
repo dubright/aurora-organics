@@ -1,488 +1,294 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aurora Organics 🌿</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Organics 🌿</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0f1115;
+      color: #e6e6e6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    aside {
+      width: 230px;
+      background: #121417;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    aside h1 {
+      font-size: 1.25rem;
+      color: #00e676;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #e6e6e6;
+      font-size: 1rem;
+      text-align: left;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .nav-btn.active, .nav-btn:hover {
+      background: #0f271d;
+      color: #00e676;
+    }
+    main {
+      flex: 1;
+      background: #0f1115;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    h2 { color: #00e676; margin-top: 0; }
+    .card {
+      background: #171a1f;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
+    }
+    select, input, button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: inherit;
+    }
+    button.action {
+      background: #00e676;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button.action:hover { transform: scale(1.03); }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .progress {
+      height: 8px;
+      background: #1e2228;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-bar {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    .small { color: #a1a1a1; font-size: 0.85rem; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00e676;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      animation: slideIn .5s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1>🌿 Aurora</h1>
+    <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+    <button class="nav-btn" data-page="projects">Projetos</button>
+  </aside>
 
-    <!-- React + Babel -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <main id="root"></main>
 
-    <!-- Fonte -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-    <style>
-      /* =================== GERAL =================== */
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        background: #0e1217;
-        color: #e6e6e6;
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-      }
+    const plantas = ["Abóbora","Abobrinha","Acelga","Agrião","Alface","Batata","Berinjela","Beterraba","Brócolis","Cenoura","Coentro","Couve","Espinafre","Pimentão","Rabanete","Repolho","Rúcula","Tomate","Uva","Morango","Manga","Laranja","Limão","Abacaxi"];
+    const fertilizantes = ["BioBizz","Forth","Dimy"];
+    const fases = [
+      { nome:"Germinação", icone:"🌱", cor:"#00ff99", dias:[0,7] },
+      { nome:"Crescimento", icone:"🌿", cor:"#00e676", dias:[8,35] },
+      { nome:"Floração", icone:"🌸", cor:"#c084fc", dias:[36,50] },
+      { nome:"Pré-colheita", icone:"🍅", cor:"#fca311", dias:[51,60] }
+    ];
 
-      * {
-        box-sizing: border-box;
-      }
+    const getFase = dias => fases.find(f => dias >= f.dias[0] && dias <= f.dias[1]) || fases[0];
+    const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{ day:"2-digit", month:"long" });
 
-      /* =================== SIDEBAR =================== */
-      .sidebar {
-        width: 230px;
-        background: #171a1f;
-        display: flex;
-        flex-direction: column;
-        padding: 1.5rem;
-        border-right: 1px solid #1f242a;
-        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
-      }
+    function App() {
+      const [page, setPage] = useState("dashboard");
+      const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projects") || "[]"));
+      const [toast, setToast] = useState("");
 
-      .sidebar h2 {
-        font-size: 1.3rem;
-        color: #00e676;
-        margin-bottom: 1.5rem;
-        text-align: center;
-      }
+      useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
 
-      .nav-btn {
-        background: none;
-        border: none;
-        color: #a1a1a1;
-        text-align: left;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
+      const addProject = nome => {
+        if (!nome.trim()) return alert("Informe um nome para o projeto.");
+        setProjects([...projects, { id: Date.now(), nome, cultivos: [] }]);
+        showToast("🌿 Projeto criado!");
+      };
+      const deleteProject = id => setProjects(projects.filter(p => p.id !== id));
+      const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      .nav-btn:hover,
-      .nav-btn.active {
-        background: #00e67622;
-        color: #00e676;
-      }
+      const addCultivo = (projId, c) => {
+        setProjects(projects.map(p =>
+          p.id === projId ? { ...p, cultivos: [...p.cultivos, { ...c, id: Date.now(), historico: [] }] } : p
+        ));
+        showToast("🌱 Cultivo adicionado!");
+      };
+      const deleteCultivo = (projId, cultId) =>
+        setProjects(projects.map(p => p.id === projId ? { ...p, cultivos: p.cultivos.filter(c => c.id !== cultId) } : p));
+      const registrar = (projId, cultId, acao) => {
+        setProjects(projects.map(p =>
+          p.id === projId ? {
+            ...p,
+            cultivos: p.cultivos.map(c => c.id === cultId
+              ? { ...c, historico:[...c.historico, { data:new Date().toLocaleDateString(), acao }] }
+              : c)
+          } : p
+        ));
+      };
 
-      /* =================== CONTEÚDO =================== */
-      .content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 1.5rem 2rem;
-        overflow-y: auto;
-      }
+      /* ======= DASHBOARD ======= */
+      const all = projects.flatMap(p => p.cultivos);
+      const totalQ = all.reduce((a,b) => a + Number(b.quantidade||0), 0);
+      const producao = totalQ * 1.5;
+      const custo = totalQ * 5;
+      const lucro = producao * 10;
+      const rent = custo ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-        color: #00e676;
-      }
-
-      .theme-selector {
-        position: relative;
-      }
-
-      .theme-selector button {
-        background: #00e676;
-        border: none;
-        color: #000;
-        font-weight: 600;
-        border-radius: 8px;
-        padding: 6px 10px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-
-      .theme-selector button:hover {
-        transform: scale(1.05);
-      }
-
-      /* =================== DASHBOARD =================== */
-      .dashboard-cards {
-        display: flex;
-        gap: 1.2rem;
-        flex-wrap: wrap;
-        margin-bottom: 2rem;
-      }
-
-      .card {
-        flex: 1;
-        min-width: 250px;
-        background: #171a1f;
-        padding: 1rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 230, 118, 0.05);
-        transition: 0.3s;
-      }
-
-      .card:hover {
-        transform: scale(1.02);
-      }
-
-      .card h3 {
-        color: #00e676;
-        margin-bottom: 0.5rem;
-      }
-
-      .card p {
-        color: #e6e6e6;
-        font-size: 1.1rem;
-        font-weight: 600;
-      }
-
-      /* =================== FORMULÁRIOS =================== */
-      .form-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      select,
-      input {
-        background: #1f242a;
-        border: 1px solid #2a2f35;
-        color: #e6e6e6;
-        padding: 8px 10px;
-        border-radius: 8px;
-        font-family: inherit;
-        min-width: 150px;
-      }
-
-      button.action {
-        background: #00e676;
-        border: none;
-        color: #000;
-        font-weight: 600;
-        border-radius: 8px;
-        padding: 8px 14px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-
-      button.action:hover {
-        transform: scale(1.05);
-      }
-
-      /* =================== TABELAS E LISTAS =================== */
-      .list {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .item {
-        background: #171a1f;
-        border: 1px solid #1f242a;
-        border-radius: 10px;
-        padding: 1rem;
-        transition: 0.3s;
-      }
-
-      .item:hover {
-        transform: scale(1.01);
-      }
-
-      .item-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-
-      .item-header strong {
-        color: #00e676;
-      }
-
-      .small {
-        color: #a1a1a1;
-        font-size: 0.85rem;
-      }
-
-      /* =================== TOAST =================== */
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #00e676;
-        color: #000;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        animation: slideIn 0.5s ease;
-      }
-
-      @keyframes slideIn {
-        from {
-          transform: translateY(50px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="sidebar">
-      <h2>🌿 Aurora</h2>
-      <button class="nav-btn active" data-page="dashboard">Dashboard</button>
-      <button class="nav-btn" data-page="projects">Projetos</button>
-      <button class="nav-btn" data-page="tasks">Tarefas</button>
-      <button class="nav-btn" data-page="inputs">Insumos</button>
-    </div>
-
-    <div class="content">
-      <header>
-        <h1 id="pageTitle">Dashboard</h1>
-        <div class="theme-selector">
-          <button id="themeToggle">Alterar Tema</button>
-        </div>
-      </header>
-
-      <div id="root"></div>
-    </div>
-    <!-- =================== REACT APP =================== -->
-    <script type="text/babel">
-      const { useState, useEffect } = React;
-
-      /* =================== DADOS BASE =================== */
-      const plantas = [
-        "Abóbora","Abobrinha","Acelga","Agrião","Aipo","Alface","Batata","Berinjela","Beterraba","Brócolis","Cebola",
-        "Cenoura","Coentro","Couve","Espinafre","Feijão-vagem","Gengibre","Pimentão","Rabanete","Repolho","Rúcula",
-        "Salsa","Tomate","Uva","Melancia","Morango","Manga","Laranja","Limão","Abacaxi"
-      ];
-      const fertilizantes = ["BioBizz", "Forth", "Dimy"];
-
-      /* =================== COMPONENTE PRINCIPAL =================== */
-      function App() {
-        const [page, setPage] = useState("dashboard");
-        const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projects") || "[]"));
-        const [toast, setToast] = useState("");
-
-        /* Persistência */
-        useEffect(() => {
-          localStorage.setItem("projects", JSON.stringify(projects));
-        }, [projects]);
-
-        /* Navegação da sidebar */
-        useEffect(() => {
-          const buttons = document.querySelectorAll(".nav-btn");
-          buttons.forEach(btn => {
-            btn.classList.toggle("active", btn.dataset.page === page);
-          });
-          document.getElementById("pageTitle").innerText =
-            page.charAt(0).toUpperCase() + page.slice(1);
-        }, [page]);
-
-        /* Cálculos agregados do Dashboard */
-        const allCultivos = projects.flatMap(p => p.cultivos);
-        const totalQuant = allCultivos.reduce((s, c) => s + Number(c.quantidade || 0), 0);
-        const producao = totalQuant * 1.5;
-        const custo = totalQuant * 5;
-        const lucro = producao * 10;
-        const rent = custo > 0 ? (((lucro - custo) / custo) * 100).toFixed(1) : 0;
-
-        /* Funções utilitárias */
-        const addProject = nome => {
-          if (!nome) return;
-          const novo = { id: Date.now(), nome, cultivos: [] };
-          setProjects([...projects, novo]);
-          setToast("🌿 Novo projeto criado!");
-          setTimeout(() => setToast(""), 2500);
-        };
-
-        const deleteProject = id => setProjects(projects.filter(p => p.id !== id));
-
-        const addCultivo = (projId, cultivo) => {
-          setProjects(projects.map(p =>
-            p.id === projId ? { ...p, cultivos: [...p.cultivos, cultivo] } : p
-          ));
-          setToast("🌱 Cultivo adicionado com sucesso!");
-          setTimeout(() => setToast(""), 2500);
-        };
-
-        const deleteCultivo = (projId, cultId) => {
-          setProjects(projects.map(p =>
-            p.id === projId ? { ...p, cultivos: p.cultivos.filter(c => c.id !== cultId) } : p
-          ));
-        };
-
-        /* =================== TELAS =================== */
-        function Dashboard() {
-          return (
-            <div>
-              <div className="dashboard-cards">
-                <div className="card">
-                  <h3>🌿 Cultivos Ativos</h3>
-                  <p>{allCultivos.length}</p>
-                </div>
-                <div className="card">
-                  <h3>📦 Quantidade Total</h3>
-                  <p>{totalQuant}</p>
-                </div>
-                <div className="card">
-                  <h3>⚙️ Produção Estimada (kg)</h3>
-                  <p>{producao.toFixed(1)}</p>
-                </div>
-                <div className="card">
-                  <h3>💰 Lucro Estimado (R$)</h3>
-                  <p>{lucro.toFixed(2)}</p>
-                </div>
-                <div className="card">
-                  <h3>📊 Rentabilidade</h3>
-                  <p>{rent}%</p>
-                </div>
-              </div>
-              <div className="card">
-                <h3>Panorama Geral</h3>
-                <p>Atualmente você possui {projects.length} projetos e {allCultivos.length} cultivos registrados.</p>
-              </div>
-            </div>
-          );
-        }
-
-        function Projects() {
-          const [nomeProj, setNomeProj] = useState("");
-          const [selected, setSelected] = useState(null);
-          const [form, setForm] = useState({
-            planta: "", data: "", fertilizante: fertilizantes[0],
-            litragem: "700ml", quantidade: 1
-          });
-
-          const current = projects.find(p => p.id === selected);
-
-          const handleAdd = () => {
-            if (!form.planta || !form.data) return alert("Preencha todos os campos!");
-            addCultivo(selected, { ...form, id: Date.now() });
-            setForm({ planta: "", data: "", fertilizante: fertilizantes[0], litragem: "700ml", quantidade: 1 });
-          };
-
-          return (
-            <div>
-              <div className="form-group">
-                <input
-                  placeholder="Nome do Projeto"
-                  value={nomeProj}
-                  onChange={e => setNomeProj(e.target.value)}
-                />
-                <button className="action" onClick={() => { addProject(nomeProj); setNomeProj(""); }}>
-                  + Novo Projeto
-                </button>
-              </div>
-
-              {projects.length > 0 && (
-                <div className="form-group">
-                  <select value={selected || ""} onChange={e => setSelected(Number(e.target.value))}>
-                    <option value="">Selecione um projeto</option>
-                    {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.nome}</option>
-                    ))}
-                  </select>
-                  {selected && (
-                    <button className="action" onClick={() => deleteProject(selected)}>🗑️ Excluir Projeto</button>
-                  )}
-                </div>
-              )}
-
-              {current && (
-                <div>
-                  <h3>Adicionar Cultivo — {current.nome}</h3>
-                  <div className="form-group">
-                    <select value={form.planta} onChange={e => setForm({ ...form, planta: e.target.value })}>
-                      <option value="">Selecione a planta</option>
-                      {plantas.map(p => <option key={p}>{p}</option>)}
-                    </select>
-                    <input type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} />
-                    <select value={form.fertilizante} onChange={e => setForm({ ...form, fertilizante: e.target.value })}>
-                      {fertilizantes.map(f => <option key={f}>{f}</option>)}
-                    </select>
-                    <select value={form.litragem} onChange={e => setForm({ ...form, litragem: e.target.value })}>
-                      <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
-                    </select>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Quantidade"
-                      value={form.quantidade}
-                      onChange={e => setForm({ ...form, quantidade: e.target.value })}
-                    />
-                    <button className="action" onClick={handleAdd}>Adicionar</button>
-                  </div>
-
-                  <div className="list">
-                    {current.cultivos.map(c => (
-                      <div key={c.id} className="item">
-                        <div className="item-header">
-                          <strong>{c.planta}</strong>
-                          <button className="action" onClick={() => deleteCultivo(current.id, c.id)}>Excluir</button>
-                        </div>
-                        <div className="small">
-                          🌱 Germinação: {new Date(c.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}
-                          <br />💧 Fertilizante: {c.fertilizante} | Litragem: {c.litragem}
-                          <br />📦 Quantidade: {c.quantidade}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        }
-
-        function Tasks() {
-          return <div className="card"><h3>Tarefas</h3><p>Em breve: gestão de tarefas do cultivo 🌱</p></div>;
-        }
-
-        function Inputs() {
-          return <div className="card"><h3>Insumos</h3><p>Em breve: controle de estoque de insumos 💧</p></div>;
-        }
-
-        /* =================== RENDER PRINCIPAL =================== */
+      function Dashboard() {
         return (
-          <div>
-            {page === "dashboard" && <Dashboard />}
-            {page === "projects" && <Projects />}
-            {page === "tasks" && <Tasks />}
-            {page === "inputs" && <Inputs />}
-            {toast && <div className="toast">{toast}</div>}
-          </div>
+          <>
+            <h2>📊 Painel Geral</h2>
+            <div className="dashboard-cards">
+              <div className="card"><h3>🌿 Cultivos Ativos</h3><p>{all.length}</p></div>
+              <div className="card"><h3>📦 Quantidade Total</h3><p>{totalQ}</p></div>
+              <div className="card"><h3>⚙️ Produção Estimada</h3><p>{producao.toFixed(1)} kg</p></div>
+              <div className="card"><h3>💰 Lucro Estimado</h3><p>R$ {lucro.toFixed(2)}</p></div>
+              <div className="card"><h3>📈 Rentabilidade</h3><p>{rent}%</p></div>
+            </div>
+          </>
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
+      function Projetos() {
+        const [nome, setNome] = useState("");
+        const [sel, setSel] = useState(null);
+        const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+        const projeto = projects.find(p => p.id === sel);
+        const handleAdd = () => {
+          if (!form.planta || !form.data) return alert("Preencha todos os campos!");
+          addCultivo(sel, form);
+          setForm({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+        };
 
-      /* =================== NAVEGAÇÃO SIDEBAR =================== */
-      document.querySelectorAll(".nav-btn").forEach(btn =>
-        btn.addEventListener("click", () => {
-          const page = btn.dataset.page;
-          window.appSetPage && window.appSetPage(page);
-        })
+        return (
+          <>
+            <h2>🌿 Projetos</h2>
+            <div className="form-group">
+              <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
+              <button className="action" onClick={()=>{addProject(nome); setNome("");}}>+ Novo Projeto</button>
+            </div>
+
+            {projects.length>0 && (
+              <div className="form-group">
+                <select value={sel||""} onChange={e=>setSel(Number(e.target.value))}>
+                  <option value="">Selecione um projeto</option>
+                  {projects.map(p=><option key={p.id} value={p.id}>{p.nome}</option>)}
+                </select>
+                {sel && <button className="action" onClick={()=>deleteProject(sel)}>🗑️ Excluir Projeto</button>}
+              </div>
+            )}
+
+            {projeto && (
+              <div>
+                <div className="form-group">
+                  <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
+                    <option value="">Planta</option>{plantas.map(p=><option key={p}>{p}</option>)}
+                  </select>
+                  <input type="date" value={form.data} onChange={e=>setForm({...form,data:e.target.value})}/>
+                  <select value={form.fertilizante} onChange={e=>setForm({...form,fertilizante:e.target.value})}>
+                    {fertilizantes.map(f=><option key={f}>{f}</option>)}
+                  </select>
+                  <select value={form.litragem} onChange={e=>setForm({...form,litragem:e.target.value})}>
+                    <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
+                  </select>
+                  <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
+                  <button className="action" onClick={handleAdd}>Adicionar</button>
+                </div>
+
+                {projeto.cultivos.map(c=>{
+                  const dias = Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
+                  const fase = getFase(dias);
+                  const prog = Math.min((dias/60)*100,100);
+                  return (
+                    <div key={c.id} className="card">
+                      <div style={{display:"flex",justifyContent:"space-between"}}>
+                        <strong>{c.planta}</strong><span>{c.fertilizante}</span>
+                      </div>
+                      <div className="small">🌱 Germinação: {formatDate(c.data)} | {fase.icone} {fase.nome}</div>
+                      <div className="progress"><div className="progress-bar" style={{width:`${prog}%`,background:fase.cor}}></div></div>
+                      <div className="small">💧 Litragem: {c.litragem} | 📦 Quantidade: {c.quantidade}</div>
+                      <div className="form-group">
+                        <button className="action" onClick={()=>registrar(projeto.id,c.id,"Adubação realizada")}>✅ Aplicar</button>
+                        <button className="action" onClick={()=>deleteCultivo(projeto.id,c.id)}>🗑️ Excluir</button>
+                      </div>
+                      {c.historico.length>0 && (
+                        <div className="small">
+                          <strong>📜 Histórico:</strong>
+                          {c.historico.map((h,i)=><div key={i}>{h.data} — {h.acao}</div>)}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        );
+      }
+
+      return (
+        <div>
+          {page==="dashboard"?<Dashboard/>:<Projetos/>}
+          {toast && <div className="toast">{toast}</div>}
+        </div>
       );
-    </script>
+    }
 
-    <script>
-      /* Integra a navegação React com botões externos */
-      window.appSetPage = page => {
-        const evt = new CustomEvent("setPage", { detail: page });
-        window.dispatchEvent(evt);
-      };
-    </script>
-  </body>
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App/>);
+
+    document.querySelectorAll(".nav-btn").forEach(btn=>{
+      btn.onclick=()=>{document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");root.render(<App/>);};
+    });
+  </script>
+</body>
 </html>
