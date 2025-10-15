@@ -44,6 +44,12 @@
     .alert{background:rgba(255,51,51,.1);border:1px solid rgba(255,51,51,.3);border-left:4px solid #ff5252;color:#ff7b7b;padding:10px;border-radius:6px;font-size:.9rem;margin-top:10px}
     .section-title{font-weight:600;color:#00e676;margin-top:1rem;margin-bottom:.5rem;font-size:1.1rem}
     textarea{resize:none}
+    .check-saved{animation:fadeCheck 1s ease-in-out}
+    @keyframes fadeCheck{
+      0%{opacity:0;transform:scale(.6)}
+      30%{opacity:1;transform:scale(1.2)}
+      100%{opacity:0;transform:scale(1)}
+    }
     ::-webkit-scrollbar{width:8px}
     ::-webkit-scrollbar-thumb{background:#00e67633;border-radius:8px}
     ::-webkit-scrollbar-thumb:hover{background:#00e67666}
@@ -66,36 +72,62 @@
   <script type="text/babel">
 const { useState, useEffect } = React;
 
-const plantas=["Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿","Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"];
-const fases=[{nome:"Germinação",icone:"🌱",dias:[0,7]},{nome:"Crescimento",icone:"🌿",dias:[8,35]},{nome:"Floração",icone:"🌸",dias:[36,50]},{nome:"Pré-colheita",icone:"🍅",dias:[51,60]},{nome:"Colheita",icone:"🌾",dias:[61,90]}];
-const formatDate=d=>new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
-const getFase=dias=>fases.find(f=>dias>=f.dias[0]&&dias<=f.dias[1])||fases[0];
-const calcularDosagem=l=>{const ml=parseFloat(l);if(isNaN(ml))return"100ml";if(ml<=700)return"100ml";if(ml<=2000)return"250ml";if(ml<=5000)return"400ml";if(ml<=10000)return"600ml";return"1L";};
+const plantas = [
+  "Tomate 🍅","Alface 🥬","Cenoura 🥕","Rúcula 🌿",
+  "Abobrinha","Abóbora 🎃","Pimentão 🌶️","Couve 🥬","Espinafre 🌱"
+];
+const fases = [
+  { nome:"Germinação",icone:"🌱",dias:[0,7]},
+  { nome:"Crescimento",icone:"🌿",dias:[8,35]},
+  { nome:"Floração",icone:"🌸",dias:[36,50]},
+  { nome:"Pré-colheita",icone:"🍅",dias:[51,60]},
+  { nome:"Colheita",icone:"🌾",dias:[61,90]}
+];
+const formatDate = d => new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+const getFase = dias => fases.find(f=>dias>=f.dias[0]&&dias<=f.dias[1])||fases[0];
+const calcularDosagem = l => {
+  const ml=parseFloat(l);
+  if(isNaN(ml))return"100ml";
+  if(ml<=700)return"100ml";
+  if(ml<=2000)return"250ml";
+  if(ml<=5000)return"400ml";
+  if(ml<=10000)return"600ml";
+  return"1L";
+};
 
 function App({page}){
   const [projects,setProjects]=useState(JSON.parse(localStorage.getItem("projectsAurora")||"[]"));
-  const [toast,setToast]=useState("");const [expanded,setExpanded]=useState(null);
+  const [toast,setToast]=useState("");
+  const [expanded,setExpanded]=useState(null);
   const [edits,setEdits]=useState({});
-  
-  // Debounce para salvar localStorage de forma leve
+  const [savedFields,setSavedFields]=useState({}); // animação do check ✅
+
+  // 💾 Salvamento com debounce
   useEffect(()=>{
     const t=setTimeout(()=>localStorage.setItem("projectsAurora",JSON.stringify(projects)),800);
     return()=>clearTimeout(t);
   },[projects]);
 
-  const showToast=msg=>{setToast(msg);setTimeout(()=>setToast(""),2500);};
+  const showToast=msg=>{
+    setToast(msg);
+    setTimeout(()=>setToast(""),2500);
+  };
 
   const addProject=nome=>{
     if(!nome.trim())return alert("Informe um nome para o projeto.");
     const novo={id:Date.now(),nome,dataCriacao:new Date().toLocaleDateString(),cultivos:[]};
-    setProjects([...projects,novo]);showToast("🌿 Projeto criado!");
+    setProjects([...projects,novo]);
+    showToast("🌿 Projeto criado!");
   };
+
   const deleteProject=id=>{
     if(confirm("Excluir este projeto?")){
-      setProjects(projects.filter(p=>p.id!==id));if(expanded===id)setExpanded(null);
+      setProjects(projects.filter(p=>p.id!==id));
+      if(expanded===id)setExpanded(null);
       showToast("🗑️ Projeto removido.");
     }
   };
+
   const addCultivo=(projId,form)=>{
     const dataGerminacao=new Date(form.data);
     const novasTarefas=[];
@@ -104,23 +136,41 @@ function App({page}){
       const tipo=(i%15===0&&i!==0)?"fertilizante":"água";
       novasTarefas.push({tipo,data:dataT.toISOString(),dosagem:calcularDosagem(form.litragem),concluida:false});
     }
-    const novo={id:Date.now(),planta:form.planta,data:form.data,litragem:form.litragem,quantidade:form.quantidade,altura:0,folhas:0,produtividade:0,custo:0,pragas:"",tarefas:novasTarefas};
+    const novo={
+      id:Date.now(),
+      planta:form.planta,
+      data:form.data,
+      litragem:form.litragem,
+      quantidade:form.quantidade,
+      altura:0,folhas:0,produtividade:0,custo:0,pragas:"",
+      tarefas:novasTarefas
+    };
     setProjects(projects.map(p=>p.id===projId?{...p,cultivos:[...p.cultivos,novo]}:p));
     showToast("🌱 Cultivo adicionado!");
   };
-  
+
+  // ⚡ Edição local (buffer)
   const handleEdit=(projId,cultId,campo,valor)=>{
     setEdits(prev=>({...prev,[`${projId}-${cultId}-${campo}`]:valor}));
   };
+
+  // 💧 Som + animação quando salvar
   const commitEdit=(projId,cultId,campo)=>{
     const valor=edits[`${projId}-${cultId}-${campo}`];
     if(valor!==undefined){
-      setProjects(projects.map(p=>p.id===projId?{...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,[campo]:valor}:c)}:p));
+      setProjects(projects.map(p=>p.id===projId?{
+        ...p,
+        cultivos:p.cultivos.map(c=>c.id===cultId?{...c,[campo]:valor}:c)
+      }:p));
+
+      // ✅ Mostra check e toca som de gota d’água
+      setSavedFields({[`${projId}-${cultId}-${campo}`]:true});
+      const dropSound = new Audio("https://cdn.jsdelivr.net/gh/adam-nascimento/audio-feedbacks@main/drop-water.mp3");
+      dropSound.volume = 0.35;
+      dropSound.play();
+
+      setTimeout(()=>setSavedFields({}),1200);
     }
-  };
-  const concluirTarefa=(projId,cultId,index)=>{
-    setProjects(projects.map(p=>p.id===projId?{...p,cultivos:p.cultivos.map(c=>c.id===cultId?{...c,tarefas:c.tarefas.map((t,i)=>i===index?{...t,concluida:true}:t)}:c)}:p));
-    showToast("✅ Tarefa concluída!");
   };
   function Projetos(){
     const [nome,setNome]=useState("");
@@ -136,15 +186,21 @@ function App({page}){
       {projects.map(p=>(
         <div key={p.id} className="card">
           <div style={{display:"flex",justifyContent:"space-between"}}>
-            <div><strong>{p.nome}</strong><div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div></div>
+            <div>
+              <strong>{p.nome}</strong>
+              <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+            </div>
             <div style={{display:"flex",gap:"8px"}}>
-              <button className="action" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>{expanded===p.id?"Fechar":"Abrir"}</button>
+              <button className="action" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>
+                {expanded===p.id?"Fechar":"Abrir"}
+              </button>
               <button className="action" onClick={()=>deleteProject(p.id)}>Excluir</button>
             </div>
           </div>
 
           {expanded===p.id&&(
             <div style={{marginTop:"1rem"}}>
+              {/* === FORM DE NOVO CULTIVO === */}
               <div style={{display:"flex",gap:"8px",marginBottom:"1rem"}}>
                 <select value={form.planta} onChange={e=>setForm({...form,planta:e.target.value})}>
                   <option value="">Planta</option>{plantas.map(pl=><option key={pl}>{pl}</option>)}
@@ -157,6 +213,7 @@ function App({page}){
                 <button className="action" onClick={()=>addCultivo(p.id,form)}>Adicionar</button>
               </div>
 
+              {/* === LISTAGEM DE CULTIVOS === */}
               {p.cultivos.map(c=>{
                 const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
                 const fase=getFase(dias);
@@ -183,7 +240,7 @@ function App({page}){
                       </div>
                     )}
 
-                    {/* === DESENVOLVIMENTO === */}
+                    {/* === CAMPOS DE DESENVOLVIMENTO === */}
                     <div className="section-title">🌱 Desenvolvimento</div>
                     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"14px"}}>
                       {[
@@ -197,28 +254,23 @@ function App({page}){
                           <label style={{color:"#00e676",fontWeight:600,fontSize:".9rem",marginBottom:"4px"}}>
                             {item.icone} {item.label}
                           </label>
-                          <div style={{display:"flex",alignItems:"center",background:"#1c1f22",borderRadius:"8px",overflow:"hidden",border:"1px solid rgba(0,230,118,.15)"}}>
+                          <div style={{display:"flex",alignItems:"center",background:"#1c1f22",borderRadius:"8px",overflow:"hidden",border:"1px solid rgba(0,230,118,.15)",position:"relative"}}>
                             <input
                               type="number"
                               min="0"
-                              defaultValue={c[item.campo]}
+                              value={edits[`${p.id}-${c.id}-${item.campo}`]!==undefined?edits[`${p.id}-${c.id}-${item.campo}`]:c[item.campo]}
                               onChange={e=>handleEdit(p.id,c.id,item.campo,e.target.value)}
                               onBlur={()=>commitEdit(p.id,c.id,item.campo)}
                               style={{flex:1,padding:"8px 10px",background:"transparent",color:"#e6e6e6",border:"none",fontSize:"1rem",outline:"none"}}
                             />
                             <span style={{background:"#151718",padding:"8px 10px",color:"#00e676",fontWeight:600,borderLeft:"1px solid rgba(0,230,118,.15)"}}>{item.unidade}</span>
+                            {savedFields[`${p.id}-${c.id}-${item.campo}`]&&(
+                              <span className="check-saved" style={{position:"absolute",right:"35px",color:"#00e676"}}>✅</span>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
-
-                    {/* === PRAGAS === */}
-                    <div className="section-title">🐛 Pragas e Ocorrências</div>
-                    <textarea rows="2" placeholder="Descreva pragas, doenças ou deficiências observadas..."
-                      value={edits[`${p.id}-${c.id}-pragas`]!==undefined?edits[`${p.id}-${c.id}-pragas`]:c.pragas}
-                      onChange={e=>handleEdit(p.id,c.id,"pragas",e.target.value)}
-                      onBlur={()=>commitEdit(p.id,c.id,"pragas")}
-                      style={{width:"100%",background:"#1b1e22",color:"#e6e6e6",borderRadius:"8px",padding:"8px",marginTop:"4px"}}></textarea>
 
                     {/* === EFICIÊNCIA AGRONÔMICA === */}
                     <div className="section-title">⚙️ Eficiência Agronômica</div>
@@ -226,18 +278,6 @@ function App({page}){
                       <div className="metric-value">{eficiencia}%</div>
                       {eficiencia<0&&<span style={{color:"#ff5252"}}>🚨 Prejuízo</span>}
                       {eficiencia>0&&<span style={{color:"#00e676"}}>✅ Lucro</span>}
-                    </div>
-
-                    {/* === TAREFAS === */}
-                    <div style={{marginTop:"10px"}}>
-                      <strong>📋 Tarefas a Executar</strong>
-                      {tarefasPendentes.length===0&&<div className="small">Tudo concluído!</div>}
-                      {tarefasPendentes.slice(0,5).map((t,i)=>(
-                        <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"#1b1e22",padding:"6px 10px",borderRadius:"6px",marginTop:"5px"}}>
-                          <span>{formatDate(t.data)} — 💧 {t.tipo} ({t.dosagem})</span>
-                          <button className="action" style={{padding:"4px 8px",fontSize:".8rem"}} onClick={()=>concluirTarefa(p.id,c.id,i)}>Concluir</button>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 );
@@ -263,11 +303,15 @@ function App({page}){
     const custo=todosCultivos.reduce((a,c)=>a+(parseFloat(c.custo)||0),0);
     const rent=custo?(((producao*10-custo)/custo)*100).toFixed(1):0;
 
+    // === GRÁFICOS E INSIGHTS ===
     useEffect(()=>{
       if(!todosCultivos.length)return;
       const ctx1=document.getElementById("graficoCrescimento");
       if(ctx1){
-        new Chart(ctx1,{type:"line",data:{labels:["Sem1","Sem2","Sem3","Sem4"],datasets:[{data:[10,14,18,21],borderColor:"#00e676",tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#ccc"}},y:{ticks:{color:"#ccc"}}}}});
+        new Chart(ctx1,{type:"line",data:{
+          labels:["Sem1","Sem2","Sem3","Sem4"],
+          datasets:[{data:[10,14,18,21],borderColor:"#00e676",tension:0.4}]
+        },options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#ccc"}},y:{ticks:{color:"#ccc"}}}}});
       }
       const ctx2=document.getElementById("graficoUmidade");
       if(ctx2){
@@ -277,6 +321,8 @@ function App({page}){
       if(ctx3){
         new Chart(ctx3,{type:"doughnut",data:{labels:["Eficiência"],datasets:[{data:[eficiencia,100-eficiencia],backgroundColor:["#00e676","#1b1e22"],borderWidth:0}]},options:{cutout:"75%",plugins:{legend:{display:false}}}});
       }
+
+      // Atualiza painel lateral
       const insightsDiv=document.getElementById("insights");
       insightsDiv.innerHTML=`
         <div class='card'>🌱 Crescimento médio: <b>${(producao/totalPlantas||0).toFixed(1)}g</b></div>
@@ -293,16 +339,21 @@ function App({page}){
         <div className="metric-card"><h3>💰 Rentabilidade</h3><div className="metric-value">{rent}%</div></div>
         <div className="metric-card"><h3>🕓 Tarefas Pendentes</h3><div className="metric-value">{pendentes}</div></div>
       </div>
+
+      {/* === GRÁFICOS === */}
       <div className="dashboard-grid" style={{marginTop:"2rem"}}>
         <div className="metric-card"><h3>📈 Crescimento</h3><canvas id="graficoCrescimento" height="100"></canvas></div>
         <div className="metric-card"><h3>💧 Umidade</h3><canvas id="graficoUmidade" height="100"></canvas></div>
         <div className="metric-card"><h3>⚙️ Eficiência</h3><canvas id="graficoEficiencia" height="100"></canvas></div>
       </div>
+
+      {/* === ALERTAS === */}
       {eficiencia<60&&<div className="alert">⚠️ Eficiência baixa ({eficiencia}%). Verifique atrasos nas regas.</div>}
       {pendentes>0&&<div className="alert">🚨 {pendentes} tarefa(s) atrasada(s).</div>}
     </>);
   }
 
+  // === RENDERIZAÇÃO FINAL ===
   return(<div>{page==="dashboard"?<Dashboard/>:<Projetos/>}{toast&&<div className="toast">{toast}</div>}</div>);
 }
 
@@ -321,4 +372,3 @@ document.querySelectorAll(".nav-btn").forEach(btn=>{
   </script>
 </body>
 </html>
-
