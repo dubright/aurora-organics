@@ -179,7 +179,6 @@
       <div id="insights"></div>
     </div>
   </main>
-
   <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
@@ -206,15 +205,15 @@ const calcularDosagem = l => {
   return "1L";
 };
 
-// 🌿 COMPONENTE DE INPUT COM FOCO FIXO E CHECK AUTOMÁTICO
+// 🌿 COMPONENTE DE INPUT FLUIDO (SEM PERDER FOCO)
 function InputCampo({ projetoId, cultivoId, campo, label, icone, unidade, valorInicial, onCommit, savedFields }) {
   const [valor, setValor] = useState(valorInicial || "");
-  const [focused, setFocused] = useState(false);
   const ref = useRef();
 
+  // Atualiza quando o valor inicial muda (ex: re-render após salvar)
   useEffect(() => {
-    if (focused && ref.current) ref.current.focus();
-  }, [focused]);
+    setValor(valorInicial || "");
+  }, [valorInicial]);
 
   return (
     <div style={{
@@ -248,11 +247,10 @@ function InputCampo({ projetoId, cultivoId, campo, label, icone, unidade, valorI
           type="number"
           min="0"
           value={valor}
-          onChange={e => setValor(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => {
-            setFocused(false);
-            onCommit(projetoId, cultivoId, campo, valor);
+          onChange={e => {
+            const novoValor = e.target.value;
+            setValor(novoValor);
+            onCommit(projetoId, cultivoId, campo, novoValor);
           }}
           style={{
             flex:1,
@@ -272,14 +270,12 @@ function InputCampo({ projetoId, cultivoId, campo, label, icone, unidade, valorI
           borderLeft:"1px solid rgba(0,230,118,.15)"
         }}>{unidade}</span>
         {savedFields[`${projetoId}-${cultivoId}-${campo}`] && (
-          <span className="check-saved" style={{position:"absolute",right:"35px",color:"#00e676"}}>✅</span>
+          <span style={{position:"absolute",right:"35px",color:"#00e676"}}>✅</span>
         )}
       </div>
     </div>
   );
 }
-
-// 🌿 COMPONENTE PRINCIPAL
 function App({ page }) {
   const [projects, setProjects] = useState(JSON.parse(localStorage.getItem("projectsAurora") || "[]"));
   const [toast, setToast] = useState("");
@@ -362,6 +358,7 @@ function App({ page }) {
       setTimeout(() => setSavedFields({}), 1200);
     }
   };
+
   // === COMPONENTE DE PROJETOS ===
   function Projetos() {
     const [nome, setNome] = useState("");
@@ -406,7 +403,6 @@ function App({ page }) {
                   <input type="number" min="1" value={form.quantidade} onChange={e => setForm({ ...form, quantidade: e.target.value })} />
                   <button className="action" onClick={() => addCultivo(p.id, form)}>Adicionar</button>
                 </div>
-
                 {/* Cultivos */}
                 {p.cultivos.map(c => {
                   const dias = Math.floor((new Date() - new Date(c.data)) / (1000 * 60 * 60 * 24));
@@ -443,7 +439,7 @@ function App({ page }) {
                         gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
                         gap: "14px"
                       }}>
-                        {[
+                        {[ 
                           { label: "Altura", campo: "altura", unidade: "cm", icone: "📏" },
                           { label: "Folhas", campo: "folhas", unidade: "unid.", icone: "🌿" },
                           { label: "Produtividade", campo: "produtividade", unidade: "g", icone: "🍅" },
