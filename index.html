@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aurora Organics 🌿</title>
 
-  <!-- Fonts e dependências -->
+  <!-- Dependências -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -14,113 +14,27 @@
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(180deg, #0c0f11 0%, #0f1115 100%);
-      color: #e6e6e6;
-      height: 100vh;
-      display: flex;
-      overflow: hidden;
-    }
-
-    aside {
-      width: 240px;
-      background: linear-gradient(180deg, #111315 0%, #0c0f11 100%);
-      border-right: 1px solid #1c1f22;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      box-shadow: inset -1px 0 10px rgba(0,230,118,.05);
-    }
-
-    aside h1 {
-      font-size: 1.3rem;
-      color: #00e676;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-shadow: 0 0 6px rgba(0,230,118,.6);
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: #e6e6e6;
-      font-size: 1rem;
-      text-align: left;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: .3s;
-    }
-
-    .nav-btn.active, .nav-btn:hover {
-      background: rgba(0,230,118,.08);
-      color: #00e676;
-      font-weight: 600;
-    }
-
-    main { flex: 1; display: flex; overflow: hidden; }
-    .content { flex: 1; padding: 2rem; overflow-y: auto; background: radial-gradient(circle at top left, rgba(0,230,118,.08), transparent 60%); }
-
-    .sidebar-right {
-      width: 320px;
-      background: linear-gradient(180deg, #121417 0%, #0f1115 100%);
-      border-left: 1px solid #1d1f23;
-      padding: 1.2rem;
-      overflow-y: auto;
-    }
-
-    h2 {
-      color: #00e676;
-      font-size: 1.3rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 6px rgba(0,230,118,.5);
-    }
-
-    .card {
-      background: rgba(23,26,31,.95);
-      border-radius: 12px;
-      padding: 1.2rem 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 20px rgba(0,230,118,.05);
-      transition: .2s;
-    }
-
-    .card:hover { transform: translateY(-2px); }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .metric-card {
-      background: #121417;
-      border: 1px solid rgba(0,230,118,.15);
-      border-radius: 10px;
-      padding: 1rem;
-      text-align: left;
-      box-shadow: 0 0 20px rgba(0,230,118,.03);
-    }
-
-    .metric-card h3 { color: #e6e6e6; font-size: 1rem; margin-bottom: .4rem; }
-    .metric-value { color: #00e676; font-weight: 700; font-size: 1.1rem; text-shadow: 0 0 8px rgba(0,230,118,.6); }
-
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-thumb { background: #00e67633; border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: #00e67666; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Inter",sans-serif;background:linear-gradient(180deg,#0c0f11 0%,#0f1115 100%);color:#e6e6e6;height:100vh;display:flex;overflow:hidden}
+    aside{width:240px;background:linear-gradient(180deg,#111315 0%,#0c0f11 100%);border-right:1px solid #1c1f22;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;box-shadow:inset -1px 0 10px rgba(0,230,118,.05)}
+    aside h1{font-size:1.3rem;color:#00e676;display:flex;align-items:center;gap:8px;text-shadow:0 0 6px rgba(0,230,118,.6)}
+    .nav-btn{background:none;border:none;color:#e6e6e6;font-size:1rem;text-align:left;padding:10px;border-radius:8px;cursor:pointer;transition:.3s}
+    .nav-btn.active,.nav-btn:hover{background:rgba(0,230,118,.08);color:#00e676;font-weight:600}
+    main{flex:1;display:flex;overflow:hidden}
+    .content{flex:1;padding:2rem;overflow-y:auto;background:radial-gradient(circle at top left,rgba(0,230,118,.08),transparent 60%)}
+    .sidebar-right{width:320px;background:linear-gradient(180deg,#121417 0%,#0f1115 100%);border-left:1px solid #1d1f23;padding:1.2rem;overflow-y:auto}
+    h2{color:#00e676;font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1rem;text-shadow:0 0 6px rgba(0,230,118,.5)}
+    .card{background:rgba(23,26,31,.95);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 4px 20px rgba(0,230,118,.05);transition:.2s}
+    .card:hover{transform:translateY(-2px)}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .metric-card{background:#121417;border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:1rem;text-align:left;box-shadow:0 0 20px rgba(0,230,118,.03)}
+    .metric-card h3{color:#e6e6e6;font-size:1rem;margin-bottom:.4rem}
+    .metric-value{color:#00e676;font-weight:700;font-size:1.1rem;text-shadow:0 0 8px rgba(0,230,118,.6)}
+    ::-webkit-scrollbar{width:8px}
+    ::-webkit-scrollbar-thumb{background:#00e67633;border-radius:8px}
+    ::-webkit-scrollbar-thumb:hover{background:#00e67666}
   </style>
 </head>
-
 <body>
   <aside>
     <h1>🌿 Aurora</h1>
@@ -137,100 +51,131 @@
   </main>
 
   <script type="text/babel">
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
-// 🌡️ Hook de Sensor (dados fictícios temporários)
+// 🌡 Hook de Sensor (real + fallback)
 function useSensor() {
   const [sensor, setSensor] = useState({ temperatura: 0, umidade: 0 });
-
   useEffect(() => {
+    let socket;
     try {
-      const socket = io("http://localhost:4000", { transports: ["websocket"] });
-
-      socket.on("connect_error", () => {
-        console.warn("⚠️ Falha ao conectar com servidor, usando dados simulados...");
-      });
-
-      socket.on("sensor-data", (data) => {
-        setSensor(data);
-      });
-
-      const fallback = setInterval(() => {
-        setSensor({
-          temperatura: 24 + Math.random() * 5,
-          umidade: 60 + Math.random() * 10,
-        });
-      }, 3000);
-
-      return () => {
-        clearInterval(fallback);
-        socket.disconnect();
-      };
-    } catch (err) {
-      console.error("Erro no sensor:", err);
-    }
-  }, []);
-
+      socket = io("http://localhost:4000", { transports:["websocket"], timeout:2000 });
+      socket.on("sensor-data", data => setSensor(data));
+      socket.on("connect_error", () => console.warn("⚠️ Sem backend — usando simulação."));
+    } catch (e) { console.log("erro socket", e); }
+    const sim = setInterval(() => {
+      setSensor({ temperatura: 24+Math.random()*5, umidade:60+Math.random()*10 });
+    }, 3000);
+    return ()=>{clearInterval(sim); if(socket) socket.disconnect();}
+  },[]);
   return sensor;
 }
 
-// 🌿 Dashboard principal
-function Dashboard() {
-  const sensor = useSensor();
-
-  const [projects, setProjects] = useState(
-    JSON.parse(localStorage.getItem("projectsAurora") || "[]")
-  );
-
-  useEffect(() => {
-    if (!projects.length) {
-      document.getElementById("insights").innerHTML = `
-        <div class='card'>🚀 Bem-vindo(a) ao Aurora!</div>
-        <div class='card'>Crie um projeto na aba "Projetos" para começar o monitoramento.</div>
-        <div class='card'>🌡 Dados de sensor simulados: <b>${sensor.temperatura.toFixed(1)}°C / ${sensor.umidade.toFixed(1)}%</b></div>
-      `;
-    } else {
-      document.getElementById("insights").innerHTML = `
-        <div class='card'>🌱 Projetos ativos: <b>${projects.length}</b></div>
-        <div class='card'>💧 Umidade: <b>${sensor.umidade.toFixed(1)}%</b></div>
-        <div class='card'>🌡 Temperatura: <b>${sensor.temperatura.toFixed(1)}°C</b></div>
-      `;
-    }
-  }, [projects, sensor]);
-
+// 🌱 Inputs reutilizáveis
+function InputCampo({ projetoId, cultivoId, campo, label, icone, unidade, valorInicial, onCommit }) {
+  const [valor,setValor]=useState(valorInicial||"");
+  const ref=useRef();
   return (
-    <>
+    <div style={{background:"#181a1d",border:"1px solid rgba(0,230,118,.15)",borderRadius:"10px",padding:"10px"}}>
+      <label style={{color:"#00e676",fontWeight:600,fontSize:".9rem"}}>{icone} {label}</label>
+      <div style={{display:"flex",alignItems:"center",background:"#1c1f22",borderRadius:"8px",overflow:"hidden",marginTop:"4px"}}>
+        <input ref={ref} type="number" min="0" value={valor}
+          onChange={e=>setValor(e.target.value)}
+          onBlur={()=>onCommit(projetoId,cultivoId,campo,valor)}
+          style={{flex:1,padding:"8px 10px",background:"transparent",color:"#e6e6e6",border:"none",fontSize:"1rem",outline:"none"}}/>
+        <span style={{background:"#151718",padding:"8px 10px",color:"#00e676",fontWeight:600,borderLeft:"1px solid rgba(0,230,118,.15)"}}>{unidade}</span>
+      </div>
+    </div>
+  );
+}
+
+// 🌿 App principal
+function App({page}) {
+  const [projects,setProjects]=useState(JSON.parse(localStorage.getItem("projectsAurora")||"[]"));
+  const [expanded,setExpanded]=useState(null);
+  const sensor=useSensor();
+
+  useEffect(()=>{localStorage.setItem("projectsAurora",JSON.stringify(projects));},[projects]);
+  useEffect(()=>{
+    document.getElementById("insights").innerHTML=`
+      <div class='card'>🌡 ${sensor.temperatura.toFixed(1)}°C</div>
+      <div class='card'>💧 ${sensor.umidade.toFixed(1)}%</div>
+      <div class='card'>🌿 Projetos: <b>${projects.length}</b></div>`;
+  },[projects,sensor]);
+
+  const addProject=nome=>{
+    if(!nome.trim())return alert("Informe um nome.");
+    setProjects([...projects,{id:Date.now(),nome,cultivos:[]}]);
+  };
+  const deleteProject=id=>{
+    if(confirm("Excluir projeto?"))setProjects(projects.filter(p=>p.id!==id));
+  };
+  const addCultivo=(id)=>{
+    const novo={id:Date.now(),planta:"Tomate 🍅",data:new Date().toISOString(),altura:0,folhas:0,produtividade:0,custo:0};
+    setProjects(projects.map(p=>p.id===id?{...p,cultivos:[...p.cultivos,novo]}:p));
+  };
+  const commitEdit=(pid,cid,campo,valor)=>{
+    setProjects(projects.map(p=>p.id===pid?{...p,cultivos:p.cultivos.map(c=>c.id===cid?{...c,[campo]:valor}:c)}:p));
+  };
+
+  function Projetos(){
+    const [nome,setNome]=useState("");
+    return(<>
+      <h2>🌿 Projetos</h2>
+      <div style={{display:"flex",gap:"10px",marginBottom:"1rem"}}>
+        <input placeholder="Nome do Projeto" value={nome} onChange={e=>setNome(e.target.value)}/>
+        <button className="action" onClick={()=>{addProject(nome);setNome("");}}>+ Novo Projeto</button>
+      </div>
+      {projects.map(p=>(<div key={p.id} className="card">
+        <div style={{display:"flex",justifyContent:"space-between"}}>
+          <strong>{p.nome}</strong>
+          <div style={{display:"flex",gap:"8px"}}>
+            <button onClick={()=>setExpanded(expanded===p.id?null:p.id)}>{expanded===p.id?"Fechar":"Abrir"}</button>
+            <button onClick={()=>deleteProject(p.id)}>Excluir</button>
+          </div>
+        </div>
+        {expanded===p.id&&(<div style={{marginTop:"1rem"}}>
+          <button onClick={()=>addCultivo(p.id)}>Adicionar Cultivo</button>
+          {p.cultivos.map(c=>(<div key={c.id} className="card">
+            <strong>{c.planta}</strong>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:"10px",marginTop:"10px"}}>
+              <InputCampo projetoId={p.id} cultivoId={c.id} campo="altura" label="Altura" icone="📏" unidade="cm" valorInicial={c.altura} onCommit={commitEdit}/>
+              <InputCampo projetoId={p.id} cultivoId={c.id} campo="folhas" label="Folhas" icone="🌿" unidade="unid." valorInicial={c.folhas} onCommit={commitEdit}/>
+              <InputCampo projetoId={p.id} cultivoId={c.id} campo="produtividade" label="Produtividade" icone="🍅" unidade="g" valorInicial={c.produtividade} onCommit={commitEdit}/>
+              <InputCampo projetoId={p.id} cultivoId={c.id} campo="custo" label="Custo" icone="💰" unidade="R$" valorInicial={c.custo} onCommit={commitEdit}/>
+            </div>
+          </div>))}
+        </div>)}
+      </div>))}
+    </>);
+  }
+
+  function Dashboard(){
+    const totalPlantas=projects.reduce((a,p)=>a+p.cultivos.length,0);
+    return(<>
       <h2>📈 Dashboard Inteligente</h2>
       <div className="dashboard-grid">
-        <div className="metric-card"><h3>🌡 Temperatura</h3><div className="metric-value">{sensor.temperatura.toFixed(1)} °C</div></div>
-        <div className="metric-card"><h3>💧 Umidade</h3><div className="metric-value">{sensor.umidade.toFixed(1)} %</div></div>
-        <div className="metric-card"><h3>🌱 Projetos Ativos</h3><div className="metric-value">{projects.length}</div></div>
+        <div className="metric-card"><h3>🌡 Temperatura</h3><div className="metric-value">{sensor.temperatura.toFixed(1)}°C</div></div>
+        <div className="metric-card"><h3>💧 Umidade</h3><div className="metric-value">{sensor.umidade.toFixed(1)}%</div></div>
+        <div className="metric-card"><h3>🌱 Cultivos Ativos</h3><div className="metric-value">{totalPlantas}</div></div>
       </div>
+      {!projects.length&&<div className="card"><h3>🚜 Nenhum projeto</h3><p>Crie um projeto em “Projetos” para começar.</p></div>}
+    </>);
+  }
 
-      {projects.length === 0 && (
-        <div className="card">
-          <h3>🚜 Nenhum projeto ainda</h3>
-          <p>Vá até <b>“Projetos”</b> para criar seu primeiro cultivo.</p>
-        </div>
-      )}
-    </>
-  );
+  return(<div>{page==="dashboard"?<Dashboard/>:<Projetos/>}</div>);
 }
 
-// Renderização
-const root = ReactDOM.createRoot(document.getElementById("root"));
-let currentPage = "dashboard";
-
-function renderApp() {
-  root.render(<Dashboard />);
-}
-
+// === Renderização ===
+const root=ReactDOM.createRoot(document.getElementById("root"));
+let currentPage="dashboard";
+function renderApp(){root.render(<App key={currentPage} page={currentPage}/>);}
 renderApp();
-document.querySelectorAll(".nav-btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    currentPage = btn.getAttribute("data-page");
+    currentPage=btn.getAttribute("data-page");
     renderApp();
   };
 });
