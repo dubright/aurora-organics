@@ -230,10 +230,18 @@
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
+      // ✅ Correção: abre automaticamente o projeto criado
       const addProject = nome => {
         if (!nome.trim()) return alert("Informe um nome para o projeto.");
-        const novo = { id: Date.now(), nome, dataCriacao: new Date().toLocaleDateString(), cultivos: [], historico: [] };
+        const novo = { 
+          id: Date.now(), 
+          nome, 
+          dataCriacao: new Date().toLocaleDateString(), 
+          cultivos: [], 
+          historico: [] 
+        };
         setProjects([...projects, novo]);
+        setExpanded(novo.id); // 🔧 agora abre automaticamente
         showToast("🌿 Projeto criado!");
       };
       const deleteProject = id => {
@@ -243,11 +251,13 @@
           showToast("🗑️ Projeto removido.");
         }
       };
+
       const saveEdit = () => {
         setProjects(projects.map(p => p.id === editProj.id ? { ...p, nome: newName } : p));
         setEditProj(null);
         showToast("✏️ Projeto atualizado!");
       };
+
       const addCultivo = (projId, form) => {
         setProjects(projects.map(p =>
           p.id === projId
@@ -260,24 +270,36 @@
         ));
         showToast("🌱 Cultivo adicionado!");
       };
+
       const deleteCultivo = (projId, cultId) => {
         setProjects(projects.map(p =>
           p.id === projId
-            ? { ...p, cultivos: p.cultivos.filter(c => c.id !== cultId),
+            ? { 
+                ...p,
+                cultivos: p.cultivos.filter(c => c.id !== cultId),
                 historico: [...p.historico, { data: new Date().toLocaleDateString(), acao: "🗑️ Cultivo removido" }]
-              } : p
-        ));
-      };
-      const registrar = (projId, cultId, acao) => {
-        setProjects(projects.map(p =>
-          p.id === projId
-            ? { ...p,
-                cultivos: p.cultivos.map(c => c.id === cultId ? { ...c, historico: [...c.historico, { data: new Date().toLocaleDateString(), acao }] } : c),
-                historico: [...p.historico, { data: new Date().toLocaleDateString(), acao }]
-              } : p
+              }
+            : p
         ));
       };
 
+      const registrar = (projId, cultId, acao) => {
+        setProjects(projects.map(p =>
+          p.id === projId
+            ? {
+                ...p,
+                cultivos: p.cultivos.map(c => 
+                  c.id === cultId 
+                    ? { ...c, historico: [...c.historico, { data: new Date().toLocaleDateString(), acao }] }
+                    : c
+                ),
+                historico: [...p.historico, { data: new Date().toLocaleDateString(), acao }]
+              }
+            : p
+        ));
+      };
+
+      /* === DASHBOARD === */
       const allCultivos = projects.flatMap(p => p.cultivos);
       const totalQ = allCultivos.reduce((a,b) => a + Number(b.quantidade||0), 0);
       const producao = totalQ * 1.5;
@@ -300,10 +322,12 @@
         );
       }
 
+      /* === PROJETOS === */
       function Projetos() {
         const [nome, setNome] = useState("");
         const [form, setForm] = useState({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
         const projetoAtual = projects.find(p => p.id === expanded);
+
         return (
           <>
             <h2>🌿 Projetos</h2>
@@ -315,7 +339,10 @@
             {projects.map(p => (
               <div key={p.id} className="project-card">
                 <div className="project-header" onClick={()=>setExpanded(expanded===p.id?null:p.id)}>
-                  <div><strong>{p.nome}</strong><div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div></div>
+                  <div>
+                    <strong>{p.nome}</strong>
+                    <div className="small">{p.cultivos.length} cultivos • criado em {p.dataCriacao}</div>
+                  </div>
                   <div style={{display:"flex",gap:"6px"}}>
                     <button className="btn-icon" onClick={e=>{e.stopPropagation(); setEditProj(p); setNewName(p.nome);}}>✏️</button>
                     <button className="btn-icon" onClick={e=>{e.stopPropagation(); deleteProject(p.id);}}>🗑️</button>
@@ -338,6 +365,7 @@
                       <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
                       <button className="action" onClick={()=>{if(!form.planta||!form.data)return alert("Preencha todos os campos!");addCultivo(p.id,form);setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});}}>Adicionar</button>
                     </div>
+
                     {p.cultivos.map(c=>{
                       const dias=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
                       const fase=getFase(dias);const prog=Math.min((dias/60)*100,100);
@@ -351,69 +379,46 @@
 
             {ReactDOM.createPortal(<div>{projetoAtual?(<>
               <div className="summary"><h4>📊 Panorama Geral</h4><div>🌾 Cultivos: {projetoAtual.cultivos.length}</div><div>📦 Quantidade Total: {projetoAtual.cultivos.reduce((a,b)=>a+Number(b.quantidade||0),0)}</div></div>
-              <div className="tasks"><h4
-              <div className="tasks">
-                <h4>🧾 Tarefas</h4>
-                {projetoAtual.cultivos.length > 0 ? projetoAtual.cultivos.map((c, i) => {
-                  const colheita = formatDate(new Date(new Date(c.data).getTime() + (60 * 24 * 60 * 60 * 1000)));
-                  return (
-                    <div key={i} className="task-item">
-                      <strong>{c.planta}</strong><br />
-                      Colheita: {colheita}
-                    </div>
-                  );
-                }) : <div className="small">Nenhuma tarefa</div>}
+              <div className="tasks"><h4>🧾 Tarefas</h4>
+                {projetoAtual.cultivos.length>0?projetoAtual.cultivos.map((c,i)=>{
+                  const colheita=formatDate(new Date(new Date(c.data).getTime()+(60*24*60*60*1000)));
+                  return(<div key={i} className="task-item"><strong>{c.planta}</strong><br/>Colheita: {colheita}</div>);
+                }):<div className="small">Nenhuma tarefa</div>}
               </div>
-
-              <div className="history">
-                <h4>🕓 Histórico do Projeto</h4>
-                {projetoAtual.historico.length > 0
-                  ? projetoAtual.historico.slice(-10).reverse().map((h, i) => (
-                      <div key={i} className="history-item">
-                        {h.data} — {h.acao}
-                      </div>
-                    ))
-                  : <div className="small">Nenhuma ação registrada</div>}
+              <div className="history"><h4>🕓 Histórico do Projeto</h4>
+                {projetoAtual.historico.length>0?projetoAtual.historico.slice(-10).reverse().map((h,i)=>(<div key={i} className="history-item">{h.data} — {h.acao}</div>)):<div className="small">Nenhuma ação registrada</div>}
               </div>
-            </>) : (
-              <div className="small" style={{opacity:0.7, marginTop:"2rem"}}>
-                Selecione um projeto para visualizar o painel
-              </div>
-            )}</div>, document.getElementById("sidePanel"))}
+            </>):(<div className="small" style={{opacity:0.7,marginTop:"2rem"}}>Selecione um projeto para visualizar o painel</div>)}</div>,document.getElementById("sidePanel"))}
           </>
         );
       }
 
       return (
         <div>
-          {page === "dashboard" ? <Dashboard /> : <Projetos />}
+          {page==="dashboard"?<Dashboard/>:<Projetos/>}
           {toast && <div className="toast">{toast}</div>}
         </div>
       );
     }
 
     /* === APLICAÇÃO PRINCIPAL === */
-    let currentPage = "dashboard";
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    const side = document.getElementById("sidePanel");
+    let currentPage="dashboard";
+    const root=ReactDOM.createRoot(document.getElementById("root"));
+    const side=document.getElementById("sidePanel");
 
-    function renderApp() {
-      if (currentPage === "dashboard") {
-        side.innerHTML = "";
-      }
-      // 🔧 Força o React a recriar o App a cada troca de aba
-      root.render(<App key={currentPage} page={currentPage} />);
+    function renderApp(){
+      if(currentPage==="dashboard") side.innerHTML="";
+      // 🔧 força o React a recriar o componente App ao trocar de aba
+      root.render(<App key={currentPage} page={currentPage}/>);
     }
 
-    // Primeira renderização
     renderApp();
 
-    // Troca entre abas
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".nav-btn").forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
         btn.classList.add("active");
-        currentPage = btn.getAttribute("data-page");
+        currentPage=btn.getAttribute("data-page");
         renderApp();
       };
     });
