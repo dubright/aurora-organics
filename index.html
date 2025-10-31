@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -227,10 +228,20 @@
       const [editProj, setEditProj] = useState(null);
       const [newName, setNewName] = useState("");
       const [expanded, setExpanded] = useState(null);
+      const [ultimoCriado, setUltimoCriado] = useState(null);
+
       useEffect(() => localStorage.setItem("projects", JSON.stringify(projects)), [projects]);
+
+      // ✅ Abre automaticamente o último projeto criado
+      useEffect(() => {
+        if (ultimoCriado && projects.some(p => p.id === ultimoCriado)) {
+          setExpanded(ultimoCriado);
+          setUltimoCriado(null);
+        }
+      }, [projects]);
+
       const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
-      // ✅ Corrigido: abre o projeto novo após o React renderizar
       const addProject = nome => {
         if (!nome.trim()) return alert("Informe um nome para o projeto.");
         const novo = { 
@@ -241,8 +252,8 @@
           historico: [] 
         };
         setProjects(prev => [...prev, novo]);
+        setUltimoCriado(novo.id);
         showToast("🌿 Projeto criado!");
-        setTimeout(() => setExpanded(novo.id), 100); // ✅ aguarda renderização e expande
       };
       const deleteProject = id => {
         if (confirm("Excluir este projeto?")) {
@@ -363,7 +374,11 @@
                         <option>700ml</option><option>5L</option><option>10L</option><option>15L</option>
                       </select>
                       <input type="number" min="1" value={form.quantidade} onChange={e=>setForm({...form,quantidade:e.target.value})}/>
-                      <button className="action" onClick={()=>{if(!form.planta||!form.data)return alert("Preencha todos os campos!");addCultivo(p.id,form);setForm({planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1});}}>Adicionar</button>
+                      <button className="action" onClick={()=>{
+                        if(!form.planta || !form.data) return alert("Preencha todos os campos!");
+                        addCultivo(p.id, form);
+                        setForm({ planta:"", data:"", fertilizante:"BioBizz", litragem:"700ml", quantidade:1 });
+                      }}>Adicionar</button>
                     </div>
 
                     {p.cultivos.map(c=>{
@@ -452,7 +467,6 @@
       );
     }
 
-    /* === APLICAÇÃO PRINCIPAL === */
     let currentPage="dashboard";
     const root=ReactDOM.createRoot(document.getElementById("root"));
     const side=document.getElementById("sidePanel");
