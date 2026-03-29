@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Aurora</title>
+<title>Aurora Agrivi Clone</title>
 
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -15,14 +15,14 @@ main { flex:1; display:flex; }
 .content { flex:1; padding:30px; }
 .right { width:320px; background:#0f1115; padding:20px; border-left:1px solid #222; }
 
-.nav { padding:10px; cursor:pointer; border-radius:8px; }
+.nav { padding:12px; border-radius:8px; cursor:pointer; color:#aaa; }
 .nav.active { background:#1a1f26; color:#00e676; }
 
 .card { background:#15191f; padding:16px; border-radius:12px; margin-top:12px; }
 
-input { background:#1c2026; border:1px solid #333; padding:8px; border-radius:8px; color:white; width:100%; margin-bottom:8px; }
+input { width:100%; padding:8px; margin:6px 0; background:#1c2026; border:1px solid #333; border-radius:8px; color:#fff; }
 
-button { background:#00e676; border:none; padding:8px; border-radius:8px; cursor:pointer; width:100%; }
+button { width:100%; padding:8px; margin-top:6px; border:none; border-radius:8px; background:#00e676; cursor:pointer; }
 
 .progress { height:6px; background:#222; border-radius:4px; overflow:hidden; }
 .bar { height:100%; background:#00e676; }
@@ -34,7 +34,7 @@ button { background:#00e676; border:none; padding:8px; border-radius:8px; cursor
 <body>
 
 <aside>
-<h3>🌿 Aurora</h3>
+<h2>🌿 Aurora</h2>
 <div id="nav-dashboard" class="nav active">Dashboard</div>
 <div id="nav-projects" class="nav">Projetos</div>
 </aside>
@@ -48,24 +48,24 @@ button { background:#00e676; border:none; padding:8px; border-radius:8px; cursor
 
 const { useState, useEffect } = React;
 
-// ================= INTELIGÊNCIA =================
+// ================= MOTOR AGRÍCOLA =================
 
-function analisar(c){
+function analyze(c){
 const dias = Math.floor((new Date() - new Date(c.data)) / (1000*60*60*24));
 
-let fase = "Germinação";
-let recomendacao = "Manter solo úmido";
-let alerta = "";
+let fase="Germinação";
+let recomendacao="Manter umidade";
+let alerta="";
 
-if(dias > 7){ fase="Crescimento"; recomendacao="Regar + adubar"; }
-if(dias > 30){ fase="Floração"; recomendacao="Aumentar nutrientes"; }
-if(dias > 50){ fase="Colheita"; recomendacao="Colher"; alerta="⚠️ Colheita atrasada"; }
+if(dias>7){fase="Crescimento"; recomendacao="Regar + adubar";}
+if(dias>30){fase="Floração"; recomendacao="Aumentar nutrientes";}
+if(dias>50){fase="Colheita"; recomendacao="Colher"; alerta="⚠️ Atrasado";}
 
 return {
 fase,
+progresso: Math.min((dias/60)*100,100),
 recomendacao,
-alerta,
-progresso: Math.min((dias/60)*100,100)
+alerta
 };
 }
 
@@ -79,9 +79,9 @@ const [form,setForm] = useState({planta:"",data:"",quantidade:1});
 
 useEffect(()=>localStorage.setItem("projects",JSON.stringify(projects)),[projects]);
 
-// ================= PROJETO =================
+// ================= PROJETOS =================
 
-const addProject = nome => {
+const createProject = nome => {
 if(!nome) return;
 setProjects(prev=>[...prev,{id:Date.now(),nome,cultivos:[]}]);
 };
@@ -108,8 +108,6 @@ p.id===active
 ));
 };
 
-const projeto = projects.find(p=>p.id===active);
-
 // ================= DASHBOARD =================
 
 const Dashboard = () => {
@@ -118,17 +116,17 @@ const all = projects.flatMap(p=>p.cultivos);
 
 return (
 <>
-<h2>Operação</h2>
+<h2>Visão Estratégica</h2>
 
 <div className="card">
 Cultivos ativos: {all.length}
 </div>
 
 <div className="card">
-Tarefas críticas:
+Alertas críticos:
 {all.map((c,i)=>{
-const info = analisar(c);
-return info.alerta ? <div key={i}>{c.planta} - colher</div> : null;
+const info=analyze(c);
+return info.alerta && <div key={i}>{c.planta}</div>;
 })}
 </div>
 
@@ -138,16 +136,18 @@ return info.alerta ? <div key={i}>{c.planta} - colher</div> : null;
 
 // ================= PROJETOS =================
 
+const projeto = projects.find(p=>p.id===active);
+
 const Projetos = () => (
 <>
-<h2>Projetos</h2>
+<h2>Gestão de Cultivo</h2>
 
-<input placeholder="Novo projeto" id="proj"/>
+<input id="proj" placeholder="Nome do projeto"/>
 <button onClick={()=>{
-addProject(document.getElementById("proj").value);
+createProject(document.getElementById("proj").value);
 document.getElementById("proj").value="";
 }}>
-Criar projeto
+Criar Projeto
 </button>
 
 {projects.map(p=>(
@@ -160,6 +160,8 @@ Criar projeto
 <div className="card">
 
 <h3>{projeto.nome}</h3>
+
+<h4>Novo Cultivo</h4>
 
 <input placeholder="Planta"
 value={form.planta}
@@ -176,15 +178,18 @@ value={form.quantidade}
 onChange={e=>setForm({...form,quantidade:e.target.value})}
 />
 
-<button onClick={addCultivo}>Adicionar cultivo</button>
+<button onClick={addCultivo}>Adicionar</button>
+
+<h4>Operação</h4>
 
 {projeto.cultivos.map(c=>{
-const info = analisar(c);
+const info = analyze(c);
 
 return (
 <div key={c.id} className="card">
 
 <strong>{c.planta}</strong>
+
 <div>{info.fase}</div>
 
 <div className="progress">
@@ -195,7 +200,7 @@ return (
 
 {info.alerta && <div className="alert">{info.alerta}</div>}
 
-<button onClick={()=>deleteCultivo(c.id)}>Excluir</button>
+<button onClick={()=>deleteCultivo(c.id)}>Remover</button>
 
 </div>
 );
@@ -204,12 +209,13 @@ return (
 </div>
 )}
 
+{/* SIDE PANEL */}
 {ReactDOM.createPortal(
 projeto
 ? <div>
 <h3>Tarefas do dia</h3>
 {projeto.cultivos.map((c,i)=>{
-const info = analisar(c);
+const info = analyze(c);
 return <div key={i} className="card">{c.planta}<br/>{info.recomendacao}</div>;
 })}
 </div>
