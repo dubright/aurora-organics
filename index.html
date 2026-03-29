@@ -1,34 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Aurora</title>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+body { margin:0; font-family:Inter; background:#0b0d10; color:#eee; display:flex; }
+aside { width:240px; background:#0f1115; padding:20px; border-right:1px solid #222; }
+main { flex:1; display:flex; }
+.content { flex:1; padding:30px; }
+.right { width:320px; background:#0f1115; padding:20px; border-left:1px solid #222; }
+
+.nav { padding:10px; cursor:pointer; border-radius:8px; }
+.nav.active { background:#1a1f26; color:#00e676; }
+
+.card { background:#15191f; padding:16px; border-radius:12px; margin-top:12px; }
+
+input { background:#1c2026; border:1px solid #333; padding:8px; border-radius:8px; color:white; width:100%; margin-bottom:8px; }
+
+button { background:#00e676; border:none; padding:8px; border-radius:8px; cursor:pointer; width:100%; }
+
+.progress { height:6px; background:#222; border-radius:4px; overflow:hidden; }
+.bar { height:100%; background:#00e676; }
+
+.alert { color:orange; font-size:12px; }
+</style>
+</head>
+
+<body>
+
+<aside>
+<h3>🌿 Aurora</h3>
+<div id="nav-dashboard" class="nav active">Dashboard</div>
+<div id="nav-projects" class="nav">Projetos</div>
+</aside>
+
+<main>
+<div id="root" class="content"></div>
+<div id="sidePanel" class="right"></div>
+</main>
+
 <script type="text/babel">
 
 const { useState, useEffect } = React;
 
 // ================= INTELIGÊNCIA =================
 
-function analisarCultivo(c){
-  const dias = Math.floor((new Date() - new Date(c.data)) / (1000*60*60*24));
+function analisar(c){
+const dias = Math.floor((new Date() - new Date(c.data)) / (1000*60*60*24));
 
-  let recomendacao = "";
-  let alerta = "";
-  let fase = "";
+let fase = "Germinação";
+let recomendacao = "Manter solo úmido";
+let alerta = "";
 
-  if(dias < 7){
-    fase = "Germinação";
-    recomendacao = "Manter solo úmido";
-  } else if(dias < 30){
-    fase = "Crescimento";
-    recomendacao = "Adubar e regar regularmente";
-  } else if(dias < 50){
-    fase = "Floração";
-    recomendacao = "Aumentar nutrientes";
-  } else {
-    fase = "Colheita";
-    recomendacao = "Pronto para colher";
-    alerta = "⚠️ Colheita disponível";
-  }
+if(dias > 7){ fase="Crescimento"; recomendacao="Regar + adubar"; }
+if(dias > 30){ fase="Floração"; recomendacao="Aumentar nutrientes"; }
+if(dias > 50){ fase="Colheita"; recomendacao="Colher"; alerta="⚠️ Colheita atrasada"; }
 
-  const progresso = Math.min((dias / 60) * 100, 100);
-
-  return { dias, fase, recomendacao, alerta, progresso };
+return {
+fase,
+recomendacao,
+alerta,
+progresso: Math.min((dias/60)*100,100)
+};
 }
 
 // ================= APP =================
@@ -38,43 +76,31 @@ function App({ page }) {
 const [projects,setProjects] = useState(()=>JSON.parse(localStorage.getItem("projects")||"[]"));
 const [active,setActive] = useState(null);
 const [form,setForm] = useState({planta:"",data:"",quantidade:1});
-const [toast,setToast] = useState("");
 
 useEffect(()=>localStorage.setItem("projects",JSON.stringify(projects)),[projects]);
 
-const showToast = msg => {
-setToast(msg);
-setTimeout(()=>setToast(""),2000);
-};
-
-// ================= PROJETOS =================
+// ================= PROJETO =================
 
 const addProject = nome => {
 if(!nome) return;
-setProjects(prev=>[...prev,{id:Date.now(),nome,cultivos:[],historico:[]}]);
-showToast("Projeto criado");
+setProjects(prev=>[...prev,{id:Date.now(),nome,cultivos:[]}]);
 };
 
 // ================= CULTIVO =================
 
 const addCultivo = () => {
-
-if(!form.planta||!form.data) return alert("Preencha");
+if(!form.planta||!form.data) return;
 
 setProjects(prev=>prev.map(p=>
 p.id===active
-? {...p,
-cultivos:[...p.cultivos,{...form,id:Date.now()}],
-historico:[...p.historico,{acao:`Plantado ${form.planta}`}]
-}
+? {...p,cultivos:[...p.cultivos,{...form,id:Date.now()}]}
 :p
 ));
 
 setForm({planta:"",data:"",quantidade:1});
-showToast("Cultivo adicionado");
 };
 
-const deleteCultivo = (id) => {
+const deleteCultivo = id => {
 setProjects(prev=>prev.map(p=>
 p.id===active
 ? {...p,cultivos:p.cultivos.filter(c=>c.id!==id)}
@@ -82,23 +108,28 @@ p.id===active
 ));
 };
 
+const projeto = projects.find(p=>p.id===active);
+
 // ================= DASHBOARD =================
 
 const Dashboard = () => {
+
 const all = projects.flatMap(p=>p.cultivos);
+
 return (
 <>
-<h2>Dashboard Inteligente</h2>
+<h2>Operação</h2>
 
 <div className="card">
 Cultivos ativos: {all.length}
 </div>
 
 <div className="card">
-Alertas:
-{all.filter(c=>analisarCultivo(c).alerta).map((c,i)=>(
-<div key={i}>{c.planta} - colher</div>
-))}
+Tarefas críticas:
+{all.map((c,i)=>{
+const info = analisar(c);
+return info.alerta ? <div key={i}>{c.planta} - colher</div> : null;
+})}
 </div>
 
 </>
@@ -107,17 +138,17 @@ Alertas:
 
 // ================= PROJETOS =================
 
-const projeto = projects.find(p=>p.id===active);
-
 const Projetos = () => (
 <>
 <h2>Projetos</h2>
 
-<input id="proj" placeholder="Novo projeto"/>
+<input placeholder="Novo projeto" id="proj"/>
 <button onClick={()=>{
 addProject(document.getElementById("proj").value);
 document.getElementById("proj").value="";
-}}>Criar</button>
+}}>
+Criar projeto
+</button>
 
 {projects.map(p=>(
 <div key={p.id} className="card" onClick={()=>setActive(p.id)}>
@@ -132,29 +163,29 @@ document.getElementById("proj").value="";
 
 <input placeholder="Planta"
 value={form.planta}
-onChange={e=>setForm({...form,planta:e.target.value})}/>
+onChange={e=>setForm({...form,planta:e.target.value})}
+/>
 
 <input type="date"
 value={form.data}
-onChange={e=>setForm({...form,data:e.target.value})}/>
+onChange={e=>setForm({...form,data:e.target.value})}
+/>
 
 <input type="number"
 value={form.quantidade}
-onChange={e=>setForm({...form,quantidade:e.target.value})}/>
+onChange={e=>setForm({...form,quantidade:e.target.value})}
+/>
 
-<button onClick={addCultivo}>Adicionar</button>
+<button onClick={addCultivo}>Adicionar cultivo</button>
 
 {projeto.cultivos.map(c=>{
-const info = analisarCultivo(c);
+const info = analisar(c);
 
 return (
 <div key={c.id} className="card">
 
 <strong>{c.planta}</strong>
-<br/>
-
-Fase: {info.fase}
-<br/>
+<div>{info.fase}</div>
 
 <div className="progress">
 <div className="bar" style={{width:info.progresso+"%"}}></div>
@@ -162,7 +193,7 @@ Fase: {info.fase}
 
 <div>{info.recomendacao}</div>
 
-{info.alerta && <div style={{color:"orange"}}>{info.alerta}</div>}
+{info.alerta && <div className="alert">{info.alerta}</div>}
 
 <button onClick={()=>deleteCultivo(c.id)}>Excluir</button>
 
@@ -173,25 +204,16 @@ Fase: {info.fase}
 </div>
 )}
 
-{/* SIDE PANEL INTELIGENTE */}
 {ReactDOM.createPortal(
-projeto ? (
-<div>
+projeto
+? <div>
 <h3>Tarefas do dia</h3>
-
 {projeto.cultivos.map((c,i)=>{
-const info = analisarCultivo(c);
-return (
-<div key={i} className="card">
-<strong>{c.planta}</strong>
-<br/>
-{info.recomendacao}
-</div>
-);
+const info = analisar(c);
+return <div key={i} className="card">{c.planta}<br/>{info.recomendacao}</div>;
 })}
-
 </div>
-) : "Selecione um projeto",
+: "Selecione um projeto",
 document.getElementById("sidePanel")
 )}
 
@@ -220,3 +242,6 @@ render();
 render();
 
 </script>
+
+</body>
+</html>
