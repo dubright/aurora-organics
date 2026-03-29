@@ -9,121 +9,27 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <style>
-* { box-sizing: border-box; }
+body { margin:0; font-family:Inter; background:#0b0d10; color:#eee; display:flex; height:100vh; }
+aside { width:240px; background:#0f1115; padding:20px; }
+main { flex:1; display:flex; }
+.content { flex:1; padding:20px; overflow:auto; }
+.right { width:300px; background:#0f1115; padding:20px; border-left:1px solid #222; }
 
-body {
-  margin: 0;
-  font-family: Inter, system-ui;
-  background: #0b0d10;
-  color: #eaeaea;
-  display: flex;
-  height: 100vh;
-}
+.nav { padding:10px; cursor:pointer; border-radius:8px; color:#aaa; }
+.nav.active { background:#1a1f26; color:#00e676; }
 
-/* SIDEBAR */
-aside {
-  width: 240px;
-  background: #0f1115;
-  padding: 20px;
-  border-right: 1px solid #1f2329;
-}
-
-.logo {
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #00e676;
-}
-
-.nav-item {
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #aaa;
-}
-
-.nav-item.active {
-  background: #1a1f26;
-  color: #00e676;
-}
-
-/* MAIN */
-main {
-  flex: 1;
-  display: flex;
-}
-
-/* CONTENT */
-.content {
-  flex: 1;
-  padding: 30px;
-  overflow-y: auto;
-}
-
-/* RIGHT PANEL */
-.right {
-  width: 320px;
-  background: #0f1115;
-  border-left: 1px solid #1f2329;
-  padding: 20px;
-}
-
-/* TITLE */
-h2 {
-  margin-top: 0;
-  font-weight: 600;
-}
-
-/* BUTTON */
-.btn {
-  background: #00e676;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* INPUT */
-input {
-  background: #15191f;
-  border: 1px solid #2a2f36;
-  padding: 8px;
-  border-radius: 8px;
-  color: white;
-}
-
-/* CARD */
-.card {
-  background: #11151a;
-  padding: 16px;
-  border-radius: 12px;
-  margin-top: 12px;
-  border: 1px solid #1c2127;
-}
-
-/* PROJECT */
-.project-header {
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-}
-
-/* CULTIVO */
-.cultivo {
-  background: #15191f;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
-}
+.card { background:#15191f; padding:12px; border-radius:10px; margin-top:10px; }
+input, select { background:#1c2026; border:1px solid #333; padding:6px; border-radius:6px; color:#fff; }
+button { background:#00e676; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <aside>
-  <div class="logo">🌿 Aurora</div>
-  <div id="nav-dashboard" class="nav-item active">Dashboard</div>
-  <div id="nav-projects" class="nav-item">Projetos</div>
+  <h3>🌿 Aurora</h3>
+  <div id="nav-dashboard" class="nav active">Dashboard</div>
+  <div id="nav-projects" class="nav">Projetos</div>
 </aside>
 
 <main>
@@ -132,180 +38,209 @@ input {
 </main>
 
 <script type="text/babel">
+
 const { useState, useEffect } = React;
 
 function App({ page }) {
 
-  const [projects, setProjects] = useState(() => JSON.parse(localStorage.getItem("projects") || "[]"));
-  const [expanded, setExpanded] = useState(null);
-  const [forms, setForms] = useState({});
+const [projects, setProjects] = useState(() => JSON.parse(localStorage.getItem("projects") || "[]"));
+const [activeProject, setActiveProject] = useState(null);
+const [forms, setForms] = useState({});
 
-  useEffect(() => {
-    localStorage.setItem("projects", JSON.stringify(projects));
-  }, [projects]);
+useEffect(()=>{
+localStorage.setItem("projects", JSON.stringify(projects));
+},[projects]);
 
-  const addProject = () => {
-    const nome = prompt("Nome do projeto");
-    if (!nome) return;
+// ===================
+// PROJETOS
+// ===================
 
-    setProjects(prev => [...prev, {
-      id: Date.now(),
-      nome,
-      cultivos: [],
-      historico: []
-    }]);
-  };
+const addProject = () => {
+const nome = prompt("Nome do projeto");
+if(!nome) return;
 
-  const addCultivo = (id) => {
-    const form = forms[id];
-    if (!form?.planta || !form?.data) return alert("Preencha");
+setProjects(prev => [...prev,{
+id:Date.now(),
+nome,
+cultivos:[],
+historico:[]
+}]);
+};
 
-    const cultivo = { ...form, id: Date.now() };
+const deleteProject = (id) => {
+setProjects(prev => prev.filter(p=>p.id!==id));
+if(activeProject===id) setActiveProject(null);
+};
 
-    setProjects(prev =>
-      prev.map(p =>
-        p.id === id
-          ? {
-              ...p,
-              cultivos: [...p.cultivos, cultivo],
-              historico: [...p.historico, { acao: `Cultivo ${form.planta}` }]
-            }
-          : p
-      )
-    );
+// ===================
+// CULTIVO
+// ===================
 
-    setForms(prev => ({
-      ...prev,
-      [id]: { planta:"", data:"", quantidade:1 }
-    }));
-  };
+const addCultivo = (projId) => {
 
-  const Dashboard = () => {
-    const total = projects.reduce((a,p)=>a+p.cultivos.length,0);
-    return <div>
-      <h2>Dashboard</h2>
-      <div className="card">Total cultivos: {total}</div>
-    </div>;
-  };
+const form = forms[projId];
+if(!form?.planta || !form?.data) return alert("Preencha");
 
-  const Projetos = () => {
+const cultivo = {
+id:Date.now(),
+...form,
+status:"Plantado",
+historico:[]
+};
 
-    const projetoAtual = projects.find(p => p.id === expanded);
+setProjects(prev => prev.map(p =>
+p.id===projId ? {
+...p,
+cultivos:[...p.cultivos, cultivo],
+historico:[...p.historico,{acao:`Plantado ${form.planta}`}]
+}:p
+));
 
-    return (
-      <div>
-        <h2>Projetos</h2>
-        <button className="btn" onClick={addProject}>+ Projeto</button>
+setForms(prev => ({
+...prev,
+[projId]:{planta:"",data:"",fertilizante:"BioBizz",litragem:"700ml",quantidade:1}
+}));
 
-        {projects.map(p => (
-          <div key={p.id} className="card">
+};
 
-            <div className="project-header" onClick={() => setExpanded(p.id === expanded ? null : p.id)}>
-              <strong>{p.nome}</strong>
-              <span>{p.cultivos.length}</span>
-            </div>
+const updateStatus = (projId, cultId, status) => {
 
-            {expanded === p.id && (
-              <div>
+setProjects(prev => prev.map(p =>
+p.id===projId ? {
+...p,
+cultivos:p.cultivos.map(c =>
+c.id===cultId ? {...c,status} : c
+),
+historico:[...p.historico,{acao:`Status atualizado: ${status}`}]
+}:p
+));
 
-                <div style={{display:"flex", gap:"6px", marginTop:"10px"}}>
-                  <input
-                    placeholder="Planta"
-                    value={forms[p.id]?.planta || ""}
-                    onChange={e =>
-                      setForms(prev => ({
-                        ...prev,
-                        [p.id]: { ...prev[p.id], planta:e.target.value }
-                      }))
-                    }
-                  />
+};
 
-                  <input
-                    type="date"
-                    value={forms[p.id]?.data || ""}
-                    onChange={e =>
-                      setForms(prev => ({
-                        ...prev,
-                        [p.id]: { ...prev[p.id], data:e.target.value }
-                      }))
-                    }
-                  />
+// ===================
+// DASHBOARD
+// ===================
 
-                  <input
-                    type="number"
-                    value={forms[p.id]?.quantidade || 1}
-                    onChange={e =>
-                      setForms(prev => ({
-                        ...prev,
-                        [p.id]: { ...prev[p.id], quantidade:e.target.value }
-                      }))
-                    }
-                  />
+const Dashboard = () => {
 
-                  <button className="btn" onClick={() => addCultivo(p.id)}>+</button>
-                </div>
+const all = projects.flatMap(p=>p.cultivos);
+const total = all.length;
+const qtd = all.reduce((a,b)=>a+Number(b.quantidade||0),0);
+const lucro = qtd*10;
+const custo = qtd*4;
 
-                {p.cultivos.map(c => (
-                  <div key={c.id} className="cultivo">
-                    {c.planta} • {c.quantidade}
-                  </div>
-                ))}
+return (
+<>
+<h2>Dashboard</h2>
+<div className="card">Cultivos: {total}</div>
+<div className="card">Produção: {qtd}</div>
+<div className="card">Lucro: R$ {lucro}</div>
+<div className="card">Custo: R$ {custo}</div>
+</>
+);
+};
 
-              </div>
-            )}
-          </div>
-        ))}
+// ===================
+// PROJETOS UI
+// ===================
 
-        {ReactDOM.createPortal(
-          <div>
-            {projetoAtual ? (
-              <>
-                <h3>{projetoAtual.nome}</h3>
-                <div>Cultivos: {projetoAtual.cultivos.length}</div>
+const Projetos = () => {
 
-                <h4>Histórico</h4>
-                {projetoAtual.historico.map((h,i)=>(
-                  <div key={i}>{h.acao}</div>
-                ))}
-              </>
-            ) : "Selecione um projeto"}
-          </div>,
-          document.getElementById("sidePanel")
-        )}
+const projeto = projects.find(p=>p.id===activeProject);
 
-      </div>
-    );
-  };
+return (
+<>
+<h2>Projetos</h2>
+<button onClick={addProject}>+ Projeto</button>
 
-  return page === "dashboard" ? <Dashboard/> : <Projetos/>;
+{projects.map(p => (
+<div key={p.id} className="card">
+<div onClick={()=>setActiveProject(p.id)}>
+<strong>{p.nome}</strong>
+</div>
+<button onClick={()=>deleteProject(p.id)}>Excluir</button>
+</div>
+))}
+
+{projeto && (
+<div className="card">
+
+<h3>{projeto.nome}</h3>
+
+<div>
+<input placeholder="Planta"
+value={forms[projeto.id]?.planta||""}
+onChange={e=>setForms(prev=>({...prev,[projeto.id]:{...prev[projeto.id],planta:e.target.value}}))}
+ />
+
+<input type="date"
+value={forms[projeto.id]?.data||""}
+onChange={e=>setForms(prev=>({...prev,[projeto.id]:{...prev[projeto.id],data:e.target.value}}))}
+ />
+
+<input type="number"
+value={forms[projeto.id]?.quantidade||1}
+onChange={e=>setForms(prev=>({...prev,[projeto.id]:{...prev[projeto.id],quantidade:e.target.value}}))}
+ />
+
+<button onClick={()=>addCultivo(projeto.id)}>Adicionar</button>
+</div>
+
+{projeto.cultivos.map(c=>(
+<div key={c.id} className="card">
+<strong>{c.planta}</strong> ({c.status})
+
+<select value={c.status} onChange={e=>updateStatus(projeto.id,c.id,e.target.value)}>
+<option>Plantado</option>
+<option>Crescimento</option>
+<option>Colheita</option>
+<option>Finalizado</option>
+</select>
+
+</div>
+))}
+
+</div>
+)}
+
+{ReactDOM.createPortal(
+projeto ? (
+<div>
+<h3>Painel</h3>
+<div>Cultivos: {projeto.cultivos.length}</div>
+
+<h4>Histórico</h4>
+{projeto.historico.map((h,i)=><div key={i}>{h.acao}</div>)}
+</div>
+) : "Selecione um projeto",
+document.getElementById("sidePanel")
+)}
+
+</>
+);
+};
+
+return page==="dashboard" ? <Dashboard/> : <Projetos/>;
+
 }
 
 // NAV
-let page = "dashboard";
-const root = ReactDOM.createRoot(document.getElementById("root"));
+let page="dashboard";
+const root=ReactDOM.createRoot(document.getElementById("root"));
 
-function render(){
-  root.render(<App page={page} />);
-}
+function render(){ root.render(<App page={page}/>); }
 
-document.getElementById("nav-dashboard").onclick = () => {
-  page="dashboard";
-  updateNav();
-  render();
-};
+document.getElementById("nav-dashboard").onclick=()=>{page="dashboard";update();};
+document.getElementById("nav-projects").onclick=()=>{page="projects";update();};
 
-document.getElementById("nav-projects").onclick = () => {
-  page="projects";
-  updateNav();
-  render();
-};
-
-function updateNav(){
-  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-  document.getElementById("nav-"+page).classList.add("active");
+function update(){
+document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
+document.getElementById("nav-"+page).classList.add("active");
+render();
 }
 
 render();
+
 </script>
 
 </body>
