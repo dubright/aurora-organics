@@ -1,43 +1,142 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Aurora Organics</title>
+<meta charset="UTF-8">
+<title>Aurora Organics</title>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <style>
-    body { margin:0; font-family:Arial; background:#111; color:#eee; display:flex; height:100vh; }
-    aside { width:200px; background:#1a1a1a; padding:1rem; }
-    button { cursor:pointer; }
-    main { flex:1; display:flex; }
-    .content { flex:1; padding:20px; overflow:auto; }
-    .right { width:250px; background:#1a1a1a; padding:10px; }
-    .card { background:#222; padding:10px; margin-bottom:10px; border-radius:8px; }
-  </style>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui;
+  background: #0b0d10;
+  color: #eaeaea;
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+aside {
+  width: 240px;
+  background: #0f1115;
+  padding: 20px;
+  border-right: 1px solid #1f2329;
+}
+
+.logo {
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #00e676;
+}
+
+.nav-item {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.nav-item.active {
+  background: #1a1f26;
+  color: #00e676;
+}
+
+/* MAIN */
+main {
+  flex: 1;
+  display: flex;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* RIGHT PANEL */
+.right {
+  width: 320px;
+  background: #0f1115;
+  border-left: 1px solid #1f2329;
+  padding: 20px;
+}
+
+/* TITLE */
+h2 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+/* BUTTON */
+.btn {
+  background: #00e676;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* INPUT */
+input {
+  background: #15191f;
+  border: 1px solid #2a2f36;
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+}
+
+/* CARD */
+.card {
+  background: #11151a;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 12px;
+  border: 1px solid #1c2127;
+}
+
+/* PROJECT */
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+/* CULTIVO */
+.cultivo {
+  background: #15191f;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+</style>
 </head>
 
 <body>
-  <aside>
-    <button onclick="setPage('dashboard')">Dashboard</button><br><br>
-    <button onclick="setPage('projects')">Projetos</button>
-  </aside>
 
-  <main>
-    <div id="root" class="content"></div>
-    <div id="sidePanel" class="right"></div>
-  </main>
+<aside>
+  <div class="logo">🌿 Aurora</div>
+  <div id="nav-dashboard" class="nav-item active">Dashboard</div>
+  <div id="nav-projects" class="nav-item">Projetos</div>
+</aside>
+
+<main>
+  <div id="root" class="content"></div>
+  <div id="sidePanel" class="right"></div>
+</main>
 
 <script type="text/babel">
 const { useState, useEffect } = React;
 
 function App({ page }) {
-  const [projects, setProjects] = useState(() => {
-    return JSON.parse(localStorage.getItem("projects") || "[]");
-  });
 
+  const [projects, setProjects] = useState(() => JSON.parse(localStorage.getItem("projects") || "[]"));
   const [expanded, setExpanded] = useState(null);
   const [forms, setForms] = useState({});
 
@@ -45,148 +144,110 @@ function App({ page }) {
     localStorage.setItem("projects", JSON.stringify(projects));
   }, [projects]);
 
-  // ======================
-  // CRUD PROJETOS
-  // ======================
-
   const addProject = () => {
-    const nome = prompt("Nome do projeto:");
+    const nome = prompt("Nome do projeto");
     if (!nome) return;
 
-    const novo = {
+    setProjects(prev => [...prev, {
       id: Date.now(),
       nome,
       cultivos: [],
       historico: []
-    };
-
-    setProjects(prev => [...prev, novo]);
+    }]);
   };
 
-  const deleteProject = (id) => {
-    setProjects(prev => prev.filter(p => p.id !== id));
-    if (expanded === id) setExpanded(null);
-  };
+  const addCultivo = (id) => {
+    const form = forms[id];
+    if (!form?.planta || !form?.data) return alert("Preencha");
 
-  // ======================
-  // CULTIVOS
-  // ======================
-
-  const addCultivo = (projId) => {
-    const form = forms[projId];
-
-    if (!form || !form.planta || !form.data) {
-      return alert("Preencha os campos");
-    }
-
-    const novoCultivo = {
-      ...form,
-      id: Date.now()
-    };
+    const cultivo = { ...form, id: Date.now() };
 
     setProjects(prev =>
       prev.map(p =>
-        p.id === projId
+        p.id === id
           ? {
               ...p,
-              cultivos: [...p.cultivos, novoCultivo],
-              historico: [...p.historico, { acao: "Cultivo adicionado" }]
+              cultivos: [...p.cultivos, cultivo],
+              historico: [...p.historico, { acao: `Cultivo ${form.planta}` }]
             }
           : p
       )
     );
 
-    // limpa form
     setForms(prev => ({
       ...prev,
-      [projId]: { planta:"", data:"", quantidade:1 }
+      [id]: { planta:"", data:"", quantidade:1 }
     }));
   };
 
-  // ======================
-  // UI
-  // ======================
-
-  function Dashboard() {
+  const Dashboard = () => {
     const total = projects.reduce((a,p)=>a+p.cultivos.length,0);
+    return <div>
+      <h2>Dashboard</h2>
+      <div className="card">Total cultivos: {total}</div>
+    </div>;
+  };
 
-    return (
-      <div>
-        <h2>Dashboard</h2>
-        <div className="card">Total de cultivos: {total}</div>
-      </div>
-    );
-  }
+  const Projetos = () => {
 
-  function Projetos() {
     const projetoAtual = projects.find(p => p.id === expanded);
 
     return (
       <div>
         <h2>Projetos</h2>
-        <button onClick={addProject}>+ Projeto</button>
+        <button className="btn" onClick={addProject}>+ Projeto</button>
 
         {projects.map(p => (
           <div key={p.id} className="card">
 
-            <div onClick={() => setExpanded(p.id === expanded ? null : p.id)}>
-              <strong>{p.nome}</strong> ({p.cultivos.length})
+            <div className="project-header" onClick={() => setExpanded(p.id === expanded ? null : p.id)}>
+              <strong>{p.nome}</strong>
+              <span>{p.cultivos.length}</span>
             </div>
-
-            <button onClick={() => deleteProject(p.id)}>Excluir</button>
 
             {expanded === p.id && (
               <div>
 
-                {/* FORM */}
-                <input
-                  placeholder="Planta"
-                  value={forms[p.id]?.planta || ""}
-                  onChange={e =>
-                    setForms(prev => ({
-                      ...prev,
-                      [p.id]: {
-                        ...prev[p.id],
-                        planta: e.target.value
-                      }
-                    }))
-                  }
-                />
+                <div style={{display:"flex", gap:"6px", marginTop:"10px"}}>
+                  <input
+                    placeholder="Planta"
+                    value={forms[p.id]?.planta || ""}
+                    onChange={e =>
+                      setForms(prev => ({
+                        ...prev,
+                        [p.id]: { ...prev[p.id], planta:e.target.value }
+                      }))
+                    }
+                  />
 
-                <input
-                  type="date"
-                  value={forms[p.id]?.data || ""}
-                  onChange={e =>
-                    setForms(prev => ({
-                      ...prev,
-                      [p.id]: {
-                        ...prev[p.id],
-                        data: e.target.value
-                      }
-                    }))
-                  }
-                />
+                  <input
+                    type="date"
+                    value={forms[p.id]?.data || ""}
+                    onChange={e =>
+                      setForms(prev => ({
+                        ...prev,
+                        [p.id]: { ...prev[p.id], data:e.target.value }
+                      }))
+                    }
+                  />
 
-                <input
-                  type="number"
-                  value={forms[p.id]?.quantidade || 1}
-                  onChange={e =>
-                    setForms(prev => ({
-                      ...prev,
-                      [p.id]: {
-                        ...prev[p.id],
-                        quantidade: e.target.value
-                      }
-                    }))
-                  }
-                />
+                  <input
+                    type="number"
+                    value={forms[p.id]?.quantidade || 1}
+                    onChange={e =>
+                      setForms(prev => ({
+                        ...prev,
+                        [p.id]: { ...prev[p.id], quantidade:e.target.value }
+                      }))
+                    }
+                  />
 
-                <button onClick={() => addCultivo(p.id)}>Adicionar</button>
+                  <button className="btn" onClick={() => addCultivo(p.id)}>+</button>
+                </div>
 
-                {/* LISTA */}
                 {p.cultivos.map(c => (
-                  <div key={c.id} className="card">
-                    {c.planta} - {c.quantidade}
+                  <div key={c.id} className="cultivo">
+                    {c.planta} • {c.quantidade}
                   </div>
                 ))}
 
@@ -195,48 +256,57 @@ function App({ page }) {
           </div>
         ))}
 
-        {/* SIDE PANEL */}
         {ReactDOM.createPortal(
           <div>
             {projetoAtual ? (
-              <div>
+              <>
                 <h3>{projetoAtual.nome}</h3>
-                <div>cultivos: {projetoAtual.cultivos.length}</div>
+                <div>Cultivos: {projetoAtual.cultivos.length}</div>
 
                 <h4>Histórico</h4>
                 {projetoAtual.historico.map((h,i)=>(
                   <div key={i}>{h.acao}</div>
                 ))}
-              </div>
+              </>
             ) : "Selecione um projeto"}
           </div>,
           document.getElementById("sidePanel")
         )}
+
       </div>
     );
-  }
+  };
 
   return page === "dashboard" ? <Dashboard/> : <Projetos/>;
 }
 
-// ======================
-// RENDER GLOBAL
-// ======================
-
-let currentPage = "dashboard";
-
+// NAV
+let page = "dashboard";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-function renderApp(){
-  root.render(<App page={currentPage} />);
+function render(){
+  root.render(<App page={page} />);
 }
 
-function setPage(p){
-  currentPage = p;
-  renderApp();
+document.getElementById("nav-dashboard").onclick = () => {
+  page="dashboard";
+  updateNav();
+  render();
+};
+
+document.getElementById("nav-projects").onclick = () => {
+  page="projects";
+  updateNav();
+  render();
+};
+
+function updateNav(){
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById("nav-"+page).classList.add("active");
 }
 
-renderApp();
+render();
 </script>
+
 </body>
 </html>
